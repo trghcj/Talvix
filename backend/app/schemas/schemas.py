@@ -15,6 +15,24 @@ class UserCreate(UserBase):
 class UserResponse(UserBase):
     id: int
     created_at: datetime
+    
+    model_config = ConfigDict(from_attributes=True)
+
+class CandidateUpdate(BaseModel):
+    phone: Optional[str] = None
+    college: Optional[str] = None
+    skills: Optional[str] = None
+    experience: Optional[str] = None
+
+class CandidateResponse(BaseModel):
+    id: int
+    user_id: int
+    phone: Optional[str] = None
+    college: Optional[str] = None
+    skills: Optional[str] = None
+    experience: Optional[str] = None
+    resume_url: Optional[str] = None
+    
     model_config = ConfigDict(from_attributes=True)
 
 # Candidates
