@@ -5,16 +5,19 @@ import { useAuthStore } from '../store/authStore';
 import { Login } from '../pages/Login';
 import { Register } from '../pages/Register';
 
-// A simple placeholder for Dashboard until we build it
-const DashboardPlaceholder = () => (
-  <div style={{ padding: '2rem', textAlign: 'center' }}>
-    <h1>Dashboard</h1>
-    <p>You are logged in!</p>
-    <button className="btn btn-outline" onClick={() => useAuthStore.getState().logout()}>
-      Sign Out
-    </button>
-  </div>
-);
+import { DashboardLayout } from '../layouts/DashboardLayout';
+import { CandidateDashboard } from '../pages/CandidateDashboard';
+import { RecruiterDashboard } from '../pages/RecruiterDashboard';
+import { CandidateProfileView } from '../pages/CandidateProfileView';
+
+// A simple wrapper to decide which dashboard to show
+const DashboardRouter = () => {
+  // TODO: Fetch user role from backend
+  const role = 'candidate'; // Hardcoded for now
+  
+  if (role === 'recruiter') return <RecruiterDashboard />;
+  return <CandidateDashboard />;
+};
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
@@ -66,9 +69,13 @@ export const AppRoutes = () => {
 
         <Route path="/dashboard" element={
           <ProtectedRoute>
-            <DashboardPlaceholder />
+            <DashboardLayout />
           </ProtectedRoute>
-        } />
+        }>
+          <Route index element={<DashboardRouter />} />
+          <Route path="jobs" element={<div>Jobs Page Coming Soon</div>} />
+          <Route path="profile" element={<CandidateProfileView />} />
+        </Route>
         
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
