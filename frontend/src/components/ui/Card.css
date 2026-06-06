@@ -1,0 +1,10 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.card-pad-none { padding: 0; }
+.card-pad-sm { padding: 1rem; }
+.card-pad-md { padding: 1.5rem; }
+.card-pad-lg { padding: 2rem; }
