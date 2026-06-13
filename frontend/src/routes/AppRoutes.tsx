@@ -1,3 +1,4 @@
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 
@@ -10,17 +11,25 @@ import { CandidateDashboard } from '../pages/CandidateDashboard';
 import { RecruiterDashboard } from '../pages/RecruiterDashboard';
 import { CandidateProfileView } from '../pages/CandidateProfileView';
 
+// ATS Pages
+import JobManagement from '../pages/recruiter/JobManagement';
+import CreateJob from '../pages/recruiter/CreateJob';
+import ApplicantManagement from '../pages/recruiter/ApplicantManagement';
+
+import JobBoard from '../pages/candidate/JobBoard';
+import JobDetails from '../pages/candidate/JobDetails';
+import MyApplications from '../pages/candidate/MyApplications';
+
 // A simple wrapper to decide which dashboard to show
 const DashboardRouter = () => {
-  // TODO: Fetch user role from backend
-  const role = 'candidate'; // Hardcoded for now
+  const { activeRole } = useAuthStore();
   
-  if (role === 'recruiter') return <RecruiterDashboard />;
+  if (activeRole === 'recruiter') return <RecruiterDashboard />;
   return <CandidateDashboard />;
 };
 
 // Protected Route Wrapper
-const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuthStore();
   
   if (loading) {
@@ -31,11 +40,11 @@ const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
     return <Navigate to="/login" replace />;
   }
   
-  return children;
+  return <>{children}</>;
 };
 
 // Public Route Wrapper (redirects to dashboard if already logged in)
-const PublicRoute = ({ children }: { children: JSX.Element }) => {
+const PublicRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuthStore();
   
   if (loading) {
@@ -46,7 +55,7 @@ const PublicRoute = ({ children }: { children: JSX.Element }) => {
     return <Navigate to="/dashboard" replace />;
   }
   
-  return children;
+  return <>{children}</>;
 };
 
 export const AppRoutes = () => {
@@ -73,8 +82,18 @@ export const AppRoutes = () => {
           </ProtectedRoute>
         }>
           <Route index element={<DashboardRouter />} />
-          <Route path="jobs" element={<div>Jobs Page Coming Soon</div>} />
           <Route path="profile" element={<CandidateProfileView />} />
+          
+          {/* Recruiter Routes */}
+          <Route path="jobs" element={<JobManagement />} />
+          <Route path="jobs/create" element={<CreateJob />} />
+          <Route path="jobs/:jobId/applicants" element={<ApplicantManagement />} />
+          <Route path="applicants" element={<ApplicantManagement />} />
+
+          {/* Candidate Routes */}
+          <Route path="candidate/jobs" element={<JobBoard />} />
+          <Route path="candidate/jobs/:jobId" element={<JobDetails />} />
+          <Route path="candidate/applications" element={<MyApplications />} />
         </Route>
         
         <Route path="*" element={<Navigate to="/" replace />} />
