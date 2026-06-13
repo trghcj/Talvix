@@ -29,11 +29,17 @@ def sync_user(user_data: UserCreate, db: Session = Depends(get_db), decoded_toke
     new_user = User(
         firebase_uid=user_data.firebase_uid,
         name=user_data.name,
-        email=user_data.email,
-        role=user_data.role
+        email=user_data.email
     )
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
-    
     return new_user
+
+@router.get("/me", response_model=UserResponse)
+def get_current_user_profile(decoded_token: dict = Depends(verify_token), db: Session = Depends(get_db)):
+    firebase_uid = decoded_token.get("uid")
+    user = db.query(User).filter(User.firebase_uid == firebase_uid).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found in DB")
+    return user

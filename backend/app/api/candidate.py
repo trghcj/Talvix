@@ -1,6 +1,6 @@
-import cloudinary
-import cloudinary.uploader
 import io
+import os
+import time
 import re
 from pypdf import PdfReader
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
@@ -13,21 +13,11 @@ from app.core.config import settings
 
 router = APIRouter(prefix="/candidate", tags=["Candidate"])
 
-# Initialize Cloudinary
-cloudinary.config(
-    cloud_name=settings.CLOUDINARY_CLOUD_NAME,
-    api_key=settings.CLOUDINARY_API_KEY,
-    api_secret=settings.CLOUDINARY_API_SECRET
-)
-
 @router.get("/profile", response_model=CandidateResponse)
 def get_profile(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    if current_user.role.value != "candidate":
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not a candidate")
-    
     candidate = db.query(Candidate).filter(Candidate.user_id == current_user.id).first()
     if not candidate:
         candidate = Candidate(user_id=current_user.id)
@@ -43,9 +33,6 @@ def update_profile(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    if current_user.role.value != "candidate":
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not a candidate")
-        
     candidate = db.query(Candidate).filter(Candidate.user_id == current_user.id).first()
     if not candidate:
         candidate = Candidate(user_id=current_user.id)
@@ -54,8 +41,8 @@ def update_profile(
         
     if profile_data.phone is not None:
         candidate.phone = profile_data.phone
-    if profile_data.college is not None:
-        candidate.college = profile_data.college
+    if profile_data.education is not None:
+        candidate.education = profile_data.education
     if profile_data.skills is not None:
         candidate.skills = profile_data.skills
     if profile_data.experience is not None:
@@ -73,9 +60,6 @@ async def upload_resume(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    if current_user.role.value != "candidate":
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not a candidate")
-        
     candidate = db.query(Candidate).filter(Candidate.user_id == current_user.id).first()
     if not candidate:
         candidate = Candidate(user_id=current_user.id)
@@ -120,30 +104,36 @@ async def upload_resume(
         lines = [line.strip() for line in extracted_text.split('\n') if line.strip()]
         for i, line in enumerate(lines):
             line_lower = line.lower()
-            if line_lower in ["education", "academics"]:
-                if i + 1 < len(lines):
-                    candidate.college = lines[i+1]
-                break
+            # Check for common education headers (allowing for extra words like "Education & Certifications")
+            if "education" in line_lower or "academic" in line_lower:
+                # If it's a short line, it's likely a header, grab the next line
+                if len(line_lower.split()) <= 4:
+                    if i + 1 < len(lines):
+                        candidate.education = lines[i+1]
+                    break
+                # If it contains a colon, the value might be after it
+                elif ":" in line:
+                    candidate.education = line.split(":", 1)[1].strip()
+                    break
                 
-        # Fallback to keyword search if header not found
-        if not candidate.college:
+        # Fallback to keyword search if header not found or next line was blank
+        if not candidate.education or len(candidate.education) < 3:
             for line in lines:
-                if "university" in line.lower() or "college" in line.lower() or "institute" in line.lower():
-                    candidate.college = line
+                line_lower = line.lower()
+                if any(kw in line_lower for kw in ["university", "college", "institute", "school", "academy", "b.tech", "b.sc", "degree"]):
+                    candidate.education = line
                     break
 
-        # 4. Upload to Cloudinary
-        # We need to seek back to start since we already read it!
-        # Instead, we just pass the BytesIO object
-        result = cloudinary.uploader.upload(
-            io.BytesIO(file_contents), 
-            resource_type="raw", 
-            folder="resumes",
-            public_id=file.filename
-        )
+        # 4. Save Locally
+        timestamp = int(time.time())
+        safe_filename = f"{timestamp}_{file.filename.replace(' ', '_')}"
+        file_path = os.path.join("app", "public", "resumes", safe_filename)
         
-        # Save URL to database
-        candidate.resume_url = result.get('secure_url')
+        with open(file_path, "wb") as f:
+            f.write(file_contents)
+        
+        # Save local URL to database (assuming backend runs on localhost:8000 for local dev)
+        candidate.resume_url = f"http://localhost:8000/public/resumes/{safe_filename}"
         db.commit()
         db.refresh(candidate)
         

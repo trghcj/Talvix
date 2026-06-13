@@ -14,7 +14,7 @@ export const CandidateDashboard = () => {
   
   // Profile State
   const [phone, setPhone] = useState('');
-  const [college, setCollege] = useState('');
+  const [education, setEducation] = useState('');
   const [skills, setSkills] = useState('');
   const [experience, setExperience] = useState('');
   const [resumeUrl, setResumeUrl] = useState<string | null>(null);
@@ -25,10 +25,10 @@ export const CandidateDashboard = () => {
 
   const fetchProfile = async () => {
     try {
-      const res = await apiClient.get('/candidate/profile');
+      const res = await apiClient.get('/api/candidate/profile');
       const data = res.data;
       setPhone(data.phone || '');
-      setCollege(data.college || '');
+      setEducation(data.education || '');
       setSkills(data.skills || '');
       setExperience(data.experience || '');
       setResumeUrl(data.resume_url || null);
@@ -44,9 +44,9 @@ export const CandidateDashboard = () => {
     setSaving(true);
     setMessage('');
     try {
-      await apiClient.put('/candidate/profile', {
+      await apiClient.put('/api/candidate/profile', {
         phone,
-        college,
+        education,
         skills,
         experience
       });
@@ -72,7 +72,7 @@ export const CandidateDashboard = () => {
     formData.append('file', file);
 
     try {
-      const res = await apiClient.post('/candidate/resume', formData, {
+      const res = await apiClient.post('/api/candidate/resume', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       setResumeUrl(res.data.resume_url);
@@ -113,8 +113,8 @@ export const CandidateDashboard = () => {
             <Input 
               label="College / University" 
               placeholder="e.g. Stanford University" 
-              value={college} 
-              onChange={e => setCollege(e.target.value)} 
+              value={education} 
+              onChange={e => setEducation(e.target.value)} 
             />
             <div style={{ marginBottom: '1rem' }}>
               <label style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-primary)', marginBottom: '0.375rem', display: 'block' }}>Skills</label>

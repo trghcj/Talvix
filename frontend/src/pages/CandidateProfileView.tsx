@@ -13,7 +13,7 @@ export const CandidateProfileView = () => {
 
   const fetchProfile = async () => {
     try {
-      const res = await apiClient.get('/candidate/profile');
+      const res = await apiClient.get('/api/candidate/profile');
       setProfile(res.data);
     } catch (err) {
       console.error("Failed to load profile", err);
@@ -41,7 +41,7 @@ export const CandidateProfileView = () => {
 
     try {
       // The backend will now parse the resume and update the profile!
-      const res = await apiClient.post('/candidate/resume', formData, {
+      const res = await apiClient.post('/api/candidate/resume', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       // The response is the newly updated profile with parsed data
@@ -213,7 +213,7 @@ export const CandidateProfileView = () => {
             <div className="education-item">
               <div className="edu-icon">🎓</div>
               <div className="edu-content">
-                <h4>{profile?.college || "Not specified"}</h4>
+                <h4>{profile?.education || "Not specified"}</h4>
                 <span className="edu-school">College / University</span>
               </div>
             </div>

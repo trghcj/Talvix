@@ -1,60 +1,134 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import './Sidebar.css';
 
 export const Sidebar = () => {
-  const { logout } = useAuthStore();
+  const { logout, activeRole } = useAuthStore();
+  const [isCollapsed, setIsCollapsed] = useState(false);
   
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
       <div className="sidebar-brand">
-        <h2>Talvix</h2>
+        {!isCollapsed && <h2>Talvix</h2>}
+        {isCollapsed && <h2>T</h2>}
+        <button className="collapse-btn" onClick={() => setIsCollapsed(!isCollapsed)}>
+          {isCollapsed ? (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="9" y1="3" x2="9" y2="21"></line>
+              <polyline points="13 16 16 12 13 8"></polyline>
+            </svg>
+          ) : (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="9" y1="3" x2="9" y2="21"></line>
+              <polyline points="15 16 12 12 15 8"></polyline>
+            </svg>
+          )}
+        </button>
       </div>
       
       <nav className="sidebar-nav">
-        <span className="nav-label">MENU</span>
+        {!isCollapsed && <span className="nav-label">MENU</span>}
         
-        {/* Wrapping the links in a card-like group container */}
-        <div className="nav-group-card">
-          <NavLink to="/dashboard" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} end>
+        <div className="nav-group">
+          <NavLink to="/dashboard" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} end title="Overview">
             <span className="nav-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="2" y="4" width="20" height="16" rx="4" fill="#E2E8F0"/>
-                <rect x="5" y="10" width="4" height="8" rx="1" fill="#4ADE80"/>
-                <rect x="10" y="14" width="4" height="4" rx="1" fill="#F43F5E"/>
-                <rect x="15" y="6" width="4" height="12" rx="1" fill="#3B82F6"/>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" />
+                <path d="M3 9h18" />
+                <path d="M9 21V9" />
               </svg>
             </span>
-            Overview
+            {!isCollapsed && <span className="nav-text">Overview</span>}
           </NavLink>
-          <NavLink to="/dashboard/jobs" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+
+          {/* Recruiter Links */}
+          {activeRole === 'recruiter' && (
+            <>
+              <NavLink to="/dashboard/jobs" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} end title="Manage Jobs">
+                <span className="nav-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+                  </svg>
+                </span>
+                {!isCollapsed && <span className="nav-text">Manage Jobs</span>}
+              </NavLink>
+              <NavLink to="/dashboard/jobs/create" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} title="Post Job">
+                <span className="nav-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                  </svg>
+                </span>
+                {!isCollapsed && <span className="nav-text">Post Job</span>}
+              </NavLink>
+              <NavLink to="/dashboard/applicants" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} title="Applicants">
+                <span className="nav-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                  </svg>
+                </span>
+                {!isCollapsed && <span className="nav-text">Applicants</span>}
+              </NavLink>
+            </>
+          )}
+
+          {/* Candidate Links */}
+          {activeRole === 'candidate' && (
+            <>
+              <NavLink to="/dashboard/candidate/jobs" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} end title="Find Jobs">
+                <span className="nav-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                  </svg>
+                </span>
+                {!isCollapsed && <span className="nav-text">Find Jobs</span>}
+              </NavLink>
+              <NavLink to="/dashboard/candidate/applications" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} title="My Applications">
+                <span className="nav-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                    <polyline points="22 4 12 14.01 9 11.01" />
+                  </svg>
+                </span>
+                {!isCollapsed && <span className="nav-text">My Applications</span>}
+              </NavLink>
+            </>
+          )}
+
+          <NavLink to="/dashboard/profile" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} title="Profile">
             <span className="nav-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="3" y="8" width="18" height="12" rx="2" fill="#8B5A5A"/>
-                <path d="M7 8V6C7 4.89543 7.89543 4 9 4H15C16.1046 4 17 4.89543 17 6V8" stroke="#8B5A5A" strokeWidth="2" strokeLinecap="round"/>
-                <rect x="10" y="12" width="4" height="3" rx="1" fill="#D97757"/>
-                <line x1="3" y1="12" x2="21" y2="12" stroke="#683B3B" strokeWidth="2"/>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
               </svg>
             </span>
-            Jobs
-          </NavLink>
-          <NavLink to="/dashboard/profile" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-            <span className="nav-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="12" cy="8" r="4" fill="#7C3AED"/>
-                <path d="M6 21C6 17.6863 8.68629 15 12 15C15.3137 15 18 17.6863 18 21" fill="#7C3AED"/>
-              </svg>
-            </span>
-            Profile
+            {!isCollapsed && <span className="nav-text">Profile</span>}
           </NavLink>
         </div>
       </nav>
 
       <div className="sidebar-footer">
-        <button className="nav-link logout-btn" onClick={() => logout()}>
+        <button 
+          className="nav-link switch-role-btn" 
+          onClick={() => useAuthStore.getState().setActiveRole(activeRole === 'candidate' ? 'recruiter' : 'candidate')} 
+          title="Switch Role"
+          style={{ marginBottom: '8px' }}
+        >
+          <span className="nav-icon">🔄</span>
+          {!isCollapsed && <span className="nav-text">Switch to {activeRole === 'candidate' ? 'Employer' : 'Candidate'}</span>}
+        </button>
+
+        <button className="nav-link logout-btn" onClick={() => logout()} title="Log out">
           <span className="nav-icon">🚪</span>
-          Log out
+          {!isCollapsed && <span className="nav-text">Log out</span>}
         </button>
       </div>
     </aside>

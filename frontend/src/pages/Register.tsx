@@ -11,7 +11,6 @@ export const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [role, setRole] = useState<'candidate' | 'recruiter'>('candidate');
   const [isLoading, setIsLoading] = useState(false);
   const [validationError, setValidationError] = useState('');
   
@@ -30,7 +29,7 @@ export const Register = () => {
     
     setIsLoading(true);
     try {
-      await register(email, password, fullName, role);
+      await register(email, password, fullName);
       navigate('/dashboard');
     } catch (err) {
       // Error handled by store
@@ -41,9 +40,7 @@ export const Register = () => {
 
   const handleGoogleSignUp = async () => {
     try {
-      // Note: for a robust app, Google Signup might also need to capture role. 
-      // For now we will default to the selected radio button role.
-      await loginWithGoogle(role);
+      await loginWithGoogle();
       navigate('/dashboard');
     } catch (err) {
       // Error handled by store
@@ -106,39 +103,6 @@ export const Register = () => {
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
           />
-
-          <div className="role-selection">
-            <label className="input-label">I am a:</label>
-            <div className="role-options">
-              <label className={`role-card ${role === 'candidate' ? 'active' : ''}`}>
-                <input 
-                  type="radio" 
-                  name="role" 
-                  value="candidate" 
-                  checked={role === 'candidate'}
-                  onChange={() => setRole('candidate')}
-                />
-                <div className="role-content">
-                  <span className="role-title">Candidate</span>
-                  <span className="role-desc">Looking for jobs</span>
-                </div>
-              </label>
-              
-              <label className={`role-card ${role === 'recruiter' ? 'active' : ''}`}>
-                <input 
-                  type="radio" 
-                  name="role" 
-                  value="recruiter" 
-                  checked={role === 'recruiter'}
-                  onChange={() => setRole('recruiter')}
-                />
-                <div className="role-content">
-                  <span className="role-title">Recruiter</span>
-                  <span className="role-desc">Hiring talent</span>
-                </div>
-              </label>
-            </div>
-          </div>
 
           <Button type="submit" fullWidth size="lg" isLoading={isLoading}>
             Sign Up
