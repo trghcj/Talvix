@@ -122,7 +122,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       } else if (orgs.length === 0 && get().activeRole === 'recruiter') {
         // Auto-create a default organization for new recruiters
         try {
-          const createRes = await apiClient.post('/api/organizations/', { name: 'My Company' });
+          const createRes = await apiClient.post('/api/organizations', { name: 'My Company' });
           set({ activeOrganization: createRes.data });
           // Fetch again to update memberships
           const updatedRes = await apiClient.get('/api/organizations/my');

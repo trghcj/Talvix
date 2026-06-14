@@ -8,7 +8,7 @@ from app.core.security import get_current_user
 
 router = APIRouter(prefix="/organizations", tags=["organizations"])
 
-@router.post("/", response_model=OrganizationResponse)
+@router.post("", response_model=OrganizationResponse)
 def create_organization(
     org_in: OrganizationCreate,
     db: Session = Depends(get_db),

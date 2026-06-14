@@ -2,7 +2,7 @@ import axios from 'axios';
 import { auth } from './firebase';
 
 export const apiClient = axios.create({
-  baseURL: 'http://localhost:8000', // Update this to your deployed backend URL later
+  baseURL: 'http://localhost:8001', // Changed to 8001 to avoid conflict with existing servers
 });
 
 // Add a request interceptor

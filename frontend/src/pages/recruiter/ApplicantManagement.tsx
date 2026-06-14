@@ -1,17 +1,21 @@
-import React, { useEffect, useState } from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react-hooks/set-state-in-effect */
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { apiClient } from '../../services/api';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '../../store/authStore';
 
+type ApplicationType = Record<string, any>;
+
 const ApplicantManagement = () => {
   const { activeOrganization } = useAuthStore();
   const { jobId } = useParams<{ jobId: string }>();
-  const [applicants, setApplicants] = useState<any[]>([]);
+  const [applicants, setApplicants] = useState<ApplicationType[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedApplicant, setSelectedApplicant] = useState<any | null>(null);
+  const [selectedApplicant, setSelectedApplicant] = useState<ApplicationType | null>(null);
 
-  const fetchApplicants = async () => {
+  const fetchApplicants = useCallback(async () => {
     if (!activeOrganization) return;
     try {
       const url = jobId 
@@ -24,13 +28,13 @@ const ApplicantManagement = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [activeOrganization, jobId]);
 
   useEffect(() => {
     fetchApplicants();
-  }, [jobId, activeOrganization]);
+  }, [fetchApplicants]);
 
-  const handleStatusUpdate = async (appId: int, newStatus: string) => {
+  const handleStatusUpdate = async (appId: number, newStatus: string) => {
     try {
       await apiClient.patch(`/api/applications/${appId}/status`, { status: newStatus, current_stage: newStatus });
       toast.success("Status updated");
@@ -39,7 +43,39 @@ const ApplicantManagement = () => {
         setSelectedApplicant({ ...selectedApplicant, status: newStatus });
       }
     } catch (error) {
+      console.error(error);
       toast.error("Failed to update status");
+    }
+  };
+
+  const scheduleInterview = async (appId: number, dateStr: string, meetLink: string) => {
+    try {
+      // Create or update interview
+      const isUpdate = selectedApplicant?.interview_date;
+      const payload = {
+        application_id: appId,
+        date: new Date(dateStr).toISOString(),
+        mode: "Google Meet",
+        meet_link: meetLink,
+        duration: 60
+      };
+      
+      if (isUpdate) {
+        await apiClient.patch(`/api/applications/${appId}/interview`, payload);
+      } else {
+        await apiClient.post(`/api/applications/${appId}/interview`, payload);
+      }
+      
+      toast.success("Interview scheduled successfully!");
+      fetchApplicants();
+      
+      // Update local state temporarily so UI reflects the change immediately
+      if (selectedApplicant && selectedApplicant.id === appId) {
+        setSelectedApplicant({ ...selectedApplicant, interview_date: payload.date });
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to schedule interview");
     }
   };
 
@@ -144,6 +180,42 @@ const ApplicantManagement = () => {
               <option value="Rejected">Rejected</option>
             </select>
           </div>
+
+          {(selectedApplicant.status === 'Technical Interview' || selectedApplicant.status === 'HR Interview') && (
+            <div style={{ marginBottom: '24px', background: '#1a1d21', padding: '16px', borderRadius: '8px', border: '1px solid #333' }}>
+              <p style={{ color: '#white', fontWeight: 'bold', marginBottom: '12px' }}>Interview Scheduling</p>
+              {selectedApplicant.interview_date ? (
+                <div>
+                  <p style={{ color: '#4ade80', fontSize: '0.9rem', marginBottom: '8px' }}>✓ Scheduled for {new Date(selectedApplicant.interview_date).toLocaleString()}</p>
+                  <button 
+                    onClick={() => {
+                      const meetLink = prompt("Update Google Meet Link:");
+                      const dateStr = prompt("Update Date/Time (YYYY-MM-DDTHH:MM):", new Date(selectedApplicant.interview_date).toISOString().slice(0, 16));
+                      if (dateStr && meetLink) {
+                        scheduleInterview(selectedApplicant.id, dateStr, meetLink);
+                      }
+                    }}
+                    style={{ background: '#333', border: 'none', color: 'white', padding: '8px', borderRadius: '4px', width: '100%', cursor: 'pointer' }}
+                  >
+                    Reschedule
+                  </button>
+                </div>
+              ) : (
+                <button 
+                  onClick={() => {
+                    const meetLink = prompt("Google Meet Link:");
+                    const dateStr = prompt("Date/Time (YYYY-MM-DDTHH:MM):");
+                    if (dateStr && meetLink) {
+                      scheduleInterview(selectedApplicant.id, dateStr, meetLink);
+                    }
+                  }}
+                  style={{ background: '#6366f1', border: 'none', color: 'white', padding: '8px', borderRadius: '4px', width: '100%', cursor: 'pointer', fontWeight: 'bold' }}
+                >
+                  Schedule Now
+                </button>
+              )}
+            </div>
+          )}
 
           {selectedApplicant.resume_snapshot_url && (
             <div style={{ marginBottom: '24px' }}>

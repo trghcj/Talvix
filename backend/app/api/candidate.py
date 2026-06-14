@@ -132,11 +132,46 @@ async def upload_resume(
         with open(file_path, "wb") as f:
             f.write(file_contents)
         
-        # Save local URL to database (assuming backend runs on localhost:8000 for local dev)
-        candidate.resume_url = f"http://localhost:8000/public/resumes/{safe_filename}"
+        # Save local URL to database (assuming backend runs on localhost:8001 for local dev)
+        candidate.resume_url = f"http://localhost:8001/public/resumes/{safe_filename}"
         db.commit()
         db.refresh(candidate)
         
         return candidate
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to process and upload resume: {str(e)}")
+
+@router.post("/profile-picture", response_model=CandidateResponse)
+async def upload_profile_picture(
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    candidate = db.query(Candidate).filter(Candidate.user_id == current_user.id).first()
+    if not candidate:
+        candidate = Candidate(user_id=current_user.id)
+        db.add(candidate)
+        db.commit()
+        db.refresh(candidate)
+        
+    if not file.filename.lower().endswith(('.png', '.jpg', '.jpeg', '.webp')):
+        raise HTTPException(status_code=400, detail="Only image files are allowed")
+
+    try:
+        file_contents = await file.read()
+        
+        timestamp = int(time.time())
+        safe_filename = f"pp_{timestamp}_{file.filename.replace(' ', '_')}"
+        os.makedirs(os.path.join("app", "public", "profiles"), exist_ok=True)
+        file_path = os.path.join("app", "public", "profiles", safe_filename)
+        
+        with open(file_path, "wb") as f:
+            f.write(file_contents)
+        
+        candidate.profile_picture_url = f"http://localhost:8001/public/profiles/{safe_filename}"
+        db.commit()
+        db.refresh(candidate)
+        
+        return candidate
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to upload profile picture: {str(e)}")

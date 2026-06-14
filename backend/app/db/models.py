@@ -49,6 +49,7 @@ class Candidate(Base):
     skills = Column(Text)
     experience = Column(Text)
     resume_url = Column(String)
+    profile_picture_url = Column(String)
 
     user = relationship("User", back_populates="candidate_profile")
     applications = relationship("Application", back_populates="candidate")
@@ -129,6 +130,8 @@ class Interview(Base):
     application_id = Column(Integer, ForeignKey("applications.id"), unique=True, nullable=False)
     date = Column(DateTime(timezone=True))
     mode = Column(String) # e.g. "Google Meet", "In-person"
+    meet_link = Column(String)
+    duration = Column(Integer) # duration in minutes
     feedback = Column(Text)
     status = Column(Enum(InterviewStatus, native_enum=False), default=InterviewStatus.scheduled)
 

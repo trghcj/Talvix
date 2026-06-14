@@ -1,22 +1,28 @@
-import React, { useEffect, useState } from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react-hooks/set-state-in-effect */
+import { useEffect, useState, useCallback } from 'react';
 import { apiClient } from '../../services/api';
 import { Link } from 'react-router-dom';
 
+type JobType = Record<string, any>;
+
 const JobBoard = () => {
-  const [jobs, setJobs] = useState<any[]>([]);
+  const [jobs, setJobs] = useState<JobType[]>([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
     title: '',
     location: '',
     work_mode: '',
     employment_type: '',
-    job_level: ''
+    job_level: '',
+    min_salary: ''
   });
 
-  const fetchJobs = async () => {
+  const fetchJobs = useCallback(async () => {
     try {
       setLoading(true);
       const queryParams = new URLSearchParams(
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         Object.entries(filters).filter(([_, v]) => v !== '')
       ).toString();
       
@@ -27,11 +33,11 @@ const JobBoard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters]);
 
   useEffect(() => {
     fetchJobs();
-  }, [filters]);
+  }, [fetchJobs]);
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFilters({ ...filters, [e.target.name]: e.target.value });
@@ -60,6 +66,8 @@ const JobBoard = () => {
           <option value="Contract">Contract</option>
           <option value="Internship">Internship</option>
         </select>
+
+        <input type="number" name="min_salary" placeholder="Min Salary ($)" onChange={handleFilterChange} style={{ width: '150px', padding: '10px', background: '#090a0b', border: '1px solid #333', color: 'white', borderRadius: '8px' }} />
       </div>
 
       {loading ? (
