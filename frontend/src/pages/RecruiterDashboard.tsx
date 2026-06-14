@@ -30,7 +30,7 @@ export const RecruiterDashboard = () => {
   const handleCreateOrg = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await apiClient.post('/api/organizations/', { name: newOrgName });
+      await apiClient.post('/api/organizations', { name: newOrgName });
       await fetchOrganizations();
     } catch (err) {
       console.error("Failed to create org", err);
@@ -43,8 +43,8 @@ export const RecruiterDashboard = () => {
     return (
       <div className="p-6" style={{ color: 'white' }}>
         <h1 className="text-2xl font-bold mb-6">Create your Organization</h1>
-        <p className="mb-4 text-gray-400">You need an organization to post jobs and manage applicants.</p>
-        <form onSubmit={handleCreateOrg} style={{ display: 'flex', gap: '12px' }}>
+        <p className="mb-4 text-gray-400" style={{ marginBottom: '24px' }}>You need an organization to post jobs and manage applicants.</p>
+        <form onSubmit={handleCreateOrg} style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
           <input 
             type="text" 
             placeholder="Organization Name" 

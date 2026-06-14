@@ -25,6 +25,7 @@ class CandidateBase(BaseModel):
     skills: Optional[str] = None
     experience: Optional[str] = None
     resume_url: Optional[str] = None
+    profile_picture_url: Optional[str] = None
 
 class CandidateUpdate(CandidateBase):
     pass
@@ -112,6 +113,7 @@ class ApplicationResponse(ApplicationBase):
     resume_snapshot_url: Optional[str] = None
     candidate_score: Optional[int] = None
     updated_at: Optional[datetime] = None
+    interview: Optional['InterviewResponse'] = None
     model_config = ConfigDict(from_attributes=True)
 
 # Interviews
@@ -119,6 +121,8 @@ class InterviewBase(BaseModel):
     application_id: int
     date: Optional[datetime] = None
     mode: Optional[str] = None
+    meet_link: Optional[str] = None
+    duration: Optional[int] = None
     feedback: Optional[str] = None
     status: InterviewStatus = InterviewStatus.scheduled
 

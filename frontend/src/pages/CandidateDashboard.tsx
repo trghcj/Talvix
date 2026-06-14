@@ -18,6 +18,7 @@ export const CandidateDashboard = () => {
   const [skills, setSkills] = useState('');
   const [experience, setExperience] = useState('');
   const [resumeUrl, setResumeUrl] = useState<string | null>(null);
+  const [profilePictureUrl, setProfilePictureUrl] = useState<string | null>(null);
 
   useEffect(() => {
     fetchProfile();
@@ -32,6 +33,7 @@ export const CandidateDashboard = () => {
       setSkills(data.skills || '');
       setExperience(data.experience || '');
       setResumeUrl(data.resume_url || null);
+      setProfilePictureUrl(data.profile_picture_url || null);
     } catch (err) {
       console.error("Failed to fetch profile", err);
     } finally {
@@ -55,6 +57,29 @@ export const CandidateDashboard = () => {
       setMessage('Failed to update profile.');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleProfilePictureUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    if (!file.type.startsWith('image/')) {
+      alert('Only image files are allowed');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res = await apiClient.post('/api/candidate/profile-picture', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      setProfilePictureUrl(res.data.profile_picture_url);
+      setMessage('Profile picture updated successfully!');
+    } catch (err) {
+      setMessage('Failed to upload profile picture.');
     }
   };
 
@@ -88,9 +113,24 @@ export const CandidateDashboard = () => {
 
   return (
     <div className="animate-fade-in">
-      <div style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '0.5rem' }}>Candidate Dashboard</h1>
-        <p style={{ color: 'var(--text-secondary)' }}>Welcome, {user?.displayName || user?.email}</p>
+      <div style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '20px' }}>
+        <div style={{ position: 'relative', width: '80px', height: '80px', borderRadius: '50%', overflow: 'hidden', background: '#222', border: '2px solid #444', flexShrink: 0 }}>
+          {profilePictureUrl ? (
+            <img src={profilePictureUrl} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          ) : (
+            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888', fontSize: '24px' }}>
+              {user?.displayName?.[0] || user?.email?.[0]?.toUpperCase() || '?'}
+            </div>
+          )}
+          <label htmlFor="pp-upload" style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'rgba(0,0,0,0.6)', color: 'white', fontSize: '10px', textAlign: 'center', cursor: 'pointer', padding: '2px 0' }}>
+            Edit
+          </label>
+          <input type="file" id="pp-upload" accept="image/*" style={{ display: 'none' }} onChange={handleProfilePictureUpload} />
+        </div>
+        <div>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '0.25rem' }}>Candidate Dashboard</h1>
+          <p style={{ color: 'var(--text-secondary)' }}>Welcome, {user?.displayName || user?.email}</p>
+        </div>
       </div>
 
       {message && (

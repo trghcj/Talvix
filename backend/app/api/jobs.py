@@ -38,6 +38,7 @@ def list_jobs(
     work_mode: Optional[str] = None,
     employment_type: Optional[str] = None,
     job_level: Optional[str] = None,
+    min_salary: Optional[int] = None,
     db: Session = Depends(get_db)
 ):
     query = db.query(Job).filter(Job.status == JobStatus.open)
@@ -52,6 +53,8 @@ def list_jobs(
         query = query.filter(Job.employment_type == employment_type)
     if job_level:
         query = query.filter(Job.job_level == job_level)
+    if min_salary:
+        query = query.filter(Job.salary_max >= min_salary)
         
     jobs = query.order_by(Job.created_at.desc()).all()
     return jobs

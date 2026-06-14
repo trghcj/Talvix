@@ -111,3 +111,68 @@ def update_application_status(
     db.commit()
     db.refresh(app)
     return app
+
+from app.db.models import Interview
+from app.schemas.schemas import InterviewCreate, InterviewResponse
+
+@router.post("/{app_id}/interview", response_model=InterviewResponse)
+def schedule_interview(
+    app_id: int,
+    interview_in: InterviewCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    app = db.query(Application).filter(Application.id == app_id).first()
+    if not app:
+        raise HTTPException(status_code=404, detail="Application not found")
+        
+    verify_org_member(db, current_user.id, app.job.organization_id)
+    
+    existing_interview = db.query(Interview).filter(Interview.application_id == app_id).first()
+    if existing_interview:
+        raise HTTPException(status_code=400, detail="Interview already scheduled for this application")
+        
+    new_interview = Interview(
+        application_id=app_id,
+        date=interview_in.date,
+        mode=interview_in.mode,
+        meet_link=interview_in.meet_link,
+        duration=interview_in.duration,
+        feedback=interview_in.feedback,
+        status=interview_in.status
+    )
+    
+    # Also update application interview_date for convenience
+    app.interview_date = interview_in.date
+    
+    db.add(new_interview)
+    db.commit()
+    db.refresh(new_interview)
+    return new_interview
+
+@router.patch("/{app_id}/interview", response_model=InterviewResponse)
+def update_interview(
+    app_id: int,
+    interview_in: InterviewCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    app = db.query(Application).filter(Application.id == app_id).first()
+    if not app:
+        raise HTTPException(status_code=404, detail="Application not found")
+        
+    verify_org_member(db, current_user.id, app.job.organization_id)
+    
+    interview = db.query(Interview).filter(Interview.application_id == app_id).first()
+    if not interview:
+        raise HTTPException(status_code=404, detail="Interview not found")
+        
+    update_data = interview_in.model_dump(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(interview, key, value)
+        
+    app.interview_date = interview.date
+        
+    db.commit()
+    db.refresh(interview)
+    return interview
