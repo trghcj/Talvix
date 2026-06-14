@@ -1,8 +1,10 @@
 import axios from 'axios';
 import { auth } from './firebase';
 
+const API_URL = import.meta.env.VITE_API_URL || 'https://talvix-api.onrender.com';
+
 export const apiClient = axios.create({
-  baseURL: 'http://localhost:8001', // Changed to 8001 to avoid conflict with existing servers
+  baseURL: API_URL,
 });
 
 // Add a request interceptor
