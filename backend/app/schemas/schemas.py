@@ -85,6 +85,7 @@ class JobResponse(JobBase):
     organization_id: int
     created_at: datetime
     updated_at: Optional[datetime] = None
+    organization: Optional[OrganizationResponse] = None
     model_config = ConfigDict(from_attributes=True)
 
 # Applications
@@ -114,6 +115,7 @@ class ApplicationResponse(ApplicationBase):
     candidate_score: Optional[int] = None
     updated_at: Optional[datetime] = None
     interview: Optional['InterviewResponse'] = None
+    job: Optional[JobResponse] = None
     model_config = ConfigDict(from_attributes=True)
 
 # Interviews
