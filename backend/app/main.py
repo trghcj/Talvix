@@ -3,8 +3,20 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from app.api import auth, candidate, recruiter, jobs, applications, organizations
 import os
+import subprocess
+from contextlib import asynccontextmanager
 
-app = FastAPI(title="Talvix API")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    try:
+        print("Running database migrations...")
+        subprocess.run(["alembic", "upgrade", "head"], check=True)
+        print("Database migrations applied successfully!")
+    except Exception as e:
+        print(f"Error applying migrations: {e}")
+    yield
+
+app = FastAPI(title="Talvix API", lifespan=lifespan)
 
 # Configure CORS
 app.add_middleware(
