@@ -3,7 +3,7 @@ import os
 import time
 import re
 from pypdf import PdfReader
-from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Request
 from sqlalchemy.orm import Session
 from app.db.database import get_db
 from app.db.models import User, Candidate
@@ -56,6 +56,7 @@ def update_profile(
 
 @router.post("/resume", response_model=CandidateResponse)
 async def upload_resume(
+    request: Request,
     file: UploadFile = File(...),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
@@ -132,8 +133,11 @@ async def upload_resume(
         with open(file_path, "wb") as f:
             f.write(file_contents)
         
-        # Save local URL to database (assuming backend runs on localhost:8001 for local dev)
-        candidate.resume_url = f"http://localhost:8001/public/resumes/{safe_filename}"
+        # Save local URL to database
+        base_url = str(request.base_url)
+        if base_url.endswith('/'):
+            base_url = base_url[:-1]
+        candidate.resume_url = f"{base_url}/public/resumes/{safe_filename}"
         db.commit()
         db.refresh(candidate)
         
@@ -143,6 +147,7 @@ async def upload_resume(
 
 @router.post("/profile-picture", response_model=CandidateResponse)
 async def upload_profile_picture(
+    request: Request,
     file: UploadFile = File(...),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
@@ -168,7 +173,10 @@ async def upload_profile_picture(
         with open(file_path, "wb") as f:
             f.write(file_contents)
         
-        candidate.profile_picture_url = f"http://localhost:8001/public/profiles/{safe_filename}"
+        base_url = str(request.base_url)
+        if base_url.endswith('/'):
+            base_url = base_url[:-1]
+        candidate.profile_picture_url = f"{base_url}/public/profiles/{safe_filename}"
         db.commit()
         db.refresh(candidate)
         
