@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
@@ -6,6 +7,7 @@ import { apiClient } from '../services/api';
 import { useAuthStore } from '../store/authStore';
 
 export const CandidateDashboard = () => {
+  const navigate = useNavigate();
   const { user } = useAuthStore();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -19,10 +21,21 @@ export const CandidateDashboard = () => {
   const [experience, setExperience] = useState('');
   const [resumeUrl, setResumeUrl] = useState<string | null>(null);
   const [profilePictureUrl, setProfilePictureUrl] = useState<string | null>(null);
+  const [applications, setApplications] = useState<any[]>([]);
 
   useEffect(() => {
     fetchProfile();
+    fetchApplications();
   }, []);
+
+  const fetchApplications = async () => {
+    try {
+      const res = await apiClient.get('/api/applications');
+      setApplications(res.data);
+    } catch (err) {
+      console.error("Failed to fetch applications", err);
+    }
+  };
 
   const fetchProfile = async () => {
     try {
@@ -215,8 +228,31 @@ export const CandidateDashboard = () => {
 
           <Card>
             <h3 style={{ marginBottom: '1rem', fontWeight: 500 }}>Recent Applications</h3>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', fontStyle: 'italic' }}>No recent applications found.</p>
-            <Button variant="ghost" style={{ marginTop: '1rem' }} fullWidth>Browse Jobs</Button>
+            
+            {applications.length === 0 ? (
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', fontStyle: 'italic' }}>No recent applications found.</p>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                {applications.slice(0, 5).map(app => (
+                  <div key={app.id} style={{ padding: '1rem', background: 'var(--bg-secondary)', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
+                      <h4 style={{ fontWeight: 500, fontSize: '1rem' }}>{app.job?.title || 'Unknown Job'}</h4>
+                      <span style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', background: 'var(--accent-primary)', color: 'white', borderRadius: '12px', textTransform: 'capitalize' }}>
+                        {app.current_stage || app.status || 'Applied'}
+                      </span>
+                    </div>
+                    <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>{app.job?.organization?.name || 'Unknown Company'}</p>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
+                      Applied: {new Date(app.applied_at).toLocaleDateString()}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            <Button variant="ghost" style={{ marginTop: '1.5rem' }} fullWidth onClick={() => navigate('/jobs')}>
+              Browse Jobs
+            </Button>
           </Card>
         </div>
 
