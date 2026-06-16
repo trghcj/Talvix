@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status, Query, BackgroundTasks
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from app.db.database import get_db
@@ -6,6 +6,7 @@ from app.db.models import User, Application, Job, Candidate, OrganizationMember,
 from app.schemas.schemas import ApplicationCreate, ApplicationResponse, ApplicationUpdate
 from app.core.security import get_current_user
 from app.core.scoring import calculate_candidate_score
+from app.core.email import send_email_background
 
 router = APIRouter(prefix="/applications", tags=["Applications"])
 
@@ -21,6 +22,7 @@ def verify_org_member(db: Session, user_id: int, org_id: int):
 @router.post("", response_model=ApplicationResponse)
 def apply_to_job(
     app_in: ApplicationCreate,
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -56,6 +58,15 @@ def apply_to_job(
     db.add(new_app)
     db.commit()
     db.refresh(new_app)
+    
+    # Send confirmation email
+    background_tasks.add_task(
+        send_email_background,
+        to_email=current_user.email,
+        subject=f"Application Received: {job.title}",
+        html_body=f"<h1>Hi {current_user.name},</h1><p>We have successfully received your application for <strong>{job.title}</strong> at {job.organization.name}.</p><p>We will keep you updated on your application status.</p>"
+    )
+    
     return new_app
 
 @router.get("", response_model=List[ApplicationResponse])
@@ -95,6 +106,7 @@ def get_application(app_id: int, current_user: User = Depends(get_current_user),
 def update_application_status(
     app_id: int,
     app_update: ApplicationUpdate,
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -105,11 +117,27 @@ def update_application_status(
     verify_org_member(db, current_user.id, app.job.organization_id)
         
     update_data = app_update.model_dump(exclude_unset=True)
+    status_changed = False
+    new_status = None
+    
+    if "status" in update_data and update_data["status"] != app.status:
+        status_changed = True
+        new_status = update_data["status"]
+
     for key, value in update_data.items():
         setattr(app, key, value)
         
     db.commit()
     db.refresh(app)
+    
+    if status_changed:
+        background_tasks.add_task(
+            send_email_background,
+            to_email=app.candidate.user.email,
+            subject=f"Application Update: {app.job.title}",
+            html_body=f"<h1>Hi {app.candidate.user.name},</h1><p>Your application status for <strong>{app.job.title}</strong> at {app.job.organization.name} has been updated to: <strong>{new_status.value}</strong>.</p><p>Check your dashboard for more details.</p>"
+        )
+        
     return app
 
 from app.db.models import Interview
@@ -119,6 +147,7 @@ from app.schemas.schemas import InterviewCreate, InterviewResponse
 def schedule_interview(
     app_id: int,
     interview_in: InterviewCreate,
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -148,6 +177,18 @@ def schedule_interview(
     db.add(new_interview)
     db.commit()
     db.refresh(new_interview)
+    
+    # Send interview scheduled email
+    formatted_date = new_interview.date.strftime("%B %d, %Y at %I:%M %p") if new_interview.date else "TBD"
+    meet_link_html = f'<p><strong>Meeting Link:</strong> <a href="{new_interview.meet_link}">{new_interview.meet_link}</a></p>' if new_interview.meet_link else ''
+    
+    background_tasks.add_task(
+        send_email_background,
+        to_email=app.candidate.user.email,
+        subject=f"Interview Scheduled: {app.job.title}",
+        html_body=f"<h1>Hi {app.candidate.user.name},</h1><p>We are excited to invite you to an interview for the <strong>{app.job.title}</strong> role at {app.job.organization.name}.</p><p><strong>Date & Time:</strong> {formatted_date}</p>{meet_link_html}<p>Please check your dashboard to confirm or view more details.</p>"
+    )
+    
     return new_interview
 
 @router.patch("/{app_id}/interview", response_model=InterviewResponse)
