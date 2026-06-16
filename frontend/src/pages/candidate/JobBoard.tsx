@@ -36,11 +36,14 @@ const JobBoard = () => {
   }, [filters]);
 
   useEffect(() => {
-    fetchJobs();
+    const timeoutId = setTimeout(() => {
+      fetchJobs();
+    }, 300); // 300ms debounce
+    return () => clearTimeout(timeoutId);
   }, [fetchJobs]);
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFilters({ ...filters, [e.target.name]: e.target.value });
+    setFilters(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   return (
