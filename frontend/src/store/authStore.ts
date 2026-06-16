@@ -106,7 +106,24 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const response = await apiClient.get('/api/auth/me');
       set({ dbUser: response.data });
       await get().fetchOrganizations();
-    } catch (err) {
+    } catch (err: any) {
+      if (err.response?.status === 404) {
+        const user = get().user;
+        if (user) {
+          try {
+            const syncRes = await apiClient.post('/api/auth/sync', {
+              firebase_uid: user.uid,
+              name: user.displayName || user.email?.split('@')[0] || 'User',
+              email: user.email || ''
+            });
+            set({ dbUser: syncRes.data });
+            await get().fetchOrganizations();
+            return;
+          } catch (syncErr) {
+            console.error("Failed to auto-sync user", syncErr);
+          }
+        }
+      }
       console.error("Failed to fetch dbUser", err);
       set({ dbUser: null });
     }
