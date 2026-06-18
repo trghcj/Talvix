@@ -7,35 +7,45 @@ export default function CareerPageBuilder() {
   const { activeOrganization } = useAuthStore();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [jobs, setJobs] = useState<any[]>([]);
   const [formData, setFormData] = useState({
     slug: '',
     title: '',
     description: '',
     logo_url: '',
+    website_url: '',
     primary_color: '#3B82F6',
   });
 
   useEffect(() => {
-    const fetchCareerPage = async () => {
+    const fetchCareerPageAndJobs = async () => {
       if (!activeOrganization) return;
       try {
         setLoading(true);
-        const response = await apiClient.get(`/api/organizations/${activeOrganization.id}/career-page`);
+        const [pageRes, jobsRes] = await Promise.all([
+          apiClient.get(`/api/organizations/${activeOrganization.id}/career-page`),
+          apiClient.get(`/api/recruiter/jobs?organization_id=${activeOrganization.id}`)
+        ]);
+        
         setFormData({
-          slug: response.data.slug || '',
-          title: response.data.title || '',
-          description: response.data.description || '',
-          logo_url: response.data.logo_url || '',
-          primary_color: response.data.primary_color || '#3B82F6',
+          slug: pageRes.data.slug || '',
+          title: pageRes.data.title || '',
+          description: pageRes.data.description || '',
+          logo_url: pageRes.data.logo_url || '',
+          website_url: pageRes.data.website_url || '',
+          primary_color: pageRes.data.primary_color || '#3B82F6',
         });
+        
+        // Only show 'Open' jobs in preview
+        setJobs(jobsRes.data.filter((j: any) => j.status === 'Open'));
       } catch (error) {
-        console.error("Failed to fetch career page settings", error);
+        console.error("Failed to fetch data", error);
         toast.error("Failed to load career page settings.");
       } finally {
         setLoading(false);
       }
     };
-    fetchCareerPage();
+    fetchCareerPageAndJobs();
   }, [activeOrganization]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -159,6 +169,20 @@ export default function CareerPageBuilder() {
 
             <div>
               <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
+                Website URL (Optional)
+              </label>
+              <input
+                type="url"
+                name="website_url"
+                value={formData.website_url}
+                onChange={handleChange}
+                className="block w-full px-3 py-2 rounded-md border border-[var(--border-color)] bg-[var(--bg-main)] text-[var(--text-primary)] focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                placeholder="https://example.com"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
                 Brand Color
               </label>
               <div className="flex items-center gap-3">
@@ -187,48 +211,74 @@ export default function CareerPageBuilder() {
 
         {/* Live Preview Pane */}
         <div className="hidden lg:block">
-          <div className="sticky top-8 border-[8px] border-gray-800 rounded-[2rem] overflow-hidden bg-[var(--bg-main)] h-[600px] shadow-2xl relative">
+          <div className="sticky top-8 border-[8px] border-gray-800 rounded-[2rem] overflow-hidden bg-[var(--bg-main)] h-[600px] shadow-2xl relative flex flex-col">
             {/* Header */}
             <div 
-              className="h-32 p-6 flex flex-col justify-end relative"
+              className="h-32 p-6 flex flex-col justify-end relative shrink-0"
               style={{ backgroundColor: formData.primary_color }}
             >
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-              <h2 className="text-2xl font-bold text-white relative z-10 drop-shadow-md">
-                {formData.title || 'Your Title Here'}
-              </h2>
+              {formData.website_url ? (
+                <a href={formData.website_url} target="_blank" rel="noreferrer" className="relative z-10 block hover:opacity-90 transition-opacity">
+                  <h2 className="text-2xl font-bold text-white drop-shadow-md">
+                    {formData.title || 'Your Title Here'}
+                  </h2>
+                </a>
+              ) : (
+                <h2 className="text-2xl font-bold text-white relative z-10 drop-shadow-md">
+                  {formData.title || 'Your Title Here'}
+                </h2>
+              )}
             </div>
             
             {/* Body */}
-            <div className="p-6">
+            <div className="p-6 flex-1 overflow-y-auto custom-scrollbar">
               {formData.logo_url && (
-                <img 
-                  src={formData.logo_url} 
-                  alt="Company Logo" 
-                  className="w-16 h-16 rounded-lg object-contain bg-white border shadow-sm mb-4 -mt-10 relative z-20"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = 'none';
-                  }}
-                />
+                formData.website_url ? (
+                  <a href={formData.website_url} target="_blank" rel="noreferrer" className="inline-block relative z-20 mb-4 -mt-10">
+                    <img 
+                      src={formData.logo_url} 
+                      alt="Company Logo" 
+                      className="w-16 h-16 rounded-lg object-contain bg-white border shadow-sm hover:scale-105 transition-transform"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = 'none';
+                      }}
+                    />
+                  </a>
+                ) : (
+                  <img 
+                    src={formData.logo_url} 
+                    alt="Company Logo" 
+                    className="w-16 h-16 rounded-lg object-contain bg-white border shadow-sm mb-4 -mt-10 relative z-20"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = 'none';
+                    }}
+                  />
+                )
               )}
               <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">About Us</h3>
               <p className="text-sm text-[var(--text-secondary)] whitespace-pre-wrap">
                 {formData.description || 'Your company description will appear here...'}
               </p>
               
-              <div className="mt-8">
+              <div className="mt-8 pb-6">
                 <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-4">Open Positions</h3>
-                <div className="space-y-3">
-                  {/* Mock Jobs */}
-                  <div className="p-3 border border-[var(--border-color)] rounded-lg bg-[var(--bg-card)] opacity-70">
-                    <div className="font-medium text-[var(--text-primary)] text-sm">Frontend Developer</div>
-                    <div className="text-xs text-[var(--text-secondary)] mt-1">Remote • Full Time</div>
+                {jobs.length === 0 ? (
+                  <div className="p-4 border border-[var(--border-color)] rounded-lg bg-[var(--bg-card)] text-center text-sm text-[var(--text-secondary)]">
+                    No open positions currently.
                   </div>
-                  <div className="p-3 border border-[var(--border-color)] rounded-lg bg-[var(--bg-card)] opacity-70">
-                    <div className="font-medium text-[var(--text-primary)] text-sm">Product Manager</div>
-                    <div className="text-xs text-[var(--text-secondary)] mt-1">New York • Hybrid</div>
+                ) : (
+                  <div className="space-y-3">
+                    {jobs.map((job) => (
+                      <div key={job.id} className="p-3 border border-[var(--border-color)] rounded-lg bg-[var(--bg-card)] opacity-90 hover:border-[var(--border-color-hover)] transition-colors cursor-default">
+                        <div className="font-medium text-[var(--text-primary)] text-sm">{job.title}</div>
+                        <div className="text-xs text-[var(--text-secondary)] mt-1">
+                          {[job.work_mode, job.employment_type, job.location].filter(Boolean).join(' • ')}
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                </div>
+                )}
               </div>
             </div>
           </div>
