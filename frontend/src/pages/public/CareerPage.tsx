@@ -10,6 +10,7 @@ interface PublicCareerPageData {
     title: string;
     description: string;
     logo_url: string;
+    website_url: string;
     primary_color: string;
   };
   organization_name: string;
@@ -68,9 +69,17 @@ export default function CareerPage() {
         <div className="absolute inset-0 bg-black opacity-30"></div>
         
         <div className="relative z-10 max-w-3xl">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-white drop-shadow-lg tracking-tight">
-            {career_page.title || `Careers at ${organization_name}`}
-          </h1>
+          {career_page.website_url ? (
+            <a href={career_page.website_url} target="_blank" rel="noreferrer" className="block hover:opacity-90 transition-opacity">
+              <h1 className="text-4xl md:text-5xl font-extrabold text-white drop-shadow-lg tracking-tight">
+                {career_page.title || `Careers at ${organization_name}`}
+              </h1>
+            </a>
+          ) : (
+            <h1 className="text-4xl md:text-5xl font-extrabold text-white drop-shadow-lg tracking-tight">
+              {career_page.title || `Careers at ${organization_name}`}
+            </h1>
+          )}
         </div>
       </div>
 
@@ -81,12 +90,23 @@ export default function CareerPage() {
         <div className="bg-[var(--bg-card)] rounded-2xl shadow-xl border border-[var(--border-color)] p-8 mb-12">
           <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
             {career_page.logo_url && (
-              <img 
-                src={career_page.logo_url} 
-                alt={`${organization_name} Logo`} 
-                className="w-32 h-32 object-contain bg-white rounded-xl shadow-md border"
-                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-              />
+              career_page.website_url ? (
+                <a href={career_page.website_url} target="_blank" rel="noreferrer" className="shrink-0 hover:scale-105 transition-transform block">
+                  <img 
+                    src={career_page.logo_url} 
+                    alt={`${organization_name} Logo`} 
+                    className="w-32 h-32 object-contain bg-white rounded-xl shadow-md border"
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                  />
+                </a>
+              ) : (
+                <img 
+                  src={career_page.logo_url} 
+                  alt={`${organization_name} Logo`} 
+                  className="w-32 h-32 object-contain bg-white rounded-xl shadow-md border shrink-0"
+                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                />
+              )
             )}
             <div>
               <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-3">About Us</h2>

@@ -66,6 +66,7 @@ class CareerPageBase(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
     logo_url: Optional[str] = None
+    website_url: Optional[str] = None
     primary_color: Optional[str] = "#3B82F6"
 
 class CareerPageUpdate(CareerPageBase):

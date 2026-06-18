@@ -76,6 +76,7 @@ class CareerPage(Base):
     title = Column(String)
     description = Column(Text)
     logo_url = Column(String)
+    website_url = Column(String)
     primary_color = Column(String, default="#3B82F6")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
