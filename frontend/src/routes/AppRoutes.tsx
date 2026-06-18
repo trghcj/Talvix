@@ -20,6 +20,9 @@ import JobBoard from '../pages/candidate/JobBoard';
 import JobDetails from '../pages/candidate/JobDetails';
 import MyApplications from '../pages/candidate/MyApplications';
 
+import CareerPageBuilder from '../pages/recruiter/CareerPageBuilder';
+import PublicCareerPage from '../pages/public/CareerPage';
+
 // A simple wrapper to decide which dashboard to show
 const DashboardRouter = () => {
   const { activeRole } = useAuthStore();
@@ -75,6 +78,9 @@ export const AppRoutes = () => {
             <Register />
           </PublicRoute>
         } />
+        
+        {/* Public Career Page */}
+        <Route path="/careers/:slug" element={<PublicCareerPage />} />
 
         <Route path="/dashboard" element={
           <ProtectedRoute>
@@ -89,6 +95,7 @@ export const AppRoutes = () => {
           <Route path="jobs/create" element={<CreateJob />} />
           <Route path="jobs/:jobId/applicants" element={<ApplicantManagement />} />
           <Route path="applicants" element={<ApplicantManagement />} />
+          <Route path="career-page" element={<CareerPageBuilder />} />
 
           {/* Candidate Routes */}
           <Route path="candidate/jobs" element={<JobBoard />} />

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
-import { LogOut, Repeat } from 'lucide-react';
+import { LogOut, Repeat, Globe } from 'lucide-react';
 import './Sidebar.css';
 
 export const Sidebar = () => {
@@ -76,6 +76,12 @@ export const Sidebar = () => {
                   </svg>
                 </span>
                 {!isCollapsed && <span className="nav-text">Applicants</span>}
+              </NavLink>
+              <NavLink to="/dashboard/career-page" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} title="Career Page">
+                <span className="nav-icon">
+                  <Globe size={20} />
+                </span>
+                {!isCollapsed && <span className="nav-text">Career Page</span>}
               </NavLink>
             </>
           )}

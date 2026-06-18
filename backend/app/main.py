@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from app.api import auth, candidate, recruiter, jobs, applications, organizations
+from app.api import auth, candidate, recruiter, jobs, applications, organizations, public
 import os
 import subprocess
 from contextlib import asynccontextmanager
@@ -53,12 +53,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+
 app.include_router(auth.router, prefix="/api")
 app.include_router(candidate.router, prefix="/api")
 app.include_router(recruiter.router, prefix="/api")
 app.include_router(jobs.router, prefix="/api")
 app.include_router(applications.router, prefix="/api")
 app.include_router(organizations.router, prefix="/api")
+app.include_router(public.router, prefix="/api")
 
 # Serve static files from the 'app/public' directory
 os.makedirs("app/public/resumes", exist_ok=True)

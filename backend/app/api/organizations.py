@@ -81,3 +81,69 @@ def get_organization_metrics(
         "status_breakdown": status_breakdown,
         "interviews_scheduled": total_interviews
     }
+
+from app.db.models import CareerPage
+from app.schemas.schemas import CareerPageResponse, CareerPageUpdate
+
+@router.get("/{org_id}/career-page", response_model=CareerPageResponse)
+def get_career_page(
+    org_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    # Verify organization membership
+    member = db.query(OrganizationMember).filter(
+        OrganizationMember.user_id == current_user.id,
+        OrganizationMember.organization_id == org_id
+    ).first()
+    if not member:
+        raise HTTPException(status_code=403, detail="Not authorized for this organization")
+        
+    page = db.query(CareerPage).filter(CareerPage.organization_id == org_id).first()
+    if not page:
+        # Create a default one
+        org = db.query(Organization).filter(Organization.id == org_id).first()
+        slug = "".join(e for e in org.name.lower() if e.isalnum())
+        page = CareerPage(
+            organization_id=org_id,
+            slug=f"{slug}-{org_id}",
+            title=f"Careers at {org.name}",
+            description="Join our team!",
+            primary_color="#3B82F6"
+        )
+        db.add(page)
+        db.commit()
+        db.refresh(page)
+        
+    return page
+
+@router.put("/{org_id}/career-page", response_model=CareerPageResponse)
+def update_career_page(
+    org_id: int,
+    page_update: CareerPageUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    # Verify organization membership
+    member = db.query(OrganizationMember).filter(
+        OrganizationMember.user_id == current_user.id,
+        OrganizationMember.organization_id == org_id
+    ).first()
+    if not member:
+        raise HTTPException(status_code=403, detail="Not authorized for this organization")
+        
+    page = db.query(CareerPage).filter(CareerPage.organization_id == org_id).first()
+    if not page:
+        raise HTTPException(status_code=404, detail="Career page not found")
+        
+    # Check if new slug is taken
+    existing_slug = db.query(CareerPage).filter(CareerPage.slug == page_update.slug, CareerPage.id != page.id).first()
+    if existing_slug:
+        raise HTTPException(status_code=400, detail="Slug already taken")
+        
+    for key, value in page_update.model_dump().items():
+        setattr(page, key, value)
+        
+    db.commit()
+    db.refresh(page)
+    return page

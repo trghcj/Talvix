@@ -65,6 +65,22 @@ class Organization(Base):
     owner = relationship("User", back_populates="owned_organizations")
     members = relationship("OrganizationMember", back_populates="organization")
     jobs = relationship("Job", back_populates="organization")
+    career_page = relationship("CareerPage", back_populates="organization", uselist=False)
+
+class CareerPage(Base):
+    __tablename__ = "career_pages"
+
+    id = Column(Integer, primary_key=True, index=True)
+    organization_id = Column(Integer, ForeignKey("organizations.id"), unique=True, nullable=False)
+    slug = Column(String, unique=True, index=True, nullable=False)
+    title = Column(String)
+    description = Column(Text)
+    logo_url = Column(String)
+    primary_color = Column(String, default="#3B82F6")
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+    organization = relationship("Organization", back_populates="career_page")
 
 class OrganizationMember(Base):
     __tablename__ = "organization_members"
