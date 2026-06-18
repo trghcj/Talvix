@@ -2,6 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { apiClient } from '../services/api';
 import { Link } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
+import { 
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  PieChart, Pie, Cell, Legend
+} from 'recharts';
 
 export const RecruiterDashboard = () => {
   const [data, setData] = useState<any>(null);
@@ -61,9 +65,17 @@ export const RecruiterDashboard = () => {
     );
   }
 
+  // Format data for Recharts
+  const funnelData = data?.funnel ? Object.entries(data.funnel).map(([name, count]) => ({
+    name,
+    count
+  })).filter(item => item.count !== 0) : [];
+
+  const COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#f97316', '#eab308', '#10b981', '#06b6d4', '#3b82f6'];
+
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6" style={{ color: 'white' }}>Recruitment Analytics Dashboard</h1>
+      <h1 className="text-2xl font-bold mb-6" style={{ color: 'white' }}>Recruitment Analytics</h1>
       
       {/* Quick Metrics */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '16px', marginBottom: '32px' }}>
@@ -81,22 +93,57 @@ export const RecruiterDashboard = () => {
         ))}
       </div>
 
-      {/* ATS Funnel */}
-      <h2 className="text-xl font-bold mb-4" style={{ color: 'white' }}>ATS Funnel</h2>
-      <div style={{ background: '#111315', padding: '24px', borderRadius: '12px', border: '1px solid #222', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-        {data?.funnel && Object.entries(data.funnel).map(([stage, count]: any, idx, arr) => {
-          const maxCount = Math.max(...Object.values(data.funnel as Record<string, number>));
-          const percentage = maxCount === 0 ? 0 : (count / maxCount) * 100;
-          return (
-            <div key={stage} style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
-              <div style={{ width: '150px', color: '#888', fontSize: '0.9rem' }}>{stage}</div>
-              <div style={{ flex: 1, background: '#1a1d21', height: '24px', borderRadius: '4px', overflow: 'hidden', display: 'flex' }}>
-                <div style={{ width: `${percentage}%`, background: '#6366f1', height: '100%', transition: 'width 0.5s ease-in-out' }}></div>
-              </div>
-              <div style={{ width: '40px', textAlign: 'right', color: 'white', fontWeight: 'bold' }}>{count}</div>
-            </div>
-          );
-        })}
+      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px', marginBottom: '32px' }}>
+        {/* Bar Chart for Funnel */}
+        <div style={{ background: '#111315', padding: '24px', borderRadius: '12px', border: '1px solid #222' }}>
+          <h2 className="text-xl font-bold mb-6" style={{ color: 'white' }}>ATS Funnel Breakdown</h2>
+          <div style={{ height: '300px' }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={funnelData} layout="vertical" margin={{ top: 5, right: 30, left: 40, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#333" horizontal={true} vertical={false} />
+                <XAxis type="number" stroke="#888" />
+                <YAxis dataKey="name" type="category" stroke="#888" width={100} tick={{ fontSize: 12 }} />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#222', border: '1px solid #444', borderRadius: '8px', color: 'white' }}
+                  itemStyle={{ color: '#6366f1' }}
+                />
+                <Bar dataKey="count" fill="#6366f1" radius={[0, 4, 4, 0]}>
+                  {funnelData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Pie Chart for Statuses */}
+        <div style={{ background: '#111315', padding: '24px', borderRadius: '12px', border: '1px solid #222' }}>
+          <h2 className="text-xl font-bold mb-6" style={{ color: 'white' }}>Candidate Distribution</h2>
+          <div style={{ height: '300px' }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={funnelData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={80}
+                  paddingAngle={5}
+                  dataKey="count"
+                >
+                  {funnelData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#222', border: '1px solid #444', borderRadius: '8px', color: 'white' }}
+                />
+                <Legend verticalAlign="bottom" height={36} wrapperStyle={{ fontSize: '12px', color: '#888' }} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
       </div>
       
       <div style={{ marginTop: '32px' }}>

@@ -5,6 +5,8 @@ from app.db.database import get_db
 from app.db.models import Organization, OrganizationMember, User
 from app.schemas.schemas import OrganizationResponse, OrganizationCreate, OrganizationMemberResponse
 from app.core.security import get_current_user
+from sqlalchemy import func
+from app.db.models import Job, Application, Interview
 
 router = APIRouter(prefix="/organizations", tags=["organizations"])
 
@@ -39,3 +41,43 @@ def get_my_organizations(
     # Returns the organization memberships for the current user
     memberships = db.query(OrganizationMember).filter(OrganizationMember.user_id == current_user.id).all()
     return memberships
+
+
+
+@router.get("/{org_id}/metrics")
+def get_organization_metrics(
+    org_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    # Verify organization membership
+    member = db.query(OrganizationMember).filter(
+        OrganizationMember.user_id == current_user.id,
+        OrganizationMember.organization_id == org_id
+    ).first()
+    
+    if not member:
+        raise HTTPException(status_code=403, detail="Not authorized for this organization")
+
+    # Metrics queries
+    total_jobs = db.query(func.count(Job.id)).filter(Job.organization_id == org_id).scalar() or 0
+    
+    # We join Application with Job to only count applications for this org's jobs
+    total_applications = db.query(func.count(Application.id)).join(Job).filter(Job.organization_id == org_id).scalar() or 0
+    
+    # Applications by status
+    status_counts = db.query(
+        Application.status, func.count(Application.id)
+    ).join(Job).filter(Job.organization_id == org_id).group_by(Application.status).all()
+    
+    status_breakdown = {status.value: count for status, count in status_counts}
+    
+    # Total Interviews Scheduled
+    total_interviews = db.query(func.count(Interview.id)).join(Application).join(Job).filter(Job.organization_id == org_id).scalar() or 0
+
+    return {
+        "total_jobs": total_jobs,
+        "total_applications": total_applications,
+        "status_breakdown": status_breakdown,
+        "interviews_scheduled": total_interviews
+    }
