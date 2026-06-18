@@ -5,7 +5,8 @@ import { useParams, Link } from 'react-router-dom';
 import { apiClient } from '../../services/api';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '../../store/authStore';
-import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import type { DropResult } from '@hello-pangea/dnd';
 
 type ApplicationType = Record<string, any>;
 
