@@ -60,6 +60,29 @@ class OrganizationMemberResponse(OrganizationMemberBase):
     organization: Optional[OrganizationResponse] = None
     model_config = ConfigDict(from_attributes=True)
 
+# Career Pages
+class CareerPageBase(BaseModel):
+    slug: str
+    title: Optional[str] = None
+    description: Optional[str] = None
+    logo_url: Optional[str] = None
+    primary_color: Optional[str] = "#3B82F6"
+
+class CareerPageUpdate(CareerPageBase):
+    pass
+
+class CareerPageResponse(CareerPageBase):
+    id: int
+    organization_id: int
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+    model_config = ConfigDict(from_attributes=True)
+
+class PublicCareerPageResponse(BaseModel):
+    career_page: CareerPageResponse
+    organization_name: str
+    jobs: List['JobResponse']
+
 # Jobs
 class JobBase(BaseModel):
     title: str
