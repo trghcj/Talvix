@@ -1,4 +1,4 @@
-﻿# Talvix
+# Talvix
 
 ## Recruitment Management & Analytics Platform
 
@@ -9,17 +9,18 @@ Talvix is a modern recruitment management platform designed to streamline the hi
 ## Features
 
 ### Candidate
-- User Registration & Login
+- User Registration & Login (Firebase Auth)
 - Profile Management
-- Resume Upload
+- Resume Upload (Supabase Storage)
 - Job Search & Applications
 - Application Tracking
 
 ### Recruiter
 - Create & Manage Jobs
-- View Applicants
+- View Applicants (Kanban Pipeline)
 - Schedule Interviews
 - Update Candidate Status
+- **Public Career Page Builder** (Customizable branded career pages)
 
 ### Admin
 - User Management
@@ -45,21 +46,21 @@ Talvix is a modern recruitment management platform designed to streamline the hi
 - React Router
 - Zustand
 - TanStack Query
-- Material UI
+- **Tailwind CSS**
 
 ### Backend
 - FastAPI
 - SQLAlchemy
 - Alembic
-- JWT Authentication
+- **Firebase Admin SDK** (Authentication)
 
-### Database
-- PostgreSQL
+### Database & Storage
+- **Supabase** (PostgreSQL)
+- **Supabase Storage** (Resumes & Media)
 
 ### Deployment
 - Vercel (Frontend)
 - Railway / Render (Backend)
-- PostgreSQL Cloud Database
 
 ---
 
@@ -82,13 +83,16 @@ Talvix
 ## Architecture
 
 ```text
-React Frontend
-       │
-       ▼
-FastAPI Backend
-       │
-       ▼
- PostgreSQL
+      Firebase (Auth)
+            │
+            ▼
+      React Frontend
+            │
+            ▼
+      FastAPI Backend
+            │
+            ▼
+   Supabase (PostgreSQL)
 ```
 
 ---
@@ -96,12 +100,13 @@ FastAPI Backend
 ## Roadmap
 
 - [x] Repository Setup
-- [x] Authentication Module
+- [x] Authentication Module (Firebase)
 - [x] Candidate Module
 - [x] Recruiter Module
 - [x] Job Management
-- [x] Applicant Tracking System
-- [ ] Interview Scheduler
+- [x] Applicant Tracking System (Kanban Board)
+- [x] Interview Scheduler
+- [x] Public Career Page Builder
 - [ ] Analytics Dashboard
 - [ ] Dockerization
 - [ ] Cloud Deployment
