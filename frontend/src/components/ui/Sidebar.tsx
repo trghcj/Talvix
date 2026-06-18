@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
+import { LogOut, Repeat } from 'lucide-react';
 import './Sidebar.css';
 
 export const Sidebar = () => {
@@ -122,12 +123,12 @@ export const Sidebar = () => {
           title="Switch Role"
           style={{ marginBottom: '8px' }}
         >
-          <span className="nav-icon">🔄</span>
+          <span className="nav-icon"><Repeat size={18} /></span>
           {!isCollapsed && <span className="nav-text">Switch to {activeRole === 'candidate' ? 'Employer' : 'Candidate'}</span>}
         </button>
 
         <button className="nav-link logout-btn" onClick={() => logout()} title="Log out">
-          <span className="nav-icon">🚪</span>
+          <span className="nav-icon"><LogOut size={18} /></span>
           {!isCollapsed && <span className="nav-text">Log out</span>}
         </button>
       </div>

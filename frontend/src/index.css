@@ -1,10 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-:root {
+:root, [data-theme='dark'] {
   /* Dark Mode Color Palette */
   --bg-base: #0B0F19;      /* Very dark, almost black blue */
   --bg-surface: #111827;   /* Slightly lighter surface */
+  --bg-card: #111315;
+  --bg-secondary: #1a1d21;
   --bg-glass: rgba(255, 255, 255, 0.03);
+  --border-color: #222;
+  --border-color-light: #333;
   --border-glass: rgba(255, 255, 255, 0.08);
   
   --text-primary: #F3F4F6;
@@ -30,6 +34,31 @@
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
   --shadow-glow: 0 0 15px var(--accent-glow);
+}
+
+[data-theme='light'] {
+  --bg-base: #F9FAFB;      
+  --bg-surface: #FFFFFF;   
+  --bg-card: #FFFFFF;
+  --bg-secondary: #F3F4F6;
+  --bg-glass: rgba(255, 255, 255, 0.7);
+  --border-color: #E5E7EB;
+  --border-color-light: #D1D5DB;
+  --border-glass: rgba(0, 0, 0, 0.08);
+  
+  --text-primary: #111827;
+  --text-secondary: #4B5563;
+  --text-muted: #9CA3AF;
+
+  --accent-primary: #2563EB; 
+  --accent-hover: #1D4ED8;
+  --accent-glow: rgba(37, 99, 235, 0.3);
+
+  --success: #059669;
+  --error: #DC2626;
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 * {
