@@ -2,8 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
 from app.db.database import get_db
-from app.db.models import CareerPage, Job, Organization
+from app.db.models import CareerPage, Job, Organization, User
 from app.schemas.schemas import PublicCareerPageResponse, JobStatus
+from fastapi import UploadFile, File
+from app.core.security import get_current_user
 
 router = APIRouter(prefix="/public", tags=["public"])
 
@@ -26,3 +28,18 @@ def get_public_career_page(slug: str, db: Session = Depends(get_db)):
         "organization_name": organization.name,
         "jobs": open_jobs
     }
+
+@router.post("/upload")
+async def upload_image(
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_user)
+):
+    try:
+        import cloudinary.uploader
+        upload_result = cloudinary.uploader.upload(
+            file.file,
+            resource_type="auto"
+        )
+        return {"url": upload_result.get("secure_url")}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to upload image: {str(e)}")
