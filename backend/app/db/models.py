@@ -8,6 +8,7 @@ class JobStatus(str, enum.Enum):
     draft = "Draft"
     open = "Open"
     closed = "Closed"
+    deleted = "Deleted"
 
 class ApplicationStatus(str, enum.Enum):
     applied = "Applied"

@@ -78,7 +78,7 @@ def get_recruiter_jobs(
     db: Session = Depends(get_db)
 ):
     verify_org_member(db, current_user.id, organization_id)
-    jobs = db.query(Job).filter(Job.organization_id == organization_id).order_by(Job.created_at.desc()).all()
+    jobs = db.query(Job).filter(Job.organization_id == organization_id, Job.status != JobStatus.deleted).order_by(Job.created_at.desc()).all()
     return jobs
 
 @router.get("/applicants", response_model=List[ApplicationResponse])
