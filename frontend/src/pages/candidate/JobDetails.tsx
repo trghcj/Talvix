@@ -3,10 +3,22 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { apiClient } from '../../services/api';
 import toast from 'react-hot-toast';
 
+interface JobData {
+  title: string;
+  department: string;
+  location?: string;
+  employment_type: string;
+  work_mode: string;
+  experience_required?: string;
+  salary_min?: number;
+  salary_max?: number;
+  description: string;
+}
+
 const JobDetails = () => {
   const { jobId } = useParams<{ jobId: string }>();
   const navigate = useNavigate();
-  const [job, setJob] = useState<any>(null);
+  const [job, setJob] = useState<JobData | null>(null);
   const [loading, setLoading] = useState(true);
   const [applying, setApplying] = useState(false);
 
