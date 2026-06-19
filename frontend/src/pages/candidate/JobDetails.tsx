@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 const JobDetails = () => {
   const { jobId } = useParams<{ jobId: string }>();
   const navigate = useNavigate();
-  const [job, setJob] = useState<Record<string, unknown> | null>(null);
+  const [job, setJob] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [applying, setApplying] = useState(false);
 
