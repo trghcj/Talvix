@@ -285,8 +285,9 @@ const ApplicantManagement = () => {
                       <label className="text-xs font-medium text-slate-500 mb-1 block">Min Match Score: {filterMinScore}%</label>
                       <input type="range" min="0" max="100" step="10" value={filterMinScore} onChange={e => setFilterMinScore(parseInt(e.target.value))} className="w-full" />
                     </div>
-                    <div className="flex justify-end mt-4">
-                      <button onClick={() => { setFilterStatus(''); setFilterMinScore(0); }} className="text-xs text-blue-600 hover:underline">Clear Filters</button>
+                    <div className="flex justify-between mt-4 items-center">
+                      <button onClick={() => { setFilterStatus(''); setFilterMinScore(0); setShowFilterMenu(false); }} className="text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 hover:underline">Clear Filters</button>
+                      <button onClick={() => setShowFilterMenu(false)} className="text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg font-medium hover:bg-blue-700 transition-colors">Apply Filters</button>
                     </div>
                   </div>
                 )}
@@ -392,10 +393,10 @@ const ApplicantManagement = () => {
                                     </div>
                                     <div className="min-w-0 flex-1">
                                       <h4 className="font-bold text-slate-900 dark:text-white text-sm truncate pr-6">
-                                        {app.candidate?.user?.name || `Candidate #${app.candidate_id}`}
+                                        {app.candidate?.user?.name || `Candidate #${app.candidate?.id || 'Unknown'}`}
                                       </h4>
                                       <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
-                                        {app.job?.title}
+                                        {app.candidate?.user?.email || app.job?.title}
                                       </p>
                                     </div>
                                   </div>
@@ -468,7 +469,8 @@ const ApplicantManagement = () => {
                   <h2 className="text-xl font-bold text-slate-900 dark:text-white">
                     {selectedApplicant.candidate?.user?.name || 'Applicant'}
                   </h2>
-                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 font-medium">{selectedApplicant.job?.title}</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 font-medium">{selectedApplicant.candidate?.user?.email}</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{selectedApplicant.job?.title}</p>
                 </div>
               </div>
               <button 
