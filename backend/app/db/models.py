@@ -134,11 +134,13 @@ class Application(Base):
     notes = Column(Text)
     resume_snapshot_url = Column(String)
     candidate_score = Column(Integer) # Non-AI score out of 100
+    offer_letter_url = Column(String)
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     job = relationship("Job", back_populates="applications")
     candidate = relationship("Candidate", back_populates="applications")
     interview = relationship("Interview", back_populates="application", uselist=False)
+    scorecards = relationship("InterviewScorecard", back_populates="application", cascade="all, delete-orphan")
 
 class Interview(Base):
     __tablename__ = "interviews"
@@ -153,3 +155,17 @@ class Interview(Base):
     status = Column(Enum(InterviewStatus, native_enum=False), default=InterviewStatus.scheduled)
 
     application = relationship("Application", back_populates="interview")
+
+class InterviewScorecard(Base):
+    __tablename__ = "interview_scorecards"
+
+    id = Column(Integer, primary_key=True, index=True)
+    application_id = Column(Integer, ForeignKey("applications.id"), nullable=False)
+    interviewer_name = Column(String, nullable=False)
+    communication_score = Column(Integer, nullable=False) # 1-10
+    technical_score = Column(Integer, nullable=False) # 1-10
+    culture_score = Column(Integer, nullable=False) # 1-10
+    comments = Column(Text)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    application = relationship("Application", back_populates="scorecards")

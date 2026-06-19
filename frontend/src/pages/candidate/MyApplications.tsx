@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { apiClient } from '../../services/api';
 import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 type ApplicationType = Record<string, any>;
 
@@ -9,19 +10,31 @@ const MyApplications = () => {
   const [applications, setApplications] = useState<ApplicationType[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const fetchApplications = async () => {
+    try {
+      const response = await apiClient.get('/api/applications');
+      setApplications(response.data);
+    } catch (error) {
+      console.error("Error fetching applications", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchApplications = async () => {
-      try {
-        const response = await apiClient.get('/api/applications');
-        setApplications(response.data);
-      } catch (error) {
-        console.error("Error fetching applications", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchApplications();
   }, []);
+
+  const handleAcceptOffer = async (appId: number) => {
+    try {
+      await apiClient.post(`/api/applications/${appId}/accept-offer`);
+      toast.success("Offer Accepted! Congratulations!");
+      fetchApplications();
+    } catch {
+      toast.error("Failed to accept offer");
+    }
+  };
 
   return (
     <div className="p-6">
@@ -80,6 +93,31 @@ const MyApplications = () => {
                         <p style={{ color: '#e2e8f0' }}>TBD</p>
                       )}
                     </div>
+                  </div>
+                </div>
+              )}
+
+              {app.offer_letter_url && app.status === 'Offer Extended' && (
+                <div style={{ background: '#064e3b', padding: '16px', borderRadius: '8px', border: '1px solid #059669', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <h4 style={{ color: '#34d399', fontWeight: 'bold', marginBottom: '4px' }}>🎉 Offer Extended!</h4>
+                    <p style={{ color: '#a7f3d0', fontSize: '0.9rem' }}>Please review your offer letter and accept it to proceed.</p>
+                  </div>
+                  <div style={{ display: 'flex', gap: '12px' }}>
+                    <a 
+                      href={app.offer_letter_url} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      style={{ padding: '8px 16px', background: 'transparent', border: '1px solid #34d399', color: '#34d399', borderRadius: '6px', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px' }}
+                    >
+                      View PDF
+                    </a>
+                    <button 
+                      onClick={() => handleAcceptOffer(app.id)}
+                      style={{ padding: '8px 16px', background: '#34d399', color: '#064e3b', borderRadius: '6px', border: 'none', fontWeight: 'bold', cursor: 'pointer', fontSize: '14px' }}
+                    >
+                      Accept Offer
+                    </button>
                   </div>
                 </div>
               )}

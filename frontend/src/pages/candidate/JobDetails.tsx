@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { apiClient } from '../../services/api';
 import toast from 'react-hot-toast';
@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 const JobDetails = () => {
   const { jobId } = useParams<{ jobId: string }>();
   const navigate = useNavigate();
-  const [job, setJob] = useState<any>(null);
+  const [job, setJob] = useState<Record<string, any> | null>(null);
   const [loading, setLoading] = useState(true);
   const [applying, setApplying] = useState(false);
 
@@ -32,8 +32,8 @@ const JobDetails = () => {
       toast.success("Successfully applied!");
       navigate('/dashboard/candidate/applications');
     } catch (error: any) {
-      if (error.response?.status === 400) {
-        toast.error(error.response.data.detail || "You have already applied to this job.");
+      if (error?.response?.status === 400) {
+        toast.error(error.response?.data?.detail || "You have already applied to this job.");
       } else {
         toast.error("Failed to apply. Please complete your profile first.");
       }

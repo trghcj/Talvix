@@ -211,7 +211,7 @@ export default function CareerPageBuilder() {
 
         {/* Live Preview Pane */}
         <div className="hidden lg:block">
-          <div className="sticky top-8 border-[8px] border-gray-800 rounded-[2rem] overflow-hidden bg-[var(--bg-main)] h-[600px] shadow-2xl relative flex flex-col">
+          <div className="sticky top-8 border-[8px] border-gray-800 rounded-[2rem] overflow-hidden bg-[var(--bg-main)] h-[600px] shadow-2xl flex flex-col">
             {/* Header */}
             <div 
               className="h-32 p-6 flex flex-col justify-end relative shrink-0"

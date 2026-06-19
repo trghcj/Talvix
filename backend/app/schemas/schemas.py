@@ -112,6 +112,23 @@ class JobResponse(JobBase):
     organization: Optional[OrganizationResponse] = None
     model_config = ConfigDict(from_attributes=True)
 
+# Scorecards
+class ScorecardBase(BaseModel):
+    interviewer_name: str
+    communication_score: int
+    technical_score: int
+    culture_score: int
+    comments: Optional[str] = None
+
+class ScorecardCreate(ScorecardBase):
+    pass
+
+class ScorecardResponse(ScorecardBase):
+    id: int
+    application_id: int
+    created_at: datetime
+    model_config = ConfigDict(from_attributes=True)
+
 # Applications
 class ApplicationBase(BaseModel):
     job_id: int
@@ -137,9 +154,11 @@ class ApplicationResponse(ApplicationBase):
     notes: Optional[str] = None
     resume_snapshot_url: Optional[str] = None
     candidate_score: Optional[int] = None
+    offer_letter_url: Optional[str] = None
     updated_at: Optional[datetime] = None
     interview: Optional['InterviewResponse'] = None
     job: Optional[JobResponse] = None
+    scorecards: Optional[List[ScorecardResponse]] = []
     model_config = ConfigDict(from_attributes=True)
 
 # Interviews
