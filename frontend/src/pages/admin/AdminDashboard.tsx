@@ -40,7 +40,8 @@ export default function AdminDashboard() {
       <p className="text-gray-400 mb-8">Overview of {activeOrganization?.name}'s recruitment performance.</p>
 
       {metrics && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="bg-white/5 border border-white/10 rounded-xl p-6">
             <div className="flex items-center gap-4">
               <div className="bg-blue-500/20 p-3 rounded-lg text-blue-400">
@@ -168,7 +169,7 @@ export default function AdminDashboard() {
               )}
             </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );
