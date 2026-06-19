@@ -37,6 +37,9 @@ const ApplicantManagement = () => {
   const [scorecards, setScorecards] = useState<any[]>([]);
   const [newScorecard, setNewScorecard] = useState({ interviewer_name: '', communication_score: 8, technical_score: 8, culture_score: 8, comments: '' });
   const [isGeneratingOffer, setIsGeneratingOffer] = useState(false);
+  const [filterStatus, setFilterStatus] = useState<string>('');
+  const [filterMinScore, setFilterMinScore] = useState<number>(0);
+  const [showFilterMenu, setShowFilterMenu] = useState(false);
 
   useEffect(() => {
     if (selectedApplicant) {
@@ -172,13 +175,43 @@ const ApplicantManagement = () => {
   }, [applicants]);
 
   const filteredApplicants = useMemo(() => {
-    if (!searchQuery) return applicants;
-    const q = searchQuery.toLowerCase();
-    return applicants.filter(a => 
-      a.candidate?.user?.name?.toLowerCase().includes(q) || 
-      a.job?.title?.toLowerCase().includes(q)
-    );
-  }, [applicants, searchQuery]);
+    return applicants.filter(a => {
+      const matchesSearch = !searchQuery || 
+        a.candidate?.user?.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        a.job?.title?.toLowerCase().includes(searchQuery.toLowerCase());
+        
+      const matchesStatus = !filterStatus || a.status === filterStatus;
+      const matchesScore = (a.candidate_score || 0) >= filterMinScore;
+      
+      return matchesSearch && matchesStatus && matchesScore;
+    });
+  }, [applicants, searchQuery, filterStatus, filterMinScore]);
+
+  const exportToCSV = () => {
+    if (filteredApplicants.length === 0) {
+      toast.error("No candidates to export");
+      return;
+    }
+    const headers = ["Candidate Name", "Email", "Job Title", "Status", "Match Score", "Applied At"];
+    const rows = filteredApplicants.map(app => [
+      `"${app.candidate?.user?.name || 'N/A'}"`,
+      `"${app.candidate?.user?.email || 'N/A'}"`,
+      `"${app.job?.title || 'N/A'}"`,
+      `"${app.status || 'N/A'}"`,
+      `${app.candidate_score || 0}`,
+      `"${new Date(app.applied_at).toLocaleDateString()}"`
+    ]);
+    
+    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `candidates_export_${new Date().getTime()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success("Export successful!");
+  };
 
   const getMatchScoreBadge = (score: number) => {
     if (score >= 90) return <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">🟢 {score}% Match</span>;
@@ -231,13 +264,37 @@ const ApplicantManagement = () => {
                   className="pl-9 pr-4 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none w-64 shadow-sm"
                 />
               </div>
-              <button className="p-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 shadow-sm transition-colors">
-                <Filter className="w-4 h-4" />
-              </button>
-              <button className="p-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 shadow-sm transition-colors">
-                <ArrowUpDown className="w-4 h-4" />
-              </button>
-              <button className="inline-flex items-center px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-medium shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+              <div className="relative">
+                <button 
+                  onClick={() => setShowFilterMenu(!showFilterMenu)}
+                  className={`p-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 shadow-sm transition-colors ${showFilterMenu ? 'ring-2 ring-blue-500' : ''}`}
+                >
+                  <Filter className="w-4 h-4" />
+                </button>
+                {showFilterMenu && (
+                  <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 z-50 p-4">
+                    <h4 className="text-sm font-semibold mb-3 dark:text-white">Filter Candidates</h4>
+                    <div className="mb-3">
+                      <label className="text-xs font-medium text-slate-500 mb-1 block">Status</label>
+                      <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="w-full text-sm rounded-lg border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 dark:text-white p-2 outline-none">
+                        <option value="">All Statuses</option>
+                        {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+                      </select>
+                    </div>
+                    <div className="mb-3">
+                      <label className="text-xs font-medium text-slate-500 mb-1 block">Min Match Score: {filterMinScore}%</label>
+                      <input type="range" min="0" max="100" step="10" value={filterMinScore} onChange={e => setFilterMinScore(parseInt(e.target.value))} className="w-full" />
+                    </div>
+                    <div className="flex justify-end mt-4">
+                      <button onClick={() => { setFilterStatus(''); setFilterMinScore(0); }} className="text-xs text-blue-600 hover:underline">Clear Filters</button>
+                    </div>
+                  </div>
+                )}
+              </div>
+              <button 
+                onClick={exportToCSV}
+                className="inline-flex items-center px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-medium shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+              >
                 <Download className="w-4 h-4 mr-2" />
                 Export CSV
               </button>

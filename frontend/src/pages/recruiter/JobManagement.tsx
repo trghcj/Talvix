@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { apiClient } from '../../services/api';
 import { Link } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
+import toast from 'react-hot-toast';
 
 const JobManagement = () => {
   const { activeOrganization } = useAuthStore();
@@ -22,6 +23,17 @@ const JobManagement = () => {
     };
     fetchJobs();
   }, [activeOrganization]);
+
+  const deleteJob = async (jobId: number) => {
+    if (!window.confirm("Are you sure you want to delete this job? This action cannot be undone.")) return;
+    try {
+      await apiClient.delete(`/api/jobs/${jobId}`);
+      setJobs(jobs.filter(j => j.id !== jobId));
+      toast.success("Job deleted successfully");
+    } catch (error) {
+      toast.error("Failed to delete job");
+    }
+  };
 
   return (
     <div className="p-6">
@@ -71,6 +83,7 @@ const JobManagement = () => {
                   <td style={{ padding: '16px', color: '#888' }}>{new Date(job.created_at).toLocaleDateString()}</td>
                   <td style={{ padding: '16px' }}>
                     <Link to={`/dashboard/jobs/${job.id}/applicants`} style={{ color: '#6366f1', textDecoration: 'none', marginRight: '16px' }}>View Applicants</Link>
+                    <button onClick={() => deleteJob(job.id)} style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>Delete</button>
                   </td>
                 </tr>
               ))}

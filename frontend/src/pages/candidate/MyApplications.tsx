@@ -56,7 +56,12 @@ const MyApplications = () => {
             <div key={app.id} style={{ background: '#111315', padding: '24px', borderRadius: '12px', border: '1px solid #222', display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>Application #{app.id}</h3>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
+                    {app.job?.title} at{' '}
+                    <a href={app.job?.organization?.career_page?.website_url || '#'} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">
+                      {app.job?.organization?.name}
+                    </a>
+                  </h3>
                   <p style={{ color: '#888', marginBottom: '8px' }}>Applied on {new Date(app.applied_at).toLocaleDateString()}</p>
                 </div>
                 <div style={{ textAlign: 'right' }}>
@@ -85,7 +90,9 @@ const MyApplications = () => {
                     </div>
                     <div>
                       <p style={{ color: '#888', fontSize: '0.85rem' }}>Meeting Link</p>
-                      {app.interview.meet_link ? (
+                      {new Date(app.interview.date) < new Date() ? (
+                        <p style={{ color: '#ef4444', fontWeight: 'bold' }}>Interview Closed</p>
+                      ) : app.interview.meet_link ? (
                         <a href={app.interview.meet_link} target="_blank" rel="noopener noreferrer" style={{ color: '#6366f1', textDecoration: 'none', fontWeight: '500' }}>
                           Join Google Meet
                         </a>
@@ -93,6 +100,35 @@ const MyApplications = () => {
                         <p style={{ color: '#e2e8f0' }}>TBD</p>
                       )}
                     </div>
+                    {app.job?.organization?.owner?.email && (
+                      <div style={{ gridColumn: '1 / -1' }}>
+                        <p style={{ color: '#888', fontSize: '0.85rem' }}>Contact Company</p>
+                        <a href={`mailto:${app.job.organization.owner.email}`} style={{ color: '#6366f1', textDecoration: 'none', fontWeight: '500' }}>
+                          {app.job.organization.owner.email}
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {app.scorecards && app.scorecards.length > 0 && (
+                <div style={{ background: '#1a1d21', padding: '16px', borderRadius: '8px', border: '1px solid #333' }}>
+                  <h4 style={{ color: 'white', fontWeight: 'bold', marginBottom: '12px' }}>📝 Interview Feedback</h4>
+                  <div style={{ display: 'grid', gap: '12px' }}>
+                    {app.scorecards.map((sc: any) => (
+                      <div key={sc.id} style={{ background: '#2d3748', padding: '12px', borderRadius: '6px' }}>
+                        <p style={{ color: '#e2e8f0', fontWeight: 'bold', marginBottom: '8px' }}>Interviewer: {sc.interviewer_name}</p>
+                        <div style={{ display: 'flex', gap: '12px', marginBottom: '8px' }}>
+                          <span style={{ fontSize: '0.85rem', color: '#cbd5e1' }}>Communication: {sc.communication_score}/10</span>
+                          <span style={{ fontSize: '0.85rem', color: '#cbd5e1' }}>Technical: {sc.technical_score}/10</span>
+                          <span style={{ fontSize: '0.85rem', color: '#cbd5e1' }}>Culture: {sc.culture_score}/10</span>
+                        </div>
+                        {sc.comments && (
+                          <p style={{ color: '#94a3b8', fontSize: '0.9rem', fontStyle: 'italic' }}>"{sc.comments}"</p>
+                        )}
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}

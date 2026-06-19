@@ -46,6 +46,7 @@ class OrganizationResponse(OrganizationBase):
     id: int
     owner_id: int
     created_at: datetime
+    owner: Optional[UserResponse] = None
     model_config = ConfigDict(from_attributes=True)
 
 # Organization Members
