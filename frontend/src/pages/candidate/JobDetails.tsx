@@ -15,6 +15,8 @@ interface JobData {
   description: string;
   application_deadline?: string;
   jd_pdf_url?: string;
+  job_category?: string;
+  status: string;
 }
 
 const JobDetails = () => {
@@ -60,7 +62,7 @@ const JobDetails = () => {
   if (loading) return <div className="p-6 text-gray-500">Loading...</div>;
   if (!job) return <div className="p-6 text-gray-500">Job not found.</div>;
 
-  const isClosed = job.application_deadline ? new Date(job.application_deadline) < new Date() : false;
+  const isClosed = job.status === 'Closed' || (job.application_deadline ? new Date(job.application_deadline) < new Date() : false);
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
@@ -71,6 +73,16 @@ const JobDetails = () => {
           <div>
             <h1 className="text-3xl font-bold" style={{ color: 'white', marginBottom: '8px' }}>
               {job.title}
+              {job.job_category && (
+                <span style={{ 
+                  marginLeft: '12px',
+                  background: job.job_category === 'Tech' ? 'rgba(59, 130, 246, 0.2)' : 'rgba(168, 85, 247, 0.2)',
+                  color: job.job_category === 'Tech' ? '#60a5fa' : '#c084fc',
+                  padding: '4px 8px', borderRadius: '4px', fontSize: '0.9rem', fontWeight: 'bold', verticalAlign: 'middle'
+                }}>
+                  {job.job_category}
+                </span>
+              )}
               {isClosed && <span style={{ marginLeft: '12px', background: 'rgba(239, 68, 68, 0.2)', color: '#ef4444', padding: '4px 8px', borderRadius: '4px', fontSize: '0.9rem', fontWeight: 'bold', verticalAlign: 'middle' }}>Closed</span>}
             </h1>
             <p style={{ color: '#888', fontSize: '1.1rem', marginBottom: '8px' }}>{job.department} • {job.location || 'Remote'}</p>
