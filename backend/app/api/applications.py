@@ -327,7 +327,7 @@ The {app.job.organization.name} Hiring Team
     import cloudinary.uploader
     upload_result = cloudinary.uploader.upload(
         pdf_buffer.read(),
-        resource_type="raw",
+        resource_type="image",
         use_filename=True,
         folder="offers",
         public_id=safe_filename
