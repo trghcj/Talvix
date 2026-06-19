@@ -9,10 +9,10 @@ import {
   Search, Filter, ArrowUpDown, Download,
   Users, UserCheck, Calendar, Award,
   X, Briefcase, FileText, ChevronRight,
-  MoreVertical, Mail, MapPin, Inbox
+  Inbox, CheckCircle
 } from 'lucide-react';
 
-type ApplicationType = Record<string, any>;
+type ApplicationType = Record<string, unknown>;
 
 const STATUS_CONFIG: Record<string, { color: string, bg: string, border: string }> = {
   'Applied': { color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-50 dark:bg-blue-900/20', border: 'border-blue-500' },
@@ -34,6 +34,47 @@ const ApplicantManagement = () => {
   const [loading, setLoading] = useState(true);
   const [selectedApplicant, setSelectedApplicant] = useState<ApplicationType | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [scorecards, setScorecards] = useState<any[]>([]);
+  const [newScorecard, setNewScorecard] = useState({ interviewer_name: '', communication_score: 8, technical_score: 8, culture_score: 8, comments: '' });
+  const [isGeneratingOffer, setIsGeneratingOffer] = useState(false);
+
+  useEffect(() => {
+    if (selectedApplicant) {
+      apiClient.get(`/api/applications/${selectedApplicant.id}/scorecards`)
+        .then(res => setScorecards(res.data))
+        .catch(err => console.error("Error fetching scorecards", err));
+    } else {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setScorecards([]);
+    }
+  }, [selectedApplicant]);
+
+  const submitScorecard = async () => {
+    if (!selectedApplicant || !newScorecard.interviewer_name) return toast.error("Interviewer name is required");
+    try {
+      const res = await apiClient.post(`/api/applications/${selectedApplicant.id}/scorecards`, newScorecard);
+      setScorecards([...scorecards, res.data]);
+      setNewScorecard({ interviewer_name: '', communication_score: 8, technical_score: 8, culture_score: 8, comments: '' });
+      toast.success("Scorecard saved!");
+    } catch (e) {
+      toast.error("Failed to save scorecard");
+    }
+  };
+
+  const generateOfferLetter = async () => {
+    if (!selectedApplicant) return;
+    setIsGeneratingOffer(true);
+    try {
+      const res = await apiClient.post(`/api/applications/${selectedApplicant.id}/generate-offer`);
+      setSelectedApplicant(res.data);
+      toast.success("Offer Letter Generated!");
+      fetchApplicants();
+    } catch (e: any) {
+      toast.error(e.response?.data?.detail || "Failed to generate offer letter");
+    } finally {
+      setIsGeneratingOffer(false);
+    }
+  };
 
   const fetchApplicants = useCallback(async () => {
     if (!activeOrganization) return;
@@ -455,6 +496,103 @@ const ApplicantManagement = () => {
                   </div>
                 </div>
               )}
+
+              {/* Generate Offer Letter */}
+              {selectedApplicant.status === 'Offer Extended' && (
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-3 uppercase tracking-wider">Offer Letter</h3>
+                  <div className="bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-900/30 rounded-xl p-4">
+                    {selectedApplicant.offer_letter_url ? (
+                      <div>
+                        <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-medium text-sm mb-3">
+                          <CheckCircle className="w-4 h-4" />
+                          Offer letter generated and sent to candidate.
+                        </div>
+                        <a 
+                          href={selectedApplicant.offer_letter_url} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="flex justify-center w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-medium py-2 rounded-lg text-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm"
+                        >
+                          View PDF Offer Letter
+                        </a>
+                      </div>
+                    ) : (
+                      <button 
+                        onClick={generateOfferLetter}
+                        disabled={isGeneratingOffer}
+                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 rounded-lg text-sm transition-colors shadow-sm disabled:opacity-50"
+                      >
+                        {isGeneratingOffer ? "Generating PDF..." : "Generate Offer Letter"}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Scorecards */}
+              <div>
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-3 uppercase tracking-wider">Interview Scorecards</h3>
+                <div className="space-y-4">
+                  {/* List Scorecards */}
+                  {scorecards.length > 0 && (
+                    <div className="space-y-3">
+                      {scorecards.map((sc, i) => (
+                        <div key={i} className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 rounded-xl p-4 shadow-sm">
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="font-semibold text-sm text-slate-900 dark:text-white">{sc.interviewer_name}</span>
+                            <span className="text-xs text-slate-500 dark:text-slate-400">{new Date(sc.created_at).toLocaleDateString()}</span>
+                          </div>
+                          <div className="flex gap-4 text-xs font-medium text-slate-600 dark:text-slate-400 mb-2">
+                            <span>Comm: <span className="text-slate-900 dark:text-white">{sc.communication_score}/10</span></span>
+                            <span>Tech: <span className="text-slate-900 dark:text-white">{sc.technical_score}/10</span></span>
+                            <span>Culture: <span className="text-slate-900 dark:text-white">{sc.culture_score}/10</span></span>
+                          </div>
+                          {sc.comments && <p className="text-sm text-slate-700 dark:text-slate-300 italic">"{sc.comments}"</p>}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Add Scorecard Form */}
+                  <div className="bg-slate-50 dark:bg-[#161b22] border border-slate-200 dark:border-slate-800 rounded-xl p-4">
+                    <h4 className="text-sm font-semibold text-slate-900 dark:text-white mb-3">Add Feedback</h4>
+                    <input 
+                      type="text" placeholder="Interviewer Name" 
+                      value={newScorecard.interviewer_name} onChange={e => setNewScorecard({...newScorecard, interviewer_name: e.target.value})}
+                      className="w-full mb-3 px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm"
+                    />
+                    <div className="grid grid-cols-3 gap-2 mb-3">
+                      <div>
+                        <label className="text-[10px] uppercase text-slate-500 font-bold">Communication</label>
+                        <select value={newScorecard.communication_score} onChange={e => setNewScorecard({...newScorecard, communication_score: parseInt(e.target.value)})} className="w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm p-1.5">
+                          {[...Array(10)].map((_, i) => <option key={i+1} value={i+1}>{i+1}</option>)}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="text-[10px] uppercase text-slate-500 font-bold">Technical</label>
+                        <select value={newScorecard.technical_score} onChange={e => setNewScorecard({...newScorecard, technical_score: parseInt(e.target.value)})} className="w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm p-1.5">
+                          {[...Array(10)].map((_, i) => <option key={i+1} value={i+1}>{i+1}</option>)}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="text-[10px] uppercase text-slate-500 font-bold">Culture Fit</label>
+                        <select value={newScorecard.culture_score} onChange={e => setNewScorecard({...newScorecard, culture_score: parseInt(e.target.value)})} className="w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm p-1.5">
+                          {[...Array(10)].map((_, i) => <option key={i+1} value={i+1}>{i+1}</option>)}
+                        </select>
+                      </div>
+                    </div>
+                    <textarea 
+                      placeholder="Notes / Comments" 
+                      value={newScorecard.comments} onChange={e => setNewScorecard({...newScorecard, comments: e.target.value})}
+                      className="w-full mb-3 px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm min-h-[60px]"
+                    ></textarea>
+                    <button onClick={submitScorecard} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg text-sm transition-colors">
+                      Save Scorecard
+                    </button>
+                  </div>
+                </div>
+              </div>
 
               {/* Candidate Info */}
               <div>

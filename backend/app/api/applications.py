@@ -1,9 +1,14 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, status, Query, BackgroundTasks, Request
 from sqlalchemy.orm import Session
 from typing import List, Optional
+import os
+import time
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+
 from app.db.database import get_db
-from app.db.models import User, Application, Job, Candidate, OrganizationMember, ApplicationStatus
-from app.schemas.schemas import ApplicationCreate, ApplicationResponse, ApplicationUpdate
+from app.db.models import User, Application, Job, Candidate, OrganizationMember, ApplicationStatus, InterviewScorecard
+from app.schemas.schemas import ApplicationCreate, ApplicationResponse, ApplicationUpdate, ScorecardCreate, ScorecardResponse
 from app.core.security import get_current_user
 from app.core.scoring import calculate_candidate_score
 from app.core.email import send_email_background
@@ -217,3 +222,138 @@ def update_interview(
     db.commit()
     db.refresh(interview)
     return interview
+
+@router.post("/{app_id}/scorecards", response_model=ScorecardResponse)
+def add_scorecard(
+    app_id: int,
+    scorecard_in: ScorecardCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    app = db.query(Application).filter(Application.id == app_id).first()
+    if not app:
+        raise HTTPException(status_code=404, detail="Application not found")
+        
+    verify_org_member(db, current_user.id, app.job.organization_id)
+    
+    new_scorecard = InterviewScorecard(
+        application_id=app_id,
+        interviewer_name=scorecard_in.interviewer_name,
+        communication_score=scorecard_in.communication_score,
+        technical_score=scorecard_in.technical_score,
+        culture_score=scorecard_in.culture_score,
+        comments=scorecard_in.comments
+    )
+    db.add(new_scorecard)
+    db.commit()
+    db.refresh(new_scorecard)
+    return new_scorecard
+
+@router.get("/{app_id}/scorecards", response_model=List[ScorecardResponse])
+def get_scorecards(
+    app_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    app = db.query(Application).filter(Application.id == app_id).first()
+    if not app:
+        raise HTTPException(status_code=404, detail="Application not found")
+        
+    verify_org_member(db, current_user.id, app.job.organization_id)
+    
+    scorecards = db.query(InterviewScorecard).filter(InterviewScorecard.application_id == app_id).all()
+    return scorecards
+
+@router.post("/{app_id}/generate-offer", response_model=ApplicationResponse)
+def generate_offer_letter(
+    app_id: int,
+    request: Request,
+    background_tasks: BackgroundTasks,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    app = db.query(Application).filter(Application.id == app_id).first()
+    if not app:
+        raise HTTPException(status_code=404, detail="Application not found")
+        
+    verify_org_member(db, current_user.id, app.job.organization_id)
+    
+    if app.status != ApplicationStatus.offer_extended:
+        raise HTTPException(status_code=400, detail="Candidate must be in 'Offer Extended' stage")
+        
+    os.makedirs(os.path.join("app", "public", "offers"), exist_ok=True)
+    timestamp = int(time.time())
+    safe_filename = f"offer_{app.id}_{timestamp}.pdf"
+    file_path = os.path.join("app", "public", "offers", safe_filename)
+    
+    c = canvas.Canvas(file_path, pagesize=letter)
+    width, height = letter
+    
+    # Simple Professional Template
+    c.setFont("Helvetica-Bold", 20)
+    c.drawString(50, height - 80, f"Offer of Employment: {app.job.organization.name}")
+    
+    c.setFont("Helvetica", 12)
+    c.drawString(50, height - 120, f"Date: {time.strftime('%B %d, %Y')}")
+    c.drawString(50, height - 140, f"Dear {app.candidate.user.name},")
+    
+    text = c.beginText(50, height - 180)
+    text.setFont("Helvetica", 12)
+    text.setLeading(14)
+    text.textLines(f"""
+We are thrilled to offer you the position of {app.job.title} at {app.job.organization.name}.
+
+We were incredibly impressed by your interviews and believe your skills and experience 
+will be a fantastic addition to our team.
+
+Role details:
+- Title: {app.job.title}
+- Department: {app.job.department or 'Engineering'}
+- Location: {app.job.location or 'Remote'}
+- Salary Range: ${app.job.salary_min or 'Competitive'} - ${app.job.salary_max or 'Competitive'}
+
+Please accept this offer through your Talvix candidate portal. We look forward to 
+welcoming you to the team!
+
+Sincerely,
+The {app.job.organization.name} Hiring Team
+    """)
+    c.drawText(text)
+    c.save()
+    
+    base_url = str(request.base_url)
+    if base_url.endswith('/'):
+        base_url = base_url[:-1]
+    
+    app.offer_letter_url = f"{base_url}/public/offers/{safe_filename}"
+    db.commit()
+    db.refresh(app)
+    
+    background_tasks.add_task(
+        send_email_background,
+        to_email=app.candidate.user.email,
+        subject=f"Offer Extended: {app.job.title}",
+        html_body=f"<h1>Congratulations {app.candidate.user.name}!</h1><p>We are extending an offer for the <strong>{app.job.title}</strong> position at {app.job.organization.name}.</p><p>Please log in to your dashboard to review and accept the official offer letter.</p>"
+    )
+    
+    return app
+
+@router.post("/{app_id}/accept-offer", response_model=ApplicationResponse)
+def accept_offer(
+    app_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    app = db.query(Application).filter(Application.id == app_id).first()
+    if not app:
+        raise HTTPException(status_code=404, detail="Application not found")
+        
+    if app.candidate.user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized")
+        
+    app.status = ApplicationStatus.hired
+    app.current_stage = "Hired"
+    db.commit()
+    db.refresh(app)
+    
+    return app

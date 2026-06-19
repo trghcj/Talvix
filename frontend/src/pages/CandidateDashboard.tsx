@@ -21,12 +21,7 @@ export const CandidateDashboard = () => {
   const [experience, setExperience] = useState('');
   const [resumeUrl, setResumeUrl] = useState<string | null>(null);
   const [profilePictureUrl, setProfilePictureUrl] = useState<string | null>(null);
-  const [applications, setApplications] = useState<any[]>([]);
-
-  useEffect(() => {
-    fetchProfile();
-    fetchApplications();
-  }, []);
+  const [applications, setApplications] = useState<Record<string, unknown>[]>([]);
 
   const fetchApplications = async () => {
     try {
@@ -54,6 +49,11 @@ export const CandidateDashboard = () => {
     }
   };
 
+  useEffect(() => {
+    fetchProfile();
+    fetchApplications();
+  }, []);
+
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
@@ -66,7 +66,7 @@ export const CandidateDashboard = () => {
         experience
       });
       setMessage('Profile updated successfully!');
-    } catch (err) {
+    } catch {
       setMessage('Failed to update profile.');
     } finally {
       setSaving(false);
@@ -91,7 +91,7 @@ export const CandidateDashboard = () => {
       });
       setProfilePictureUrl(res.data.profile_picture_url);
       setMessage('Profile picture updated successfully!');
-    } catch (err) {
+    } catch {
       setMessage('Failed to upload profile picture.');
     }
   };
@@ -115,7 +115,7 @@ export const CandidateDashboard = () => {
       });
       setResumeUrl(res.data.resume_url);
       setMessage('Resume uploaded successfully!');
-    } catch (err) {
+    } catch {
       setMessage('Failed to upload resume.');
     } finally {
       setUploading(false);

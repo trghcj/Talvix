@@ -1,12 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { apiClient } from '../../services/api';
 import toast from 'react-hot-toast';
 
+interface JobData {
+  title: string;
+  department: string;
+  location?: string;
+  employment_type: string;
+  work_mode: string;
+  experience_required?: string;
+  salary_min?: number;
+  salary_max?: number;
+  description: string;
+}
+
 const JobDetails = () => {
   const { jobId } = useParams<{ jobId: string }>();
   const navigate = useNavigate();
-  const [job, setJob] = useState<any>(null);
+  const [job, setJob] = useState<JobData | null>(null);
   const [loading, setLoading] = useState(true);
   const [applying, setApplying] = useState(false);
 
@@ -31,9 +43,10 @@ const JobDetails = () => {
       await apiClient.post('/api/applications', { job_id: parseInt(jobId!) });
       toast.success("Successfully applied!");
       navigate('/dashboard/candidate/applications');
-    } catch (error: any) {
-      if (error.response?.status === 400) {
-        toast.error(error.response.data.detail || "You have already applied to this job.");
+    } catch (err: unknown) {
+      const error = err as Record<string, unknown>;
+      if ((error?.response as Record<string, unknown>)?.status === 400) {
+        toast.error(((error?.response as Record<string, unknown>)?.data as Record<string, unknown>)?.detail as string || "You have already applied to this job.");
       } else {
         toast.error("Failed to apply. Please complete your profile first.");
       }

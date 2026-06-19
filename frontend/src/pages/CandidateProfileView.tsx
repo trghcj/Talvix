@@ -23,6 +23,7 @@ export const CandidateProfileView = () => {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchProfile();
   }, []);
 
@@ -47,7 +48,7 @@ export const CandidateProfileView = () => {
       // The response is the newly updated profile with parsed data
       setProfile(res.data);
       alert('Resume parsed successfully! Your profile has been updated.');
-    } catch (err) {
+    } catch {
       alert('Failed to upload and parse resume.');
     } finally {
       setUploading(false);

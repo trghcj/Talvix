@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { apiClient } from '../../services/api';
 import { Link } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 
 const JobManagement = () => {
   const { activeOrganization } = useAuthStore();
-  const [jobs, setJobs] = useState<any[]>([]);
+  const [jobs, setJobs] = useState<Record<string, any>[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
