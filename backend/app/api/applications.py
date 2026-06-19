@@ -365,3 +365,19 @@ def accept_offer(
     db.refresh(app)
     
     return app
+
+@router.delete("/{app_id}")
+def delete_application(
+    app_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    app = db.query(Application).filter(Application.id == app_id).first()
+    if not app:
+        raise HTTPException(status_code=404, detail="Application not found")
+        
+    verify_org_member(db, current_user.id, app.job.organization_id)
+    
+    db.delete(app)
+    db.commit()
+    return {"message": "Application deleted successfully"}

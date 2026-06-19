@@ -162,6 +162,7 @@ class ApplicationResponse(ApplicationBase):
     interview: Optional['InterviewResponse'] = None
     job: Optional[JobResponse] = None
     scorecards: Optional[List[ScorecardResponse]] = []
+    candidate: Optional['CandidateResponse'] = None
     model_config = ConfigDict(from_attributes=True)
 
 # Interviews

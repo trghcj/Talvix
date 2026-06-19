@@ -9,7 +9,7 @@ import {
   Search, Filter, ArrowUpDown, Download,
   Users, UserCheck, Calendar, Award,
   X, Briefcase, FileText, ChevronRight,
-  Inbox, CheckCircle
+  Inbox, CheckCircle, Trash2
 } from 'lucide-react';
 
 type ApplicationType = Record<string, unknown>;
@@ -131,6 +131,18 @@ const ApplicantManagement = () => {
     });
 
     handleStatusUpdate(appId, newStatus);
+  };
+
+  const deleteApplicant = async (appId: number) => {
+    if (!window.confirm("Are you sure you want to delete this applicant? This action cannot be undone.")) return;
+    try {
+      await apiClient.delete(`/api/applications/${appId}`);
+      setApplicants(prev => prev.filter(a => a.id !== appId));
+      if (selectedApplicant?.id === appId) setSelectedApplicant(null);
+      toast.success("Applicant deleted successfully");
+    } catch (error) {
+      toast.error("Failed to delete applicant");
+    }
   };
 
   const scheduleInterview = async (appId: number, dateStr: string, meetLink: string) => {
@@ -379,11 +391,18 @@ const ApplicantManagement = () => {
                                   {/* Quick Actions Hover */}
                                   <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex bg-white dark:bg-[#111827] shadow-sm rounded-md border border-slate-200 dark:border-slate-700 overflow-hidden z-10">
                                     <button 
-                                      className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-slate-50 dark:hover:bg-slate-800"
+                                      className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-slate-50 dark:hover:bg-slate-800 border-r border-slate-200 dark:border-slate-700"
                                       title="View Profile"
                                       onClick={(e) => { e.stopPropagation(); setSelectedApplicant(app); }}
                                     >
                                       <FileText className="w-4 h-4" />
+                                    </button>
+                                    <button 
+                                      className="p-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                      title="Delete Applicant"
+                                      onClick={(e) => { e.stopPropagation(); deleteApplicant(app.id); }}
+                                    >
+                                      <Trash2 className="w-4 h-4" />
                                     </button>
                                   </div>
 
