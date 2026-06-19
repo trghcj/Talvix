@@ -93,10 +93,15 @@ const JobBoard = () => {
                     <span style={{ background: '#1a1d21', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', color: '#ccc' }}>{job.work_mode}</span>
                     <span style={{ background: '#1a1d21', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', color: '#ccc' }}>{job.job_level}</span>
                     {isClosed && <span style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#ef4444', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold' }}>Closed</span>}
+                    {job.application_deadline && !isClosed && (
+                      <span style={{ background: 'rgba(234, 179, 8, 0.2)', color: '#eab308', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem' }}>
+                        Closes: {new Date(job.application_deadline).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
+                      </span>
+                    )}
                   </div>
                 </div>
-                <Link to={`/dashboard/candidate/jobs/${job.id}`} style={{ padding: '10px 24px', background: isClosed ? '#4b5563' : '#6366f1', color: 'white', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold', pointerEvents: isClosed ? 'none' : 'auto' }}>
-                  {isClosed ? 'Closed' : 'View & Apply'}
+                <Link to={`/dashboard/candidate/jobs/${job.id}`} style={{ padding: '10px 24px', background: isClosed ? '#374151' : '#6366f1', color: 'white', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold' }}>
+                  {isClosed ? 'View' : 'View & Apply'}
                 </Link>
               </div>
             );

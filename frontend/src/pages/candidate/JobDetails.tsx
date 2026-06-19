@@ -14,6 +14,7 @@ interface JobData {
   salary_max?: number;
   description: string;
   application_deadline?: string;
+  jd_pdf_url?: string;
 }
 
 const JobDetails = () => {
@@ -72,7 +73,17 @@ const JobDetails = () => {
               {job.title}
               {isClosed && <span style={{ marginLeft: '12px', background: 'rgba(239, 68, 68, 0.2)', color: '#ef4444', padding: '4px 8px', borderRadius: '4px', fontSize: '0.9rem', fontWeight: 'bold', verticalAlign: 'middle' }}>Closed</span>}
             </h1>
-            <p style={{ color: '#888', fontSize: '1.1rem' }}>{job.department} • {job.location || 'Remote'}</p>
+            <p style={{ color: '#888', fontSize: '1.1rem', marginBottom: '8px' }}>{job.department} • {job.location || 'Remote'}</p>
+            {job.application_deadline && !isClosed && (
+              <p style={{ color: '#eab308', fontSize: '0.9rem', background: 'rgba(234, 179, 8, 0.1)', display: 'inline-block', padding: '4px 8px', borderRadius: '4px' }}>
+                <strong>Deadline:</strong> {new Date(job.application_deadline).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}
+              </p>
+            )}
+            {isClosed && job.application_deadline && (
+              <p style={{ color: '#ef4444', fontSize: '0.9rem' }}>
+                Deadline passed: {new Date(job.application_deadline).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}
+              </p>
+            )}
           </div>
           <button 
             onClick={handleApply} 
@@ -103,6 +114,19 @@ const JobDetails = () => {
             </p>
           </div>
         </div>
+
+        {job.jd_pdf_url && (
+          <div style={{ marginBottom: '24px' }}>
+            <a 
+              href={job.jd_pdf_url} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              style={{ display: 'inline-block', padding: '10px 20px', background: '#374151', color: 'white', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold', fontSize: '0.9rem' }}
+            >
+              📄 View Job Description (PDF)
+            </a>
+          </div>
+        )}
 
         <div>
           <h2 style={{ color: 'white', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '16px', borderBottom: '1px solid #333', paddingBottom: '8px' }}>Job Description</h2>
