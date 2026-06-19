@@ -23,7 +23,11 @@ const CreateJob = () => {
     salary_max: '',
     openings: 1,
     skills_required: '',
+    application_deadline: '',
   });
+  
+  const [jdPdfUrl, setJdPdfUrl] = useState<string | null>(null);
+  const [isUploadingJd, setIsUploadingJd] = useState(false);
   
   const navigate = useNavigate();
 
@@ -33,6 +37,28 @@ const CreateJob = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const uploadFormData = new FormData();
+    uploadFormData.append('file', file);
+
+    setIsUploadingJd(true);
+    try {
+      const res = await apiClient.post('/api/jobs/upload-jd', uploadFormData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      setJdPdfUrl(res.data.url);
+      toast.success("JD PDF uploaded successfully!");
+    } catch (err) {
+      toast.error("Failed to upload JD PDF");
+      console.error(err);
+    } finally {
+      setIsUploadingJd(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -47,7 +73,9 @@ const CreateJob = () => {
         description: markup,
         salary_min: formData.salary_min ? parseInt(formData.salary_min) : null,
         salary_max: formData.salary_max ? parseInt(formData.salary_max) : null,
-        openings: parseInt(formData.openings.toString())
+        openings: parseInt(formData.openings.toString()),
+        jd_pdf_url: jdPdfUrl,
+        application_deadline: formData.application_deadline ? new Date(formData.application_deadline).toISOString() : null
       });
       toast.success("Job posted successfully!");
       navigate('/dashboard/jobs'); // Navigate to job management
@@ -109,6 +137,16 @@ const CreateJob = () => {
           <div>
             <label style={{ display: 'block', marginBottom: '8px', color: '#888' }}>Skills Required (Comma separated)</label>
             <input type="text" name="skills_required" value={formData.skills_required} onChange={handleChange} style={{ width: '100%', padding: '10px', background: '#090a0b', border: '1px solid #333', color: 'white', borderRadius: '8px' }} />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#888' }}>Application Deadline</label>
+            <input type="datetime-local" name="application_deadline" value={formData.application_deadline} onChange={handleChange} style={{ width: '100%', padding: '10px', background: '#090a0b', border: '1px solid #333', color: 'white', borderRadius: '8px', colorScheme: 'dark' }} />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#888' }}>Job Description PDF (Optional)</label>
+            <input type="file" accept="application/pdf" onChange={handleFileUpload} style={{ width: '100%', padding: '10px', background: '#090a0b', border: '1px solid #333', color: 'white', borderRadius: '8px' }} />
+            {isUploadingJd && <div style={{ color: '#888', fontSize: '0.8rem', marginTop: '4px' }}>Uploading...</div>}
+            {jdPdfUrl && <div style={{ color: '#4ade80', fontSize: '0.8rem', marginTop: '4px' }}>✓ PDF Uploaded</div>}
           </div>
         </div>
 

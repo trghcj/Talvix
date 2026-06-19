@@ -100,6 +100,7 @@ class JobBase(BaseModel):
     salary_max: Optional[int] = None
     openings: int = 1
     skills_required: Optional[str] = None
+    jd_pdf_url: Optional[str] = None
     application_deadline: Optional[datetime] = None
     status: JobStatus = JobStatus.open
 

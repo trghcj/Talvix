@@ -132,7 +132,7 @@ async def upload_resume(
         import cloudinary.uploader
         upload_result = cloudinary.uploader.upload(
             file_contents,
-            resource_type="image",
+            resource_type="auto",
             use_filename=True,
             folder="resumes",
             public_id=safe_filename

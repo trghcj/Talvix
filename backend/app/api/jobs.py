@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status, Query, UploadFile, File
+import time
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from app.db.database import get_db
@@ -102,3 +103,27 @@ def delete_job(
     db.delete(job)
     db.commit()
     return {"message": "Job deleted successfully"}
+
+@router.post("/upload-jd")
+async def upload_jd_pdf(
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_user)
+):
+    try:
+        file_contents = await file.read()
+        
+        timestamp = int(time.time())
+        safe_filename = f"{timestamp}_{file.filename.replace(' ', '_')}"
+        
+        import cloudinary.uploader
+        upload_result = cloudinary.uploader.upload(
+            file_contents,
+            resource_type="auto",
+            use_filename=True,
+            folder="jds",
+            public_id=safe_filename
+        )
+        
+        return {"url": upload_result.get("secure_url")}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to upload JD: {str(e)}")

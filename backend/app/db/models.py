@@ -112,13 +112,14 @@ class Job(Base):
     salary_max = Column(Integer)
     openings = Column(Integer, default=1)
     skills_required = Column(Text)
+    jd_pdf_url = Column(String)
     application_deadline = Column(DateTime(timezone=True))
     status = Column(Enum(JobStatus, native_enum=False), default=JobStatus.open)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     organization = relationship("Organization", back_populates="jobs")
-    applications = relationship("Application", back_populates="job")
+    applications = relationship("Application", back_populates="job", cascade="all, delete-orphan")
 
 class Application(Base):
     __tablename__ = "applications"
@@ -139,7 +140,7 @@ class Application(Base):
 
     job = relationship("Job", back_populates="applications")
     candidate = relationship("Candidate", back_populates="applications")
-    interview = relationship("Interview", back_populates="application", uselist=False)
+    interview = relationship("Interview", back_populates="application", uselist=False, cascade="all, delete-orphan")
     scorecards = relationship("InterviewScorecard", back_populates="application", cascade="all, delete-orphan")
 
 class Interview(Base):
