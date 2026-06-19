@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
-import { LogOut, Repeat, Globe } from 'lucide-react';
+import { LogOut, Repeat, Globe, Settings, Users, Shield, Server } from 'lucide-react';
 import './Sidebar.css';
 
 export const Sidebar = () => {
-  const { logout, activeRole } = useAuthStore();
+  const { logout, activeRole, isOrgAdmin, isSuperAdmin } = useAuthStore();
   const [isCollapsed, setIsCollapsed] = useState(false);
   
   return (
@@ -118,6 +118,42 @@ export const Sidebar = () => {
             </span>
             {!isCollapsed && <span className="nav-text">Profile</span>}
           </NavLink>
+
+          {/* Admin Links */}
+          {activeRole === 'recruiter' && isOrgAdmin && (
+            <>
+              <div className="nav-divider" style={{ margin: '12px 0', borderTop: '1px solid var(--border)', opacity: 0.5 }}></div>
+              {!isCollapsed && <span className="nav-label" style={{ paddingLeft: '16px', fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Admin Hub</span>}
+              <NavLink to="/dashboard/admin" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} end title="Org Analytics">
+                <span className="nav-icon"><Shield size={20} /></span>
+                {!isCollapsed && <span className="nav-text">Org Analytics</span>}
+              </NavLink>
+              <NavLink to="/dashboard/admin/users" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} title="User Management">
+                <span className="nav-icon"><Users size={20} /></span>
+                {!isCollapsed && <span className="nav-text">Manage Team</span>}
+              </NavLink>
+              <NavLink to="/dashboard/admin/settings" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} title="Organization Settings">
+                <span className="nav-icon"><Settings size={20} /></span>
+                {!isCollapsed && <span className="nav-text">Settings</span>}
+              </NavLink>
+            </>
+          )}
+
+          {/* Super Admin Links */}
+          {isSuperAdmin && (
+            <>
+              <div className="nav-divider" style={{ margin: '12px 0', borderTop: '1px solid var(--border)', opacity: 0.5 }}></div>
+              {!isCollapsed && <span className="nav-label" style={{ paddingLeft: '16px', fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Super Admin</span>}
+              <NavLink to="/dashboard/superadmin" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} end title="Platform Analytics">
+                <span className="nav-icon"><Server size={20} /></span>
+                {!isCollapsed && <span className="nav-text">Platform Analytics</span>}
+              </NavLink>
+              <NavLink to="/dashboard/superadmin/organizations" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} title="All Organizations">
+                <span className="nav-icon"><Globe size={20} /></span>
+                {!isCollapsed && <span className="nav-text">All Organizations</span>}
+              </NavLink>
+            </>
+          )}
         </div>
       </nav>
 

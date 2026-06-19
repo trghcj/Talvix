@@ -101,7 +101,7 @@ export const DashboardLayout = () => {
                 className="user-avatar cursor-pointer transition-all"
                 style={{ 
                   boxShadow: isProfileDropdownOpen ? '0 0 0 2px #3b82f6' : 'none',
-                  backgroundImage: profileData?.profile_picture_url ? `url(${profileData.profile_picture_url})` : 'none',
+                  backgroundImage: profileData?.profile_picture_url ? `url(${profileData.profile_picture_url})` : undefined,
                   backgroundSize: 'cover',
                   backgroundPosition: 'center',
                   display: 'flex',
@@ -117,7 +117,7 @@ export const DashboardLayout = () => {
               {isProfileDropdownOpen && (
                 <div style={{ position: 'absolute', top: '100%', right: '0', marginTop: '12px', background: 'var(--bg-card, #1a1d21)', border: '1px solid var(--border-color, #333)', borderRadius: '12px', overflow: 'hidden', zIndex: 50, minWidth: '240px', boxShadow: '0 10px 25px rgba(0,0,0,0.5)', padding: '16px' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', borderBottom: '1px solid var(--border-color, #333)', paddingBottom: '16px', marginBottom: '16px' }}>
-                     <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'linear-gradient(135deg, #3b82f6, #6366f1)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', fontWeight: 'bold', backgroundImage: profileData?.profile_picture_url ? `url(${profileData.profile_picture_url})` : 'none', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+                     <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'linear-gradient(135deg, #3b82f6, #6366f1)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', fontWeight: 'bold', backgroundImage: profileData?.profile_picture_url ? `url(${profileData.profile_picture_url})` : undefined, backgroundSize: 'cover', backgroundPosition: 'center' }}>
                        {!profileData?.profile_picture_url && ((user as any).name?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase())}
                      </div>
                      <h3 style={{ margin: 0, color: 'var(--text-primary, white)', fontSize: '16px', fontWeight: '600', textAlign: 'center' }}>{(user as any).name || 'User'}</h3>
