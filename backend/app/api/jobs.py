@@ -100,7 +100,7 @@ def delete_job(
         
     verify_org_member(db, current_user.id, job.organization_id)
         
-    db.delete(job)
+    job.status = JobStatus.deleted
     db.commit()
     return {"message": "Job deleted successfully"}
 

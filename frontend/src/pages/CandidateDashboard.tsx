@@ -250,7 +250,7 @@ export const CandidateDashboard = () => {
               </div>
             )}
             
-            <Button variant="ghost" style={{ marginTop: '1.5rem' }} fullWidth onClick={() => navigate('/jobs')}>
+            <Button variant="ghost" style={{ marginTop: '1.5rem' }} fullWidth onClick={() => navigate('/dashboard/candidate/jobs')}>
               Browse Jobs
             </Button>
           </Card>
