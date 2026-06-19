@@ -81,22 +81,26 @@ const JobBoard = () => {
         </div>
       ) : (
         <div style={{ display: 'grid', gap: '16px' }}>
-          {jobs.map(job => (
-            <div key={job.id} style={{ background: '#111315', padding: '24px', borderRadius: '12px', border: '1px solid #222', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'white', marginBottom: '4px' }}>{job.title}</h3>
-                <p style={{ color: '#888', marginBottom: '8px' }}>{job.department} • {job.location || 'Remote'}</p>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <span style={{ background: '#1a1d21', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', color: '#ccc' }}>{job.employment_type}</span>
-                  <span style={{ background: '#1a1d21', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', color: '#ccc' }}>{job.work_mode}</span>
-                  <span style={{ background: '#1a1d21', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', color: '#ccc' }}>{job.job_level}</span>
+          {jobs.map(job => {
+            const isClosed = job.application_deadline && new Date(job.application_deadline) < new Date();
+            return (
+              <div key={job.id} style={{ background: '#111315', padding: '24px', borderRadius: '12px', border: '1px solid #222', display: 'flex', justifyContent: 'space-between', alignItems: 'center', opacity: isClosed ? 0.6 : 1 }}>
+                <div>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'white', marginBottom: '4px' }}>{job.title}</h3>
+                  <p style={{ color: '#888', marginBottom: '8px' }}>{job.department} • {job.location || 'Remote'}</p>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <span style={{ background: '#1a1d21', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', color: '#ccc' }}>{job.employment_type}</span>
+                    <span style={{ background: '#1a1d21', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', color: '#ccc' }}>{job.work_mode}</span>
+                    <span style={{ background: '#1a1d21', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', color: '#ccc' }}>{job.job_level}</span>
+                    {isClosed && <span style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#ef4444', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold' }}>Closed</span>}
+                  </div>
                 </div>
+                <Link to={`/dashboard/candidate/jobs/${job.id}`} style={{ padding: '10px 24px', background: isClosed ? '#4b5563' : '#6366f1', color: 'white', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold', pointerEvents: isClosed ? 'none' : 'auto' }}>
+                  {isClosed ? 'Closed' : 'View & Apply'}
+                </Link>
               </div>
-              <Link to={`/dashboard/candidate/jobs/${job.id}`} style={{ padding: '10px 24px', background: '#6366f1', color: 'white', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold' }}>
-                View & Apply
-              </Link>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

@@ -259,7 +259,8 @@ def get_scorecards(
     if not app:
         raise HTTPException(status_code=404, detail="Application not found")
         
-    verify_org_member(db, current_user.id, app.job.organization_id)
+    if app.candidate.user_id != current_user.id:
+        verify_org_member(db, current_user.id, app.job.organization_id)
     
     scorecards = db.query(InterviewScorecard).filter(InterviewScorecard.application_id == app_id).all()
     return scorecards
@@ -281,12 +282,12 @@ def generate_offer_letter(
     if app.status != ApplicationStatus.offer_extended:
         raise HTTPException(status_code=400, detail="Candidate must be in 'Offer Extended' stage")
         
-    os.makedirs(os.path.join("app", "public", "offers"), exist_ok=True)
     timestamp = int(time.time())
     safe_filename = f"offer_{app.id}_{timestamp}.pdf"
-    file_path = os.path.join("app", "public", "offers", safe_filename)
-    
-    c = canvas.Canvas(file_path, pagesize=letter)
+
+    import io
+    pdf_buffer = io.BytesIO()
+    c = canvas.Canvas(pdf_buffer, pagesize=letter)
     width, height = letter
     
     # Simple Professional Template
@@ -321,11 +322,18 @@ The {app.job.organization.name} Hiring Team
     c.drawText(text)
     c.save()
     
-    base_url = str(request.base_url)
-    if base_url.endswith('/'):
-        base_url = base_url[:-1]
+    pdf_buffer.seek(0)
     
-    app.offer_letter_url = f"{base_url}/public/offers/{safe_filename}"
+    import cloudinary.uploader
+    upload_result = cloudinary.uploader.upload(
+        pdf_buffer.read(),
+        resource_type="raw",
+        use_filename=True,
+        folder="offers",
+        public_id=safe_filename
+    )
+    
+    app.offer_letter_url = upload_result.get("secure_url")
     db.commit()
     db.refresh(app)
     

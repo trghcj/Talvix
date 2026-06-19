@@ -125,19 +125,20 @@ async def upload_resume(
                     candidate.education = line
                     break
 
-        # 4. Save Locally
+        # 4. Upload to Cloudinary
         timestamp = int(time.time())
         safe_filename = f"{timestamp}_{file.filename.replace(' ', '_')}"
-        file_path = os.path.join("app", "public", "resumes", safe_filename)
         
-        with open(file_path, "wb") as f:
-            f.write(file_contents)
+        import cloudinary.uploader
+        upload_result = cloudinary.uploader.upload(
+            file_contents,
+            resource_type="raw",
+            use_filename=True,
+            folder="resumes",
+            public_id=safe_filename
+        )
         
-        # Save local URL to database
-        base_url = str(request.base_url)
-        if base_url.endswith('/'):
-            base_url = base_url[:-1]
-        candidate.resume_url = f"{base_url}/public/resumes/{safe_filename}"
+        candidate.resume_url = upload_result.get("secure_url")
         db.commit()
         db.refresh(candidate)
         
@@ -167,16 +168,15 @@ async def upload_profile_picture(
         
         timestamp = int(time.time())
         safe_filename = f"pp_{timestamp}_{file.filename.replace(' ', '_')}"
-        os.makedirs(os.path.join("app", "public", "profiles"), exist_ok=True)
-        file_path = os.path.join("app", "public", "profiles", safe_filename)
         
-        with open(file_path, "wb") as f:
-            f.write(file_contents)
+        import cloudinary.uploader
+        upload_result = cloudinary.uploader.upload(
+            file_contents,
+            folder="profiles",
+            public_id=safe_filename
+        )
         
-        base_url = str(request.base_url)
-        if base_url.endswith('/'):
-            base_url = base_url[:-1]
-        candidate.profile_picture_url = f"{base_url}/public/profiles/{safe_filename}"
+        candidate.profile_picture_url = upload_result.get("secure_url")
         db.commit()
         db.refresh(candidate)
         

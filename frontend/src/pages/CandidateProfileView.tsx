@@ -80,8 +80,12 @@ export const CandidateProfileView = () => {
             </div>
             
             <div className="profile-info-section">
-              <div className="avatar-wrapper">
-                <div className="avatar-image">{user?.displayName?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase()}</div>
+              <div className="avatar-wrapper" style={{ overflow: 'hidden', borderRadius: '50%' }}>
+                {profile?.profile_picture_url ? (
+                  <img src={profile.profile_picture_url} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : (
+                  <div className="avatar-image">{user?.displayName?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase()}</div>
+                )}
               </div>
               
               <div className="profile-header-text">
