@@ -33,6 +33,7 @@ class CandidateUpdate(CandidateBase):
 class CandidateResponse(CandidateBase):
     id: int
     user_id: int
+    user: Optional['UserResponse'] = None
     model_config = ConfigDict(from_attributes=True)
 
 # Organizations
