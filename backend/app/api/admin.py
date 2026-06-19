@@ -42,11 +42,29 @@ def get_org_analytics(
     
     total_recruiters = db.query(OrganizationMember).filter(OrganizationMember.organization_id == organization_id).count()
     
+    # Get 5 recent applications
+    recent_apps = db.query(Application).join(Job).filter(Job.organization_id == organization_id).order_by(Application.applied_at.desc()).limit(5).all()
+    recent_applications = []
+    for app in recent_apps:
+        recent_applications.append({
+            "id": app.id,
+            "candidate_name": app.candidate.user.name,
+            "job_title": app.job.title,
+            "current_stage": app.current_stage,
+            "applied_at": app.applied_at
+        })
+        
+    # Get stage distribution
+    stage_counts = db.query(Application.current_stage, func.count(Application.id)).join(Job).filter(Job.organization_id == organization_id).group_by(Application.current_stage).all()
+    stage_distribution = {stage: count for stage, count in stage_counts}
+    
     return {
         "total_jobs": total_jobs,
         "total_applications": total_applications,
         "hired_candidates": hired_applications,
-        "active_recruiters": total_recruiters
+        "active_recruiters": total_recruiters,
+        "recent_applications": recent_applications,
+        "stage_distribution": stage_distribution
     }
 
 @router.get("/members")
