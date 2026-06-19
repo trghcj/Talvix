@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Outlet, Navigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
+import { apiClient } from '../services/api';
 import { Sidebar } from '../components/ui/Sidebar';
 import { Sun, Moon, Monitor, ChevronDown } from 'lucide-react';
 import './DashboardLayout.css';
@@ -14,6 +15,18 @@ export const DashboardLayout = () => {
   });
   const [isThemeOpen, setIsThemeOpen] = useState(false);
   const themeRef = useRef<HTMLDivElement>(null);
+
+  const [profileData, setProfileData] = useState<any>(null);
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (user) {
+      apiClient.get('/api/candidate/profile')
+        .then(res => setProfileData(res.data))
+        .catch(err => console.error("Could not fetch profile for avatar", err));
+    }
+  }, [user]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -30,6 +43,9 @@ export const DashboardLayout = () => {
     const handleClickOutside = (event: MouseEvent) => {
       if (themeRef.current && !themeRef.current.contains(event.target as Node)) {
         setIsThemeOpen(false);
+      }
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setIsProfileDropdownOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -80,8 +96,57 @@ export const DashboardLayout = () => {
             </div>
 
             <span className="user-email">{user.email}</span>
-            <div className="user-avatar">
-              {user.email?.charAt(0).toUpperCase()}
+            <div className="user-profile-menu" ref={profileRef} style={{ position: 'relative' }}>
+              <div 
+                className="user-avatar cursor-pointer transition-all"
+                style={{ 
+                  boxShadow: isProfileDropdownOpen ? '0 0 0 2px #3b82f6' : 'none',
+                  backgroundImage: profileData?.profile_picture_url ? `url(${profileData.profile_picture_url})` : 'none',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: profileData?.profile_picture_url ? 'transparent' : 'white'
+                }}
+                onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+              >
+                {!profileData?.profile_picture_url && ((user as any).name?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase())}
+              </div>
+
+              {isProfileDropdownOpen && (
+                <div style={{ position: 'absolute', top: '100%', right: '0', marginTop: '12px', background: 'var(--bg-card, #1a1d21)', border: '1px solid var(--border-color, #333)', borderRadius: '12px', overflow: 'hidden', zIndex: 50, minWidth: '240px', boxShadow: '0 10px 25px rgba(0,0,0,0.5)', padding: '16px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', borderBottom: '1px solid var(--border-color, #333)', paddingBottom: '16px', marginBottom: '16px' }}>
+                     <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'linear-gradient(135deg, #3b82f6, #6366f1)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', fontWeight: 'bold', backgroundImage: profileData?.profile_picture_url ? `url(${profileData.profile_picture_url})` : 'none', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+                       {!profileData?.profile_picture_url && ((user as any).name?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase())}
+                     </div>
+                     <h3 style={{ margin: 0, color: 'var(--text-primary, white)', fontSize: '16px', fontWeight: '600', textAlign: 'center' }}>{(user as any).name || 'User'}</h3>
+                     <p style={{ margin: 0, color: 'var(--text-secondary, #9ca3af)', fontSize: '12px', textAlign: 'center' }}>{user.email}</p>
+                  </div>
+                  
+                  {profileData?.education && (
+                     <div style={{ marginBottom: '12px' }}>
+                       <p style={{ margin: '0 0 4px 0', fontSize: '10px', textTransform: 'uppercase', color: 'var(--text-secondary, #9ca3af)', fontWeight: 'bold' }}>Education</p>
+                       <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-primary, white)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{profileData.education}</p>
+                     </div>
+                  )}
+                  {profileData?.experience && (
+                     <div style={{ marginBottom: '16px' }}>
+                       <p style={{ margin: '0 0 4px 0', fontSize: '10px', textTransform: 'uppercase', color: 'var(--text-secondary, #9ca3af)', fontWeight: 'bold' }}>Experience</p>
+                       <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-primary, white)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{profileData.experience}</p>
+                     </div>
+                  )}
+
+                  <button 
+                    onClick={() => { useAuthStore.getState().logout(); }} 
+                    style={{ width: '100%', padding: '10px 12px', background: '#ef4444', color: 'white', border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: '600', cursor: 'pointer', transition: 'background 0.2s' }}
+                    onMouseOver={(e) => e.currentTarget.style.background = '#dc2626'}
+                    onMouseOut={(e) => e.currentTarget.style.background = '#ef4444'}
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </header>
