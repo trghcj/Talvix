@@ -102,6 +102,7 @@ class JobBase(BaseModel):
     skills_required: Optional[str] = None
     jd_pdf_url: Optional[str] = None
     application_deadline: Optional[datetime] = None
+    job_category: Optional[str] = None
     status: JobStatus = JobStatus.open
 
 class JobCreate(JobBase):

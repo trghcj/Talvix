@@ -15,7 +15,9 @@ const JobBoard = () => {
     work_mode: '',
     employment_type: '',
     job_level: '',
-    min_salary: ''
+    min_salary: '',
+    status: '',
+    job_category: ''
   });
 
   const fetchJobs = useCallback(async () => {
@@ -71,6 +73,18 @@ const JobBoard = () => {
         </select>
 
         <input type="number" name="min_salary" placeholder="Min Salary ($)" onChange={handleFilterChange} style={{ width: '150px', padding: '10px', background: '#090a0b', border: '1px solid #333', color: 'white', borderRadius: '8px' }} />
+        
+        <select name="status" onChange={handleFilterChange} style={{ width: '150px', padding: '10px', background: '#090a0b', border: '1px solid #333', color: 'white', borderRadius: '8px' }}>
+          <option value="">All Statuses</option>
+          <option value="Open">Open</option>
+          <option value="Closed">Closed</option>
+        </select>
+        
+        <select name="job_category" onChange={handleFilterChange} style={{ width: '150px', padding: '10px', background: '#090a0b', border: '1px solid #333', color: 'white', borderRadius: '8px' }}>
+          <option value="">All Categories</option>
+          <option value="Tech">Tech</option>
+          <option value="Non-Tech">Non-Tech</option>
+        </select>
       </div>
 
       {loading ? (
@@ -82,7 +96,7 @@ const JobBoard = () => {
       ) : (
         <div style={{ display: 'grid', gap: '16px' }}>
           {jobs.map(job => {
-            const isClosed = job.application_deadline && new Date(job.application_deadline) < new Date();
+            const isClosed = job.status === 'Closed' || (job.application_deadline && new Date(job.application_deadline) < new Date());
             return (
               <div key={job.id} style={{ background: '#111315', padding: '24px', borderRadius: '12px', border: '1px solid #222', display: 'flex', justifyContent: 'space-between', alignItems: 'center', opacity: isClosed ? 0.6 : 1 }}>
                 <div>
@@ -92,6 +106,15 @@ const JobBoard = () => {
                     <span style={{ background: '#1a1d21', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', color: '#ccc' }}>{job.employment_type}</span>
                     <span style={{ background: '#1a1d21', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', color: '#ccc' }}>{job.work_mode}</span>
                     <span style={{ background: '#1a1d21', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', color: '#ccc' }}>{job.job_level}</span>
+                    {job.job_category && (
+                      <span style={{ 
+                        background: job.job_category === 'Tech' ? 'rgba(59, 130, 246, 0.2)' : 'rgba(168, 85, 247, 0.2)',
+                        color: job.job_category === 'Tech' ? '#60a5fa' : '#c084fc',
+                        padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold' 
+                      }}>
+                        {job.job_category}
+                      </span>
+                    )}
                     {isClosed && <span style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#ef4444', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold' }}>Closed</span>}
                     {job.application_deadline && !isClosed && (
                       <span style={{ background: 'rgba(234, 179, 8, 0.2)', color: '#eab308', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem' }}>

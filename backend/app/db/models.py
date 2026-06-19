@@ -116,6 +116,7 @@ class Job(Base):
     jd_pdf_url = Column(String)
     application_deadline = Column(DateTime(timezone=True))
     status = Column(Enum(JobStatus, native_enum=False), default=JobStatus.open)
+    job_category = Column(String, nullable=True) # Tech / Non-Tech
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 

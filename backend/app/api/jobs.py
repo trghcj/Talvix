@@ -42,7 +42,7 @@ def list_jobs(
     min_salary: Optional[int] = None,
     db: Session = Depends(get_db)
 ):
-    query = db.query(Job).filter(Job.status == JobStatus.open)
+    query = db.query(Job).filter(Job.status != JobStatus.deleted)
     
     if title:
         query = query.filter(Job.title.ilike(f"%{title}%"))
@@ -103,6 +103,26 @@ def delete_job(
     job.status = JobStatus.deleted
     db.commit()
     return {"message": "Job deleted successfully"}
+
+@router.patch("/{job_id}/status", response_model=JobResponse)
+def update_job_status(
+    job_id: int,
+    status_update: dict,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    job = db.query(Job).filter(Job.id == job_id).first()
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+        
+    verify_org_member(db, current_user.id, job.organization_id)
+        
+    new_status = status_update.get("status")
+    if new_status:
+        job.status = new_status
+        db.commit()
+        db.refresh(job)
+    return job
 
 @router.post("/upload-jd")
 async def upload_jd_pdf(

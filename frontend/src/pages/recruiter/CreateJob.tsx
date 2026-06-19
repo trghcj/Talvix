@@ -24,6 +24,7 @@ const CreateJob = () => {
     openings: 1,
     skills_required: '',
     application_deadline: '',
+    job_category: 'Tech',
   });
   
   const [jdPdfUrl, setJdPdfUrl] = useState<string | null>(null);
@@ -141,6 +142,13 @@ const CreateJob = () => {
           <div>
             <label style={{ display: 'block', marginBottom: '8px', color: '#888' }}>Application Deadline</label>
             <input type="datetime-local" name="application_deadline" value={formData.application_deadline} onChange={handleChange} style={{ width: '100%', padding: '10px', background: '#090a0b', border: '1px solid #333', color: 'white', borderRadius: '8px', colorScheme: 'dark' }} />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#888' }}>Job Category</label>
+            <select name="job_category" value={formData.job_category} onChange={handleChange} style={{ width: '100%', padding: '10px', background: '#090a0b', border: '1px solid #333', color: 'white', borderRadius: '8px' }}>
+              <option>Tech</option>
+              <option>Non-Tech</option>
+            </select>
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '8px', color: '#888' }}>Job Description PDF (Optional)</label>

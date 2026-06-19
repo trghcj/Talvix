@@ -8,6 +8,8 @@ const JobManagement = () => {
   const { activeOrganization } = useAuthStore();
   const [jobs, setJobs] = useState<Record<string, any>[]>([]);
   const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState('All');
+  const [categoryFilter, setCategoryFilter] = useState('All');
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -24,16 +26,22 @@ const JobManagement = () => {
     fetchJobs();
   }, [activeOrganization]);
 
-  const deleteJob = async (jobId: number) => {
-    if (!window.confirm("Are you sure you want to delete this job? This action cannot be undone.")) return;
+  const closeJob = async (jobId: number) => {
+    if (!window.confirm("Are you sure you want to close this job? Candidates will no longer be able to apply.")) return;
     try {
-      await apiClient.delete(`/api/jobs/${jobId}`);
-      setJobs(jobs.filter(j => j.id !== jobId));
-      toast.success("Job deleted successfully");
+      await apiClient.patch(`/api/jobs/${jobId}/status`, { status: 'Closed' });
+      setJobs(jobs.map(j => j.id === jobId ? { ...j, status: 'Closed' } : j));
+      toast.success("Job closed successfully");
     } catch (error) {
-      toast.error("Failed to delete job");
+      toast.error("Failed to close job");
     }
   };
+
+  const filteredJobs = jobs.filter(job => {
+    if (statusFilter !== 'All' && job.status !== statusFilter) return false;
+    if (categoryFilter !== 'All' && job.job_category !== categoryFilter) return false;
+    return true;
+  });
 
   return (
     <div className="p-6">
@@ -51,23 +59,58 @@ const JobManagement = () => {
           No jobs posted yet. Create your first job posting!
         </div>
       ) : (
-        <div style={{ background: '#111315', borderRadius: '12px', overflow: 'hidden' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', color: 'white', textAlign: 'left' }}>
-            <thead style={{ background: '#1a1d21', borderBottom: '1px solid #333' }}>
-              <tr>
-                <th style={{ padding: '16px', color: '#888', fontWeight: 'normal' }}>Job Title</th>
-                <th style={{ padding: '16px', color: '#888', fontWeight: 'normal' }}>Department</th>
-                <th style={{ padding: '16px', color: '#888', fontWeight: 'normal' }}>Type</th>
-                <th style={{ padding: '16px', color: '#888', fontWeight: 'normal' }}>Status</th>
-                <th style={{ padding: '16px', color: '#888', fontWeight: 'normal' }}>Posted On</th>
-                <th style={{ padding: '16px', color: '#888', fontWeight: 'normal' }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {jobs.map(job => (
-                <tr key={job.id} style={{ borderBottom: '1px solid #222' }}>
-                  <td style={{ padding: '16px', fontWeight: 'bold' }}>{job.title}</td>
-                  <td style={{ padding: '16px', color: '#ccc' }}>{job.department || '-'}</td>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div style={{ display: 'flex', gap: '16px', marginBottom: '8px' }}>
+            <select 
+              value={statusFilter} 
+              onChange={(e) => setStatusFilter(e.target.value)}
+              style={{ padding: '10px', background: '#111315', border: '1px solid #333', color: 'white', borderRadius: '8px' }}
+            >
+              <option value="All">All Statuses</option>
+              <option value="Open">Open</option>
+              <option value="Closed">Closed</option>
+            </select>
+            <select 
+              value={categoryFilter} 
+              onChange={(e) => setCategoryFilter(e.target.value)}
+              style={{ padding: '10px', background: '#111315', border: '1px solid #333', color: 'white', borderRadius: '8px' }}
+            >
+              <option value="All">All Categories</option>
+              <option value="Tech">Tech</option>
+              <option value="Non-Tech">Non-Tech</option>
+            </select>
+          </div>
+          <div style={{ background: '#111315', borderRadius: '12px', overflow: 'hidden' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', color: 'white', textAlign: 'left' }}>
+              <thead style={{ background: '#1a1d21', borderBottom: '1px solid #333' }}>
+                <tr>
+                  <th style={{ padding: '16px', color: '#888', fontWeight: 'normal' }}>Job Title</th>
+                  <th style={{ padding: '16px', color: '#888', fontWeight: 'normal' }}>Category</th>
+                  <th style={{ padding: '16px', color: '#888', fontWeight: 'normal' }}>Department</th>
+                  <th style={{ padding: '16px', color: '#888', fontWeight: 'normal' }}>Type</th>
+                  <th style={{ padding: '16px', color: '#888', fontWeight: 'normal' }}>Status</th>
+                  <th style={{ padding: '16px', color: '#888', fontWeight: 'normal' }}>Posted On</th>
+                  <th style={{ padding: '16px', color: '#888', fontWeight: 'normal' }}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredJobs.map(job => (
+                  <tr key={job.id} style={{ borderBottom: '1px solid #222' }}>
+                    <td style={{ padding: '16px', fontWeight: 'bold' }}>{job.title}</td>
+                    <td style={{ padding: '16px' }}>
+                      {job.job_category ? (
+                        <span style={{ 
+                          padding: '4px 8px', 
+                          borderRadius: '4px', 
+                          fontSize: '0.8rem',
+                          background: job.job_category === 'Tech' ? 'rgba(59, 130, 246, 0.2)' : 'rgba(168, 85, 247, 0.2)',
+                          color: job.job_category === 'Tech' ? '#60a5fa' : '#c084fc'
+                        }}>
+                          {job.job_category}
+                        </span>
+                      ) : '-'}
+                    </td>
+                    <td style={{ padding: '16px', color: '#ccc' }}>{job.department || '-'}</td>
                   <td style={{ padding: '16px', color: '#ccc' }}>{job.employment_type}</td>
                   <td style={{ padding: '16px' }}>
                     <span style={{ 
@@ -83,7 +126,9 @@ const JobManagement = () => {
                   <td style={{ padding: '16px', color: '#888' }}>{new Date(job.created_at).toLocaleDateString()}</td>
                   <td style={{ padding: '16px' }}>
                     <Link to={`/dashboard/jobs/${job.id}/applicants`} style={{ color: '#6366f1', textDecoration: 'none', marginRight: '16px' }}>View Applicants</Link>
-                    <button onClick={() => deleteJob(job.id)} style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>Delete</button>
+                    {job.status === 'Open' && (
+                      <button onClick={() => closeJob(job.id)} style={{ color: '#f59e0b', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>Close</button>
+                    )}
                   </td>
                 </tr>
               ))}
