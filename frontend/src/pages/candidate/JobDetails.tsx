@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 const JobDetails = () => {
   const { jobId } = useParams<{ jobId: string }>();
   const navigate = useNavigate();
-  const [job, setJob] = useState<Record<string, any> | null>(null);
+  const [job, setJob] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
   const [applying, setApplying] = useState(false);
 
@@ -31,9 +31,10 @@ const JobDetails = () => {
       await apiClient.post('/api/applications', { job_id: parseInt(jobId!) });
       toast.success("Successfully applied!");
       navigate('/dashboard/candidate/applications');
-    } catch (error: any) {
-      if (error?.response?.status === 400) {
-        toast.error(error.response?.data?.detail || "You have already applied to this job.");
+    } catch (err: unknown) {
+      const error = err as Record<string, unknown>;
+      if ((error?.response as Record<string, unknown>)?.status === 400) {
+        toast.error(((error?.response as Record<string, unknown>)?.data as Record<string, unknown>)?.detail as string || "You have already applied to this job.");
       } else {
         toast.error("Failed to apply. Please complete your profile first.");
       }
