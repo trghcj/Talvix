@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from app.api import auth, candidate, recruiter, jobs, applications, organizations, public
+from app.api import auth, candidate, recruiter, jobs, applications, organizations, public, interviews, admin, superadmin
 import os
 import subprocess
 import cloudinary
@@ -71,6 +71,9 @@ app.include_router(recruiter.router, prefix="/api")
 app.include_router(jobs.router, prefix="/api")
 app.include_router(applications.router, prefix="/api")
 app.include_router(organizations.router, prefix="/api")
+app.include_router(interviews.router, prefix="/api")
+app.include_router(admin.router, prefix="/api")
+app.include_router(superadmin.router, prefix="/api")
 app.include_router(public.router, prefix="/api")
 
 # Serve static files from the 'app/public' directory

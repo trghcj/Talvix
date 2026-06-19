@@ -19,6 +19,8 @@ interface AuthState {
   organizations: any[];
   loading: boolean;
   error: string | null;
+  isSuperAdmin: boolean;
+  isOrgAdmin: boolean;
   setUser: (user: User | null) => void;
   setDbUser: (dbUser: any | null) => void;
   setActiveRole: (role: 'candidate' | 'recruiter') => void;
@@ -41,6 +43,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   organizations: [],
   loading: true,
   error: null,
+  isSuperAdmin: false,
+  isOrgAdmin: false,
   
   setUser: (user) => set({ user, loading: false }),
   setDbUser: (dbUser) => set({ dbUser }),
@@ -104,7 +108,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   fetchDbUser: async () => {
     try {
       const response = await apiClient.get('/api/auth/me');
-      set({ dbUser: response.data });
+      set({ dbUser: response.data, isSuperAdmin: response.data?.is_super_admin === true });
       await get().fetchOrganizations();
     } catch (err: any) {
       if (err.response?.status === 404) {
@@ -150,10 +154,23 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       }
     } catch (err) {
       console.error("Failed to fetch organizations", err);
-      set({ organizations: [] });
+      set({ organizations: [], isOrgAdmin: false });
     }
   }
 }));
+
+// Setup a subscriber to recalculate isOrgAdmin when activeOrganization or organizations change
+useAuthStore.subscribe((state) => {
+  if (state.activeOrganization && state.organizations.length > 0) {
+    const membership = state.organizations.find((m: any) => m.organization?.id === state.activeOrganization.id);
+    const isOwner = membership?.role === 'owner';
+    if (state.isOrgAdmin !== isOwner) {
+      useAuthStore.setState({ isOrgAdmin: isOwner });
+    }
+  } else if (state.isOrgAdmin) {
+    useAuthStore.setState({ isOrgAdmin: false });
+  }
+});
 
 // Initialize auth listener
 onAuthStateChanged(auth, async (user) => {
