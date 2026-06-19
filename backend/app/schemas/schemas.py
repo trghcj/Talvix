@@ -39,9 +39,16 @@ class CandidateResponse(CandidateBase):
 # Organizations
 class OrganizationBase(BaseModel):
     name: str
+    logo_url: Optional[str] = None
+    website_url: Optional[str] = None
 
 class OrganizationCreate(OrganizationBase):
     pass
+
+class OrganizationUpdate(BaseModel):
+    name: Optional[str] = None
+    logo_url: Optional[str] = None
+    website_url: Optional[str] = None
 
 class OrganizationResponse(OrganizationBase):
     id: int

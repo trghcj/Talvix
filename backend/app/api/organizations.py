@@ -42,6 +42,57 @@ def get_my_organizations(
     memberships = db.query(OrganizationMember).filter(OrganizationMember.user_id == current_user.id).all()
     return memberships
 
+from app.schemas.schemas import OrganizationUpdate
+
+@router.put("/{org_id}", response_model=OrganizationResponse)
+def update_organization(
+    org_id: int,
+    org_update: OrganizationUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    # Verify owner
+    member = db.query(OrganizationMember).filter(
+        OrganizationMember.user_id == current_user.id,
+        OrganizationMember.organization_id == org_id,
+        OrganizationMember.role == "owner"
+    ).first()
+    if not member:
+        raise HTTPException(status_code=403, detail="Must be an owner to update organization settings")
+        
+    org = db.query(Organization).filter(Organization.id == org_id).first()
+    if not org:
+        raise HTTPException(status_code=404, detail="Organization not found")
+        
+    for key, value in org_update.model_dump(exclude_unset=True).items():
+        setattr(org, key, value)
+        
+    db.commit()
+    db.refresh(org)
+    return org
+
+@router.delete("/{org_id}")
+def delete_organization(
+    org_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    # Verify owner
+    member = db.query(OrganizationMember).filter(
+        OrganizationMember.user_id == current_user.id,
+        OrganizationMember.organization_id == org_id,
+        OrganizationMember.role == "owner"
+    ).first()
+    if not member:
+        raise HTTPException(status_code=403, detail="Must be an owner to delete organization")
+        
+    org = db.query(Organization).filter(Organization.id == org_id).first()
+    if not org:
+        raise HTTPException(status_code=404, detail="Organization not found")
+        
+    db.delete(org)
+    db.commit()
+    return {"message": "Organization deleted successfully"}
 
 
 @router.get("/{org_id}/metrics")
