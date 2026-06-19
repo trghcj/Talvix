@@ -7,6 +7,12 @@ export default function UserManagement() {
   const { activeOrganization, user } = useAuthStore();
   const [members, setMembers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // Invite Modal State
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteLoading, setInviteLoading] = useState(false);
+  const [inviteError, setInviteError] = useState<string | null>(null);
 
   useEffect(() => {
     if (activeOrganization) {
@@ -37,7 +43,26 @@ export default function UserManagement() {
     }
   };
 
-  if (loading) {
+  const handleInvite = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inviteEmail.trim()) return;
+    
+    try {
+      setInviteLoading(true);
+      setInviteError(null);
+      await apiClient.post(`/api/admin/members?organization_id=${activeOrganization.id}`, { email: inviteEmail.trim() });
+      setInviteEmail('');
+      setIsInviteModalOpen(false);
+      fetchMembers();
+    } catch (err: any) {
+      console.error("Failed to invite member", err);
+      setInviteError(err.response?.data?.detail || "Failed to invite recruiter");
+    } finally {
+      setInviteLoading(false);
+    }
+  };
+
+  if (loading && members.length === 0) {
     return <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><span className="loader"></span></div>;
   }
 
@@ -52,8 +77,8 @@ export default function UserManagement() {
           <p className="text-gray-400">Manage recruiters for {activeOrganization?.name}</p>
         </div>
         <button 
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium"
-          onClick={() => alert("Invite feature coming soon! Currently recruits are auto-added or you can add via DB.")}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+          onClick={() => setIsInviteModalOpen(true)}
         >
           Invite Recruiter
         </button>
@@ -105,6 +130,55 @@ export default function UserManagement() {
           </tbody>
         </table>
       </div>
+
+      {/* Invite Modal */}
+      {isInviteModalOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-[#1a1d21] border border-white/10 rounded-xl max-w-md w-full overflow-hidden shadow-2xl">
+            <div className="p-6">
+              <h2 className="text-xl font-bold mb-2">Invite Recruiter</h2>
+              <p className="text-gray-400 text-sm mb-6">Enter the email address of the recruiter you want to invite to {activeOrganization?.name}. They must already have a Talvix account.</p>
+              
+              <form onSubmit={handleInvite}>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Email Address</label>
+                  <input 
+                    type="email" 
+                    value={inviteEmail}
+                    onChange={(e) => setInviteEmail(e.target.value)}
+                    required
+                    className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-white focus:border-blue-500 focus:outline-none transition-colors"
+                    placeholder="recruiter@example.com"
+                  />
+                </div>
+                
+                {inviteError && (
+                  <div className="bg-red-500/10 border border-red-500/50 text-red-400 p-3 rounded-lg text-sm mb-4">
+                    {inviteError}
+                  </div>
+                )}
+                
+                <div className="flex gap-3 justify-end mt-6">
+                  <button 
+                    type="button"
+                    onClick={() => { setIsInviteModalOpen(false); setInviteError(null); setInviteEmail(''); }}
+                    className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    type="submit"
+                    disabled={inviteLoading || !inviteEmail.trim()}
+                    className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+                  >
+                    {inviteLoading ? 'Inviting...' : 'Send Invite'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -4,9 +4,14 @@ from typing import List
 from app.db.database import get_db
 from app.db.models import User, Organization, OrganizationMember, Job, Application, Candidate
 from app.core.security import get_current_user
+from pydantic import BaseModel
 from sqlalchemy import func
 
 router = APIRouter(prefix="/admin", tags=["Organization Admin"])
+
+class InviteMemberRequest(BaseModel):
+    email: str
+    role: str = "recruiter"
 
 def verify_org_owner(db: Session, user_id: int, org_id: int):
     member = db.query(OrganizationMember).filter(
@@ -64,6 +69,40 @@ def get_org_members(
             "joined_at": member.created_at
         })
     return result
+
+@router.post("/members")
+def invite_org_member(
+    organization_id: int,
+    invite_data: InviteMemberRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    verify_org_owner(db, current_user.id, organization_id)
+    
+    # Find user by email
+    target_user = db.query(User).filter(func.lower(User.email) == invite_data.email.lower()).first()
+    if not target_user:
+        raise HTTPException(status_code=404, detail="User not found. They must sign up for Talvix first.")
+        
+    # Check if already a member
+    existing_member = db.query(OrganizationMember).filter(
+        OrganizationMember.user_id == target_user.id,
+        OrganizationMember.organization_id == organization_id
+    ).first()
+    
+    if existing_member:
+        raise HTTPException(status_code=400, detail="User is already a member of this organization")
+        
+    # Add member
+    new_member = OrganizationMember(
+        organization_id=organization_id,
+        user_id=target_user.id,
+        role=invite_data.role
+    )
+    db.add(new_member)
+    db.commit()
+    
+    return {"message": "Recruiter invited successfully"}
 
 @router.delete("/members/{member_id}")
 def remove_org_member(
