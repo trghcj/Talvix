@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "npx tailwindcss -i src/index.css -o src/tailwind-built.css && vite",
-    "build": "npx tailwindcss -i src/index.css -o src/tailwind-built.css && vite build",
+    "dev": "vite",
+    "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -16,6 +16,7 @@
     "@hookform/resolvers": "^5.4.0",
     "@mui/icons-material": "^9.0.1",
     "@mui/material": "^9.0.1",
+    "@tailwindcss/vite": "^4.3.1",
     "@tanstack/react-query": "^5.101.0",
     "axios": "^1.17.0",
     "date-fns": "^4.4.0",
