@@ -11,6 +11,7 @@ export default function UserManagement() {
   // Invite Modal State
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteRole, setInviteRole] = useState('recruiter');
   const [inviteLoading, setInviteLoading] = useState(false);
   const [inviteError, setInviteError] = useState<string | null>(null);
 
@@ -50,8 +51,9 @@ export default function UserManagement() {
     try {
       setInviteLoading(true);
       setInviteError(null);
-      await apiClient.post(`/api/admin/members?organization_id=${activeOrganization.id}`, { email: inviteEmail.trim() });
+      await apiClient.post(`/api/admin/members?organization_id=${activeOrganization.id}`, { email: inviteEmail.trim(), role: inviteRole });
       setInviteEmail('');
+      setInviteRole('recruiter');
       setIsInviteModalOpen(false);
       fetchMembers();
     } catch (err: any) {
@@ -101,7 +103,11 @@ export default function UserManagement() {
                 <td className="p-4 font-medium">{member.name}</td>
                 <td className="p-4 text-gray-400">{member.email}</td>
                 <td className="p-4">
-                  <span className={`px-2 py-1 rounded text-xs font-medium ${member.role === 'owner' ? 'bg-purple-500/20 text-purple-400' : 'bg-blue-500/20 text-blue-400'}`}>
+                  <span className={`px-2 py-1 rounded text-xs font-medium ${
+                    member.role === 'owner' ? 'bg-purple-500/20 text-purple-400' : 
+                    member.role === 'admin' ? 'bg-yellow-500/20 text-yellow-400' : 
+                    'bg-blue-500/20 text-blue-400'
+                  }`}>
                     {member.role.toUpperCase()}
                   </span>
                 </td>
@@ -150,6 +156,18 @@ export default function UserManagement() {
                     className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-white focus:border-blue-500 focus:outline-none transition-colors"
                     placeholder="recruiter@example.com"
                   />
+                </div>
+                
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Role</label>
+                  <select 
+                    value={inviteRole}
+                    onChange={(e) => setInviteRole(e.target.value)}
+                    className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-white focus:border-blue-500 focus:outline-none transition-colors"
+                  >
+                    <option value="recruiter">Recruiter (No Admin Access)</option>
+                    <option value="admin">Admin (Manage Team & Settings)</option>
+                  </select>
                 </div>
                 
                 {inviteError && (

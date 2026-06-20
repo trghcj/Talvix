@@ -21,6 +21,7 @@ interface AuthState {
   error: string | null;
   isSuperAdmin: boolean;
   isOrgAdmin: boolean;
+  isOrgOwner: boolean;
   setUser: (user: User | null) => void;
   setDbUser: (dbUser: any | null) => void;
   setActiveRole: (role: 'candidate' | 'recruiter') => void;
@@ -45,6 +46,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   error: null,
   isSuperAdmin: false,
   isOrgAdmin: false,
+  isOrgOwner: false,
   
   setUser: (user) => set({ user, loading: false }),
   setDbUser: (dbUser) => set({ dbUser }),
@@ -145,7 +147,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       }
     } catch (err) {
       console.error("Failed to fetch organizations", err);
-      set({ organizations: [], isOrgAdmin: false });
+      set({ organizations: [], isOrgAdmin: false, isOrgOwner: false });
     }
   }
 }));
@@ -155,11 +157,16 @@ useAuthStore.subscribe((state) => {
   if (state.activeOrganization && state.organizations.length > 0) {
     const membership = state.organizations.find((m: any) => m.organization?.id === state.activeOrganization.id);
     const isOwner = membership?.role === 'owner';
-    if (state.isOrgAdmin !== isOwner) {
-      useAuthStore.setState({ isOrgAdmin: isOwner });
+    const isAdmin = isOwner || membership?.role === 'admin';
+    
+    if (state.isOrgOwner !== isOwner) {
+      useAuthStore.setState({ isOrgOwner: isOwner });
     }
-  } else if (state.isOrgAdmin) {
-    useAuthStore.setState({ isOrgAdmin: false });
+    if (state.isOrgAdmin !== isAdmin) {
+      useAuthStore.setState({ isOrgAdmin: isAdmin });
+    }
+  } else if (state.isOrgAdmin || state.isOrgOwner) {
+    useAuthStore.setState({ isOrgAdmin: false, isOrgOwner: false });
   }
 });
 
