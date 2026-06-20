@@ -4,7 +4,7 @@ import { apiClient } from '../../services/api';
 import { Users, UserMinus } from 'lucide-react';
 
 export default function UserManagement() {
-  const { activeOrganization, user } = useAuthStore();
+  const { activeOrganization, user, isOrgOwner } = useAuthStore();
   const [members, setMembers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   
@@ -41,6 +41,16 @@ export default function UserManagement() {
     } catch (err) {
       console.error("Failed to remove member", err);
       alert("Failed to remove member");
+    }
+  };
+
+  const handleUpdateRole = async (memberId: number, newRole: string) => {
+    try {
+      await apiClient.put(`/api/admin/members/${memberId}/role?organization_id=${activeOrganization.id}`, { role: newRole });
+      fetchMembers();
+    } catch (err) {
+      console.error("Failed to update member role", err);
+      alert("Failed to update member role");
     }
   };
 
@@ -103,13 +113,27 @@ export default function UserManagement() {
                 <td className="p-4 font-medium">{member.name}</td>
                 <td className="p-4 text-gray-400">{member.email}</td>
                 <td className="p-4">
-                  <span className={`px-2 py-1 rounded text-xs font-medium ${
-                    member.role === 'owner' ? 'bg-purple-500/20 text-purple-400' : 
-                    member.role === 'admin' ? 'bg-yellow-500/20 text-yellow-400' : 
-                    'bg-blue-500/20 text-blue-400'
-                  }`}>
-                    {member.role.toUpperCase()}
-                  </span>
+                  {isOrgOwner && member.user_id !== user?.id && member.role !== 'owner' ? (
+                    <select
+                      value={member.role}
+                      onChange={(e) => handleUpdateRole(member.id, e.target.value)}
+                      className={`px-2 py-1 rounded text-xs font-medium cursor-pointer border border-transparent hover:border-white/20 outline-none ${
+                        member.role === 'admin' ? 'bg-yellow-500/20 text-yellow-400' : 
+                        'bg-blue-500/20 text-blue-400'
+                      }`}
+                    >
+                      <option value="admin" className="bg-gray-800 text-white">ADMIN</option>
+                      <option value="recruiter" className="bg-gray-800 text-white">RECRUITER</option>
+                    </select>
+                  ) : (
+                    <span className={`px-2 py-1 rounded text-xs font-medium ${
+                      member.role === 'owner' ? 'bg-purple-500/20 text-purple-400' : 
+                      member.role === 'admin' ? 'bg-yellow-500/20 text-yellow-400' : 
+                      'bg-blue-500/20 text-blue-400'
+                    }`}>
+                      {member.role.toUpperCase()}
+                    </span>
+                  )}
                 </td>
                 <td className="p-4 text-gray-400 text-sm">
                   {new Date(member.joined_at).toLocaleDateString()}

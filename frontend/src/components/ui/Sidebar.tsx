@@ -39,13 +39,25 @@ export const Sidebar = () => {
             }}
             style={{ 
               width: '100%', 
-              padding: '8px', 
-              borderRadius: '6px', 
+              padding: '10px 12px', 
+              borderRadius: '12px', 
               background: 'var(--bg-secondary)', 
               color: 'var(--text-primary)',
               border: '1px solid var(--border)',
               fontSize: '14px',
-              outline: 'none'
+              fontWeight: 500,
+              outline: 'none',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.boxShadow = '0 0 15px rgba(59, 130, 246, 0.3)';
+              e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.5)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+              e.currentTarget.style.borderColor = 'var(--border)';
             }}
           >
             {organizations.map((org: any) => (
