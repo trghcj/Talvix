@@ -5,7 +5,7 @@ import { LogOut, Repeat, Globe, Settings, Users, Shield, Server } from 'lucide-r
 import './Sidebar.css';
 
 export const Sidebar = () => {
-  const { logout, activeRole, isOrgAdmin, isSuperAdmin, activeOrganization } = useAuthStore();
+  const { logout, activeRole, isOrgAdmin, isSuperAdmin, activeOrganization, organizations, setActiveOrganization } = useAuthStore();
   const [isCollapsed, setIsCollapsed] = useState(false);
   
   return (
@@ -28,6 +28,34 @@ export const Sidebar = () => {
           )}
         </button>
       </div>
+
+      {!isCollapsed && organizations?.length > 1 && activeRole === 'recruiter' && (
+        <div style={{ padding: '0 16px', marginBottom: '16px' }}>
+          <select 
+            value={activeOrganization?.id || ''}
+            onChange={(e) => {
+              const org = organizations.find((o: any) => o.organization.id === parseInt(e.target.value))?.organization;
+              if (org) setActiveOrganization(org);
+            }}
+            style={{ 
+              width: '100%', 
+              padding: '8px', 
+              borderRadius: '6px', 
+              background: 'var(--bg-secondary)', 
+              color: 'var(--text-primary)',
+              border: '1px solid var(--border)',
+              fontSize: '14px',
+              outline: 'none'
+            }}
+          >
+            {organizations.map((org: any) => (
+              <option key={org.organization.id} value={org.organization.id}>
+                {org.organization.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
       
       <nav className="sidebar-nav">
         {!isCollapsed && <span className="nav-label">MENU</span>}
