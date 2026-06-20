@@ -140,6 +140,14 @@ const CreateJob = () => {
             <input type="text" name="skills_required" value={formData.skills_required} onChange={handleChange} style={{ width: '100%', padding: '10px', background: '#090a0b', border: '1px solid #333', color: 'white', borderRadius: '8px' }} />
           </div>
           <div>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#888' }}>Minimum Salary ($)</label>
+            <input type="number" name="salary_min" value={formData.salary_min} onChange={handleChange} placeholder="e.g. 50000" style={{ width: '100%', padding: '10px', background: '#090a0b', border: '1px solid #333', color: 'white', borderRadius: '8px' }} />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#888' }}>Maximum Salary ($)</label>
+            <input type="number" name="salary_max" value={formData.salary_max} onChange={handleChange} placeholder="e.g. 80000" style={{ width: '100%', padding: '10px', background: '#090a0b', border: '1px solid #333', color: 'white', borderRadius: '8px' }} />
+          </div>
+          <div>
             <label style={{ display: 'block', marginBottom: '8px', color: '#888' }}>Application Deadline</label>
             <input type="datetime-local" name="application_deadline" value={formData.application_deadline} onChange={handleChange} style={{ width: '100%', padding: '10px', background: '#090a0b', border: '1px solid #333', color: 'white', borderRadius: '8px', colorScheme: 'dark' }} />
           </div>

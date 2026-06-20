@@ -115,6 +115,11 @@ const JobBoard = () => {
                         {job.job_category}
                       </span>
                     )}
+                    {job.salary_min && job.salary_max && (
+                      <span style={{ background: 'rgba(34, 197, 94, 0.2)', color: '#4ade80', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold' }}>
+                        ${job.salary_min.toLocaleString()} - ${job.salary_max.toLocaleString()}
+                      </span>
+                    )}
                     {isClosed && <span style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#ef4444', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold' }}>Closed</span>}
                     {job.application_deadline && !isClosed && (
                       <span style={{ background: 'rgba(234, 179, 8, 0.2)', color: '#eab308', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem' }}>
