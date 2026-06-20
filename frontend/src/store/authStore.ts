@@ -140,17 +140,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ organizations: orgs });
       if (orgs.length > 0 && !get().activeOrganization) {
         set({ activeOrganization: orgs[0].organization });
-      } else if (orgs.length === 0 && get().activeRole === 'recruiter') {
-        // Auto-create a default organization for new recruiters
-        try {
-          const createRes = await apiClient.post('/api/organizations', { name: 'My Company' });
-          set({ activeOrganization: createRes.data });
-          // Fetch again to update memberships
-          const updatedRes = await apiClient.get('/api/organizations/my');
-          set({ organizations: updatedRes.data });
-        } catch (e) {
-          console.error("Failed to auto-create organization", e);
-        }
+      } else if (orgs.length === 0) {
+        set({ activeOrganization: null });
       }
     } catch (err) {
       console.error("Failed to fetch organizations", err);
