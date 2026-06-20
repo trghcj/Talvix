@@ -1,7 +1,4 @@
 # Talvix ATS 🚀
-
-![Talvix Cover](https://via.placeholder.com/1200x400/111315/ffffff?text=Talvix+-+The+All-In-One+Hiring+Platform)
-
 > Streamline Hiring. Track Talent. Drive Decisions. An end-to-end Applicant Tracking System (ATS) designed to simplify your entire recruitment pipeline and help you hire better.
 
 ## 🌟 Features
@@ -51,8 +48,8 @@ Talvix is fully containerized and production-ready. You can easily run the entir
    docker-compose up --build -d
    ```
 3. **Access the application**:
-   - The Frontend is now running on [http://localhost](http://localhost) (Port 80)
-   - The Backend API is running on [http://localhost:8000](http://localhost:8000)
+   - The Frontend is now running on [http://localhost:3000](http://localhost:3000) (Port 3000)
+   - The Backend API is running on [http://localhost:8001](http://localhost:8001)
 
 ### Stopping the App
 To stop the application and spin down the containers, run:
