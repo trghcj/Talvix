@@ -80,7 +80,7 @@ export default function CareerPageBuilder() {
     return <div className="p-8 text-[var(--text-secondary)]">Loading settings...</div>;
   }
 
-  const publicUrl = `${window.location.origin}/careers/${formData.slug}`;
+  const publicUrl = `/careers/${encodeURIComponent(formData.slug)}`;
 
   return (
     <div className="p-8 max-w-4xl mx-auto">
