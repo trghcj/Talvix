@@ -114,6 +114,7 @@ class Job(Base):
     job_level = Column(String) # Fresher, Junior, Mid-Level, Senior, Lead
     salary_min = Column(Integer)
     salary_max = Column(Integer)
+    currency = Column(String, default="USD") # USD, INR
     openings = Column(Integer, default=1)
     skills_required = Column(Text)
     jd_pdf_url = Column(String)

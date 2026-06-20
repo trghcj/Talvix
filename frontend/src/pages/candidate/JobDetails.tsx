@@ -12,6 +12,7 @@ interface JobData {
   experience_required?: string;
   salary_min?: number;
   salary_max?: number;
+  currency?: string;
   description: string;
   application_deadline?: string;
   jd_pdf_url?: string;
@@ -122,7 +123,7 @@ const JobDetails = () => {
           <div style={{ background: '#1a1d21', padding: '12px 16px', borderRadius: '8px' }}>
             <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '4px' }}>Salary</p>
             <p style={{ color: 'white', fontWeight: 'bold' }}>
-              {job.salary_min && job.salary_max ? `$${job.salary_min} - $${job.salary_max}` : 'Not Disclosed'}
+              {job.salary_min && job.salary_max ? `${job.currency === 'INR' ? '₹' : '$'}${job.salary_min.toLocaleString()} - ${job.currency === 'INR' ? '₹' : '$'}${job.salary_max.toLocaleString()}` : 'Not Disclosed'}
             </p>
           </div>
         </div>

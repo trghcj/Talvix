@@ -105,6 +105,7 @@ class JobBase(BaseModel):
     job_level: Optional[str] = None
     salary_min: Optional[int] = None
     salary_max: Optional[int] = None
+    currency: Optional[str] = "USD"
     openings: int = 1
     skills_required: Optional[str] = None
     jd_pdf_url: Optional[str] = None

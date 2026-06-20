@@ -172,7 +172,7 @@ export default function CareerPage() {
                         )}
                         {job.salary_min && job.salary_max && (
                           <span className="px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded-md text-xs font-medium">
-                            ${job.salary_min.toLocaleString()} - ${job.salary_max.toLocaleString()}
+                            {job.currency === 'INR' ? '₹' : '$'}{job.salary_min.toLocaleString()} - {job.currency === 'INR' ? '₹' : '$'}{job.salary_max.toLocaleString()}
                           </span>
                         )}
                       </div>
