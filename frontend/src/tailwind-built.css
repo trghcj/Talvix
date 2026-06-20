@@ -1755,6 +1755,10 @@ video {
   letter-spacing: 0.05em;
 }
 
+.tracking-widest{
+  letter-spacing: 0.1em;
+}
+
 .text-\[var\(--text-primary\)\]{
   color: var(--text-primary);
 }

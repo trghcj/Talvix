@@ -35,7 +35,7 @@ def create_organization(
 
 from pydantic import BaseModel
 class JoinOrganizationRequest(BaseModel):
-    organization_id: int
+    invite_code: str
 
 @router.post("/join", response_model=OrganizationResponse)
 def join_organization(
@@ -43,13 +43,13 @@ def join_organization(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    org = db.query(Organization).filter(Organization.id == req.organization_id).first()
-    if not org:
-        raise HTTPException(status_code=404, detail="Organization not found")
+    org = db.query(Organization).filter(Organization.invite_code == req.invite_code).first()
+    if not org or not req.invite_code:
+        raise HTTPException(status_code=404, detail="Invalid invite code")
 
     # Check if already a member
     existing_member = db.query(OrganizationMember).filter(
-        OrganizationMember.organization_id == req.organization_id,
+        OrganizationMember.organization_id == org.id,
         OrganizationMember.user_id == current_user.id
     ).first()
 
@@ -57,7 +57,7 @@ def join_organization(
         raise HTTPException(status_code=400, detail="Already a member of this organization")
 
     member = OrganizationMember(
-        organization_id=req.organization_id,
+        organization_id=org.id,
         user_id=current_user.id,
         role="member"
     )
@@ -125,6 +125,38 @@ def delete_organization(
     db.delete(org)
     db.commit()
     return {"message": "Organization deleted successfully"}
+
+import random
+import string
+
+@router.post("/{org_id}/generate-invite", response_model=OrganizationResponse)
+def generate_invite_code(
+    org_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    # Verify owner
+    member = db.query(OrganizationMember).filter(
+        OrganizationMember.user_id == current_user.id,
+        OrganizationMember.organization_id == org_id,
+        OrganizationMember.role == "owner"
+    ).first()
+    if not member:
+        raise HTTPException(status_code=403, detail="Must be an owner to generate invite code")
+
+    org = db.query(Organization).filter(Organization.id == org_id).first()
+    if not org:
+        raise HTTPException(status_code=404, detail="Organization not found")
+
+    # Generate a random 5-character alphanumeric string
+    while True:
+        code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
+        exists = db.query(Organization).filter(Organization.invite_code == code).first()
+        if not exists:
+            org.invite_code = code
+            db.commit()
+            db.refresh(org)
+            return org
 
 
 @router.get("/{org_id}/metrics")

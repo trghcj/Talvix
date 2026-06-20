@@ -45,11 +45,11 @@ export const RecruiterDashboard = () => {
   const handleJoinOrg = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await apiClient.post('/api/organizations/join', { organization_id: parseInt(joinOrgId) });
+      await apiClient.post('/api/organizations/join', { invite_code: joinOrgId.toUpperCase() });
       await fetchOrganizations();
     } catch (err) {
       console.error("Failed to join org", err);
-      alert("Failed to join organization. Please check the ID.");
+      alert("Failed to join organization. Please check the invite code.");
     }
   };
 
@@ -84,14 +84,15 @@ export const RecruiterDashboard = () => {
           {/* Join Organization */}
           <div style={{ background: 'var(--bg-card)', padding: '32px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
             <h2 className="text-xl font-bold mb-2">Join a Company</h2>
-            <p className="text-sm text-gray-400 mb-6">Enter a Company ID to join an existing workspace.</p>
+            <p className="text-sm text-gray-400 mb-6">Enter a 5-character Invite Code to join your team.</p>
             <form onSubmit={handleJoinOrg} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <input 
-                type="number" 
-                placeholder="Company ID (e.g. 1)" 
+                type="text" 
+                placeholder="e.g. A1B2C" 
                 value={joinOrgId} 
-                onChange={(e) => setJoinOrgId(e.target.value)}
-                style={{ padding: '12px 16px', borderRadius: '8px', background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border-color)' }}
+                onChange={(e) => setJoinOrgId(e.target.value.toUpperCase())}
+                style={{ padding: '12px 16px', borderRadius: '8px', background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', textTransform: 'uppercase' }}
+                maxLength={5}
                 required
               />
               <button type="submit" style={{ padding: '12px 16px', borderRadius: '8px', background: '#10b981', color: 'var(--text-primary)', fontWeight: 'bold' }}>
