@@ -13,6 +13,9 @@ class InviteMemberRequest(BaseModel):
     email: str
     role: str = "recruiter"
 
+class UpdateRoleRequest(BaseModel):
+    role: str
+
 def verify_org_owner(db: Session, user_id: int, org_id: int):
     member = db.query(OrganizationMember).filter(
         OrganizationMember.user_id == user_id,
@@ -158,3 +161,35 @@ def remove_org_member(
     db.delete(member)
     db.commit()
     return {"message": "Member removed successfully"}
+
+@router.put("/members/{member_id}/role")
+def update_org_member_role(
+    organization_id: int,
+    member_id: int,
+    role_data: UpdateRoleRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    verify_org_owner(db, current_user.id, organization_id)
+    
+    if role_data.role not in ["admin", "recruiter"]:
+        raise HTTPException(status_code=400, detail="Invalid role specified")
+        
+    member = db.query(OrganizationMember).filter(
+        OrganizationMember.id == member_id,
+        OrganizationMember.organization_id == organization_id
+    ).first()
+    
+    if not member:
+        raise HTTPException(status_code=404, detail="Member not found")
+        
+    if member.user_id == current_user.id:
+        raise HTTPException(status_code=400, detail="Cannot change your own role")
+        
+    if member.role == "owner":
+        raise HTTPException(status_code=403, detail="Cannot change the role of the organization owner")
+        
+    member.role = role_data.role
+    db.commit()
+    
+    return {"message": "Role updated successfully"}
