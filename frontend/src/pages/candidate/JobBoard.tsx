@@ -72,7 +72,7 @@ const JobBoard = () => {
           <option value="Internship">Internship</option>
         </select>
 
-        <input type="number" name="min_salary" placeholder="Min Salary ($)" onChange={handleFilterChange} style={{ width: '150px', padding: '10px', background: '#090a0b', border: '1px solid #333', color: 'white', borderRadius: '8px' }} />
+        <input type="number" name="min_salary" placeholder="Min Salary / Stipend" onChange={handleFilterChange} style={{ width: '180px', padding: '10px', background: '#090a0b', border: '1px solid #333', color: 'white', borderRadius: '8px' }} />
         
         <select name="status" onChange={handleFilterChange} style={{ width: '150px', padding: '10px', background: '#090a0b', border: '1px solid #333', color: 'white', borderRadius: '8px' }}>
           <option value="">All Statuses</option>
@@ -113,6 +113,11 @@ const JobBoard = () => {
                         padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold' 
                       }}>
                         {job.job_category}
+                      </span>
+                    )}
+                    {job.salary_min && job.salary_max && (
+                      <span style={{ background: 'rgba(34, 197, 94, 0.2)', color: '#4ade80', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold' }}>
+                        {job.currency === 'INR' ? '₹' : '$'}{job.salary_min.toLocaleString()} - {job.currency === 'INR' ? '₹' : '$'}{job.salary_max.toLocaleString()}
                       </span>
                     )}
                     {isClosed && <span style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#ef4444', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold' }}>Closed</span>}

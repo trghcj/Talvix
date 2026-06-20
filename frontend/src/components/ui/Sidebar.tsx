@@ -5,7 +5,7 @@ import { LogOut, Repeat, Globe, Settings, Users, Shield, Server } from 'lucide-r
 import './Sidebar.css';
 
 export const Sidebar = () => {
-  const { logout, activeRole, isOrgAdmin, isSuperAdmin } = useAuthStore();
+  const { logout, activeRole, isOrgAdmin, isSuperAdmin, activeOrganization } = useAuthStore();
   const [isCollapsed, setIsCollapsed] = useState(false);
   
   return (
@@ -45,7 +45,7 @@ export const Sidebar = () => {
           </NavLink>
 
           {/* Recruiter Links */}
-          {activeRole === 'recruiter' && (
+          {activeRole === 'recruiter' && activeOrganization && (
             <>
               <NavLink to="/dashboard/jobs" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} end title="Manage Jobs">
                 <span className="nav-icon">
@@ -120,7 +120,7 @@ export const Sidebar = () => {
           </NavLink>
 
           {/* Admin Links */}
-          {activeRole === 'recruiter' && isOrgAdmin && (
+          {activeRole === 'recruiter' && activeOrganization && isOrgAdmin && (
             <>
               <div className="nav-divider" style={{ margin: '12px 0', borderTop: '1px solid var(--border)', opacity: 0.5 }}></div>
               {!isCollapsed && <span className="nav-label" style={{ paddingLeft: '16px', fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Admin Hub</span>}

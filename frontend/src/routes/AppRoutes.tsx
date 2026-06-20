@@ -86,6 +86,20 @@ const SuperAdminRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+// Requires Organization Wrapper for Recruiter routes
+const RequiresOrganizationRoute = ({ children }: { children: React.ReactNode }) => {
+  const { activeRole, activeOrganization, loading } = useAuthStore();
+  
+  if (loading) return <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><span className="loader"></span></div>;
+  
+  // If they are a recruiter and don't have an active organization, redirect to the overview page to create/join one
+  if (activeRole === 'recruiter' && !activeOrganization) {
+    return <Navigate to="/dashboard" replace />;
+  }
+  
+  return <>{children}</>;
+};
+
 export const AppRoutes = () => {
   return (
     <Router>
@@ -116,11 +130,11 @@ export const AppRoutes = () => {
           <Route path="profile" element={<CandidateProfileView />} />
           
           {/* Recruiter Routes */}
-          <Route path="jobs" element={<JobManagement />} />
-          <Route path="jobs/create" element={<CreateJob />} />
-          <Route path="jobs/:jobId/applicants" element={<ApplicantManagement />} />
-          <Route path="applicants" element={<ApplicantManagement />} />
-          <Route path="career-page" element={<CareerPageBuilder />} />
+          <Route path="jobs" element={<RequiresOrganizationRoute><JobManagement /></RequiresOrganizationRoute>} />
+          <Route path="jobs/create" element={<RequiresOrganizationRoute><CreateJob /></RequiresOrganizationRoute>} />
+          <Route path="jobs/:jobId/applicants" element={<RequiresOrganizationRoute><ApplicantManagement /></RequiresOrganizationRoute>} />
+          <Route path="applicants" element={<RequiresOrganizationRoute><ApplicantManagement /></RequiresOrganizationRoute>} />
+          <Route path="career-page" element={<RequiresOrganizationRoute><CareerPageBuilder /></RequiresOrganizationRoute>} />
 
           {/* Candidate Routes */}
           <Route path="candidate/jobs" element={<JobBoard />} />
@@ -128,9 +142,9 @@ export const AppRoutes = () => {
           <Route path="candidate/applications" element={<MyApplications />} />
 
           {/* Admin Routes */}
-          <Route path="admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
-          <Route path="admin/users" element={<AdminRoute><UserManagement /></AdminRoute>} />
-          <Route path="admin/settings" element={<AdminRoute><OrganizationSettings /></AdminRoute>} />
+          <Route path="admin" element={<AdminRoute><RequiresOrganizationRoute><AdminDashboard /></RequiresOrganizationRoute></AdminRoute>} />
+          <Route path="admin/users" element={<AdminRoute><RequiresOrganizationRoute><UserManagement /></RequiresOrganizationRoute></AdminRoute>} />
+          <Route path="admin/settings" element={<AdminRoute><RequiresOrganizationRoute><OrganizationSettings /></RequiresOrganizationRoute></AdminRoute>} />
 
           {/* Super Admin Routes */}
           <Route path="superadmin" element={<SuperAdminRoute><SuperAdminDashboard /></SuperAdminRoute>} />

@@ -21,6 +21,7 @@ const CreateJob = () => {
     job_level: 'Mid-Level',
     salary_min: '',
     salary_max: '',
+    currency: 'USD',
     openings: 1,
     skills_required: '',
     application_deadline: '',
@@ -138,6 +139,21 @@ const CreateJob = () => {
           <div>
             <label style={{ display: 'block', marginBottom: '8px', color: '#888' }}>Skills Required (Comma separated)</label>
             <input type="text" name="skills_required" value={formData.skills_required} onChange={handleChange} style={{ width: '100%', padding: '10px', background: '#090a0b', border: '1px solid #333', color: 'white', borderRadius: '8px' }} />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#888' }}>Currency</label>
+            <select name="currency" value={formData.currency} onChange={handleChange} style={{ width: '100%', padding: '10px', background: '#090a0b', border: '1px solid #333', color: 'white', borderRadius: '8px' }}>
+              <option value="USD">USD ($)</option>
+              <option value="INR">INR (₹)</option>
+            </select>
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#888' }}>Minimum Salary / Stipend</label>
+            <input type="number" name="salary_min" value={formData.salary_min} onChange={handleChange} placeholder="e.g. 50000" style={{ width: '100%', padding: '10px', background: '#090a0b', border: '1px solid #333', color: 'white', borderRadius: '8px' }} />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#888' }}>Maximum Salary / Stipend</label>
+            <input type="number" name="salary_max" value={formData.salary_max} onChange={handleChange} placeholder="e.g. 80000" style={{ width: '100%', padding: '10px', background: '#090a0b', border: '1px solid #333', color: 'white', borderRadius: '8px' }} />
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '8px', color: '#888' }}>Application Deadline</label>

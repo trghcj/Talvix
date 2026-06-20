@@ -33,6 +33,38 @@ def create_organization(
     
     return new_org
 
+from pydantic import BaseModel
+class JoinOrganizationRequest(BaseModel):
+    organization_id: int
+
+@router.post("/join", response_model=OrganizationResponse)
+def join_organization(
+    req: JoinOrganizationRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    org = db.query(Organization).filter(Organization.id == req.organization_id).first()
+    if not org:
+        raise HTTPException(status_code=404, detail="Organization not found")
+
+    # Check if already a member
+    existing_member = db.query(OrganizationMember).filter(
+        OrganizationMember.organization_id == req.organization_id,
+        OrganizationMember.user_id == current_user.id
+    ).first()
+
+    if existing_member:
+        raise HTTPException(status_code=400, detail="Already a member of this organization")
+
+    member = OrganizationMember(
+        organization_id=req.organization_id,
+        user_id=current_user.id,
+        role="member"
+    )
+    db.add(member)
+    db.commit()
+    return org
+
 @router.get("/my", response_model=List[OrganizationMemberResponse])
 def get_my_organizations(
     db: Session = Depends(get_db),
