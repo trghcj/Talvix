@@ -72,7 +72,7 @@ const JobBoard = () => {
           <option value="Internship">Internship</option>
         </select>
 
-        <input type="number" name="min_salary" placeholder="Min Salary" onChange={handleFilterChange} style={{ width: '150px', padding: '10px', background: '#090a0b', border: '1px solid #333', color: 'white', borderRadius: '8px' }} />
+        <input type="number" name="min_salary" placeholder="Min Salary / Stipend" onChange={handleFilterChange} style={{ width: '180px', padding: '10px', background: '#090a0b', border: '1px solid #333', color: 'white', borderRadius: '8px' }} />
         
         <select name="status" onChange={handleFilterChange} style={{ width: '150px', padding: '10px', background: '#090a0b', border: '1px solid #333', color: 'white', borderRadius: '8px' }}>
           <option value="">All Statuses</option>

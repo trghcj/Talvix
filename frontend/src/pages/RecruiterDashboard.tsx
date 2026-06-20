@@ -12,6 +12,7 @@ export const RecruiterDashboard = () => {
   const [loading, setLoading] = useState(true);
   const { activeOrganization, fetchOrganizations } = useAuthStore();
   const [newOrgName, setNewOrgName] = useState('');
+  const [joinOrgId, setJoinOrgId] = useState('');
 
   useEffect(() => {
     const fetchDashboard = async () => {
@@ -41,26 +42,64 @@ export const RecruiterDashboard = () => {
     }
   };
 
+  const handleJoinOrg = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await apiClient.post('/api/organizations/join', { organization_id: parseInt(joinOrgId) });
+      await fetchOrganizations();
+    } catch (err) {
+      console.error("Failed to join org", err);
+      alert("Failed to join organization. Please check the ID.");
+    }
+  };
+
   if (loading) return <div className="p-6 text-gray-500">Loading dashboard...</div>;
 
   if (!activeOrganization) {
     return (
-      <div className="p-6" style={{ color: 'white' }}>
-        <h1 className="text-2xl font-bold mb-6">Create your Organization</h1>
-        <p className="mb-4 text-gray-400" style={{ marginBottom: '24px' }}>You need an organization to post jobs and manage applicants.</p>
-        <form onSubmit={handleCreateOrg} style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
-          <input 
-            type="text" 
-            placeholder="Organization Name" 
-            value={newOrgName} 
-            onChange={(e) => setNewOrgName(e.target.value)}
-            style={{ padding: '8px 16px', borderRadius: '4px', background: '#222', color: 'white', border: '1px solid #444' }}
-            required
-          />
-          <button type="submit" style={{ padding: '8px 16px', borderRadius: '4px', background: '#6366f1', color: 'white', fontWeight: 'bold' }}>
-            Create
-          </button>
-        </form>
+      <div className="p-6 max-w-4xl mx-auto" style={{ color: 'white' }}>
+        <h1 className="text-3xl font-bold mb-2">Welcome to Talvix</h1>
+        <p className="mb-12 text-gray-400">You need an organization to post jobs and manage applicants.</p>
+        
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px' }}>
+          {/* Create Organization */}
+          <div style={{ background: '#111315', padding: '32px', borderRadius: '12px', border: '1px solid #222' }}>
+            <h2 className="text-xl font-bold mb-2">Create a Company</h2>
+            <p className="text-sm text-gray-400 mb-6">Start fresh by creating a new workspace for your team.</p>
+            <form onSubmit={handleCreateOrg} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <input 
+                type="text" 
+                placeholder="Organization Name" 
+                value={newOrgName} 
+                onChange={(e) => setNewOrgName(e.target.value)}
+                style={{ padding: '12px 16px', borderRadius: '8px', background: '#090a0b', color: 'white', border: '1px solid #333' }}
+                required
+              />
+              <button type="submit" style={{ padding: '12px 16px', borderRadius: '8px', background: '#6366f1', color: 'white', fontWeight: 'bold' }}>
+                Create Company
+              </button>
+            </form>
+          </div>
+
+          {/* Join Organization */}
+          <div style={{ background: '#111315', padding: '32px', borderRadius: '12px', border: '1px solid #222' }}>
+            <h2 className="text-xl font-bold mb-2">Join a Company</h2>
+            <p className="text-sm text-gray-400 mb-6">Enter a Company ID to join an existing workspace.</p>
+            <form onSubmit={handleJoinOrg} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <input 
+                type="number" 
+                placeholder="Company ID (e.g. 1)" 
+                value={joinOrgId} 
+                onChange={(e) => setJoinOrgId(e.target.value)}
+                style={{ padding: '12px 16px', borderRadius: '8px', background: '#090a0b', color: 'white', border: '1px solid #333' }}
+                required
+              />
+              <button type="submit" style={{ padding: '12px 16px', borderRadius: '8px', background: '#10b981', color: 'white', fontWeight: 'bold' }}>
+                Join Company
+              </button>
+            </form>
+          </div>
+        </div>
       </div>
     );
   }

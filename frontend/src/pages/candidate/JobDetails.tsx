@@ -121,7 +121,7 @@ const JobDetails = () => {
             <p style={{ color: 'white', fontWeight: 'bold' }}>{job.experience_required || 'Not Specified'}</p>
           </div>
           <div style={{ background: '#1a1d21', padding: '12px 16px', borderRadius: '8px' }}>
-            <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '4px' }}>Salary</p>
+            <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '4px' }}>Salary / Stipend</p>
             <p style={{ color: 'white', fontWeight: 'bold' }}>
               {job.salary_min && job.salary_max ? `${job.currency === 'INR' ? '₹' : '$'}${job.salary_min.toLocaleString()} - ${job.currency === 'INR' ? '₹' : '$'}${job.salary_max.toLocaleString()}` : 'Not Disclosed'}
             </p>

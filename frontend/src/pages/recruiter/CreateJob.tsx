@@ -148,11 +148,11 @@ const CreateJob = () => {
             </select>
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: '#888' }}>Minimum Salary</label>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#888' }}>Minimum Salary / Stipend</label>
             <input type="number" name="salary_min" value={formData.salary_min} onChange={handleChange} placeholder="e.g. 50000" style={{ width: '100%', padding: '10px', background: '#090a0b', border: '1px solid #333', color: 'white', borderRadius: '8px' }} />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: '#888' }}>Maximum Salary</label>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#888' }}>Maximum Salary / Stipend</label>
             <input type="number" name="salary_max" value={formData.salary_max} onChange={handleChange} placeholder="e.g. 80000" style={{ width: '100%', padding: '10px', background: '#090a0b', border: '1px solid #333', color: 'white', borderRadius: '8px' }} />
           </div>
           <div>
