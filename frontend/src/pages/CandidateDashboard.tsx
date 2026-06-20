@@ -131,11 +131,11 @@ export const CandidateDashboard = () => {
           {profilePictureUrl ? (
             <img src={profilePictureUrl} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           ) : (
-            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888', fontSize: '24px' }}>
+            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)', fontSize: '24px' }}>
               {user?.displayName?.[0] || user?.email?.[0]?.toUpperCase() || '?'}
             </div>
           )}
-          <label htmlFor="pp-upload" style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'rgba(0,0,0,0.6)', color: 'white', fontSize: '10px', textAlign: 'center', cursor: 'pointer', padding: '2px 0' }}>
+          <label htmlFor="pp-upload" style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'rgba(0,0,0,0.6)', color: 'var(--text-primary)', fontSize: '10px', textAlign: 'center', cursor: 'pointer', padding: '2px 0' }}>
             Edit
           </label>
           <input type="file" id="pp-upload" accept="image/*" style={{ display: 'none' }} onChange={handleProfilePictureUpload} />
@@ -237,7 +237,7 @@ export const CandidateDashboard = () => {
                   <div key={app.id} style={{ padding: '1rem', background: 'var(--bg-secondary)', borderRadius: '8px', border: '1px solid var(--border-glass)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
                       <h4 style={{ fontWeight: 500, fontSize: '1rem' }}>{app.job?.title || 'Unknown Job'}</h4>
-                      <span style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', background: 'var(--accent-primary)', color: 'white', borderRadius: '12px', textTransform: 'capitalize' }}>
+                      <span style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', background: 'var(--accent-primary)', color: 'var(--text-primary)', borderRadius: '12px', textTransform: 'capitalize' }}>
                         {app.current_stage || app.status || 'Applied'}
                       </span>
                     </div>

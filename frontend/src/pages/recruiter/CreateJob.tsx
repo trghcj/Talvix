@@ -89,33 +89,33 @@ const CreateJob = () => {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6" style={{ color: 'white' }}>Create New Job Posting</h1>
+      <h1 className="text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>Create New Job Posting</h1>
       
-      <form onSubmit={handleSubmit} style={{ background: '#111315', padding: '24px', borderRadius: '12px' }}>
+      <form onSubmit={handleSubmit} style={{ background: 'var(--bg-card)', padding: '24px', borderRadius: '12px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: '#888' }}>Job Title</label>
-            <input required type="text" name="title" value={formData.title} onChange={handleChange} style={{ width: '100%', padding: '10px', background: '#090a0b', border: '1px solid #333', color: 'white', borderRadius: '8px' }} />
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Job Title</label>
+            <input required type="text" name="title" value={formData.title} onChange={handleChange} style={{ width: '100%', padding: '10px', background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '8px' }} />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: '#888' }}>Department</label>
-            <input type="text" name="department" value={formData.department} onChange={handleChange} style={{ width: '100%', padding: '10px', background: '#090a0b', border: '1px solid #333', color: 'white', borderRadius: '8px' }} />
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Department</label>
+            <input type="text" name="department" value={formData.department} onChange={handleChange} style={{ width: '100%', padding: '10px', background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '8px' }} />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: '#888' }}>Location</label>
-            <input type="text" name="location" value={formData.location} onChange={handleChange} style={{ width: '100%', padding: '10px', background: '#090a0b', border: '1px solid #333', color: 'white', borderRadius: '8px' }} />
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Location</label>
+            <input type="text" name="location" value={formData.location} onChange={handleChange} style={{ width: '100%', padding: '10px', background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '8px' }} />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: '#888' }}>Work Mode</label>
-            <select name="work_mode" value={formData.work_mode} onChange={handleChange} style={{ width: '100%', padding: '10px', background: '#090a0b', border: '1px solid #333', color: 'white', borderRadius: '8px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Work Mode</label>
+            <select name="work_mode" value={formData.work_mode} onChange={handleChange} style={{ width: '100%', padding: '10px', background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '8px' }}>
               <option>Remote</option>
               <option>Hybrid</option>
               <option>On-Site</option>
             </select>
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: '#888' }}>Employment Type</label>
-            <select name="employment_type" value={formData.employment_type} onChange={handleChange} style={{ width: '100%', padding: '10px', background: '#090a0b', border: '1px solid #333', color: 'white', borderRadius: '8px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Employment Type</label>
+            <select name="employment_type" value={formData.employment_type} onChange={handleChange} style={{ width: '100%', padding: '10px', background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '8px' }}>
               <option>Full Time</option>
               <option>Part Time</option>
               <option>Contract</option>
@@ -123,8 +123,8 @@ const CreateJob = () => {
             </select>
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: '#888' }}>Job Level</label>
-            <select name="job_level" value={formData.job_level} onChange={handleChange} style={{ width: '100%', padding: '10px', background: '#090a0b', border: '1px solid #333', color: 'white', borderRadius: '8px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Job Level</label>
+            <select name="job_level" value={formData.job_level} onChange={handleChange} style={{ width: '100%', padding: '10px', background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '8px' }}>
               <option>Fresher</option>
               <option>Junior</option>
               <option>Mid-Level</option>
@@ -133,49 +133,49 @@ const CreateJob = () => {
             </select>
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: '#888' }}>Experience Required (e.g. 3-5 Years)</label>
-            <input type="text" name="experience_required" value={formData.experience_required} onChange={handleChange} style={{ width: '100%', padding: '10px', background: '#090a0b', border: '1px solid #333', color: 'white', borderRadius: '8px' }} />
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Experience Required (e.g. 3-5 Years)</label>
+            <input type="text" name="experience_required" value={formData.experience_required} onChange={handleChange} style={{ width: '100%', padding: '10px', background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '8px' }} />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: '#888' }}>Skills Required (Comma separated)</label>
-            <input type="text" name="skills_required" value={formData.skills_required} onChange={handleChange} style={{ width: '100%', padding: '10px', background: '#090a0b', border: '1px solid #333', color: 'white', borderRadius: '8px' }} />
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Skills Required (Comma separated)</label>
+            <input type="text" name="skills_required" value={formData.skills_required} onChange={handleChange} style={{ width: '100%', padding: '10px', background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '8px' }} />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: '#888' }}>Currency</label>
-            <select name="currency" value={formData.currency} onChange={handleChange} style={{ width: '100%', padding: '10px', background: '#090a0b', border: '1px solid #333', color: 'white', borderRadius: '8px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Currency</label>
+            <select name="currency" value={formData.currency} onChange={handleChange} style={{ width: '100%', padding: '10px', background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '8px' }}>
               <option value="USD">USD ($)</option>
               <option value="INR">INR (₹)</option>
             </select>
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: '#888' }}>Minimum Salary / Stipend</label>
-            <input type="number" name="salary_min" value={formData.salary_min} onChange={handleChange} placeholder="e.g. 50000" style={{ width: '100%', padding: '10px', background: '#090a0b', border: '1px solid #333', color: 'white', borderRadius: '8px' }} />
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Minimum Salary / Stipend</label>
+            <input type="number" name="salary_min" value={formData.salary_min} onChange={handleChange} placeholder="e.g. 50000" style={{ width: '100%', padding: '10px', background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '8px' }} />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: '#888' }}>Maximum Salary / Stipend</label>
-            <input type="number" name="salary_max" value={formData.salary_max} onChange={handleChange} placeholder="e.g. 80000" style={{ width: '100%', padding: '10px', background: '#090a0b', border: '1px solid #333', color: 'white', borderRadius: '8px' }} />
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Maximum Salary / Stipend</label>
+            <input type="number" name="salary_max" value={formData.salary_max} onChange={handleChange} placeholder="e.g. 80000" style={{ width: '100%', padding: '10px', background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '8px' }} />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: '#888' }}>Application Deadline</label>
-            <input type="datetime-local" name="application_deadline" value={formData.application_deadline} onChange={handleChange} style={{ width: '100%', padding: '10px', background: '#090a0b', border: '1px solid #333', color: 'white', borderRadius: '8px', colorScheme: 'dark' }} />
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Application Deadline</label>
+            <input type="datetime-local" name="application_deadline" value={formData.application_deadline} onChange={handleChange} style={{ width: '100%', padding: '10px', background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '8px', colorScheme: 'dark' }} />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: '#888' }}>Job Category</label>
-            <select name="job_category" value={formData.job_category} onChange={handleChange} style={{ width: '100%', padding: '10px', background: '#090a0b', border: '1px solid #333', color: 'white', borderRadius: '8px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Job Category</label>
+            <select name="job_category" value={formData.job_category} onChange={handleChange} style={{ width: '100%', padding: '10px', background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '8px' }}>
               <option>Tech</option>
               <option>Non-Tech</option>
             </select>
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: '#888' }}>Job Description PDF (Optional)</label>
-            <input type="file" accept="application/pdf" onChange={handleFileUpload} style={{ width: '100%', padding: '10px', background: '#090a0b', border: '1px solid #333', color: 'white', borderRadius: '8px' }} />
-            {isUploadingJd && <div style={{ color: '#888', fontSize: '0.8rem', marginTop: '4px' }}>Uploading...</div>}
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Job Description PDF (Optional)</label>
+            <input type="file" accept="application/pdf" onChange={handleFileUpload} style={{ width: '100%', padding: '10px', background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '8px' }} />
+            {isUploadingJd && <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginTop: '4px' }}>Uploading...</div>}
             {jdPdfUrl && <div style={{ color: '#4ade80', fontSize: '0.8rem', marginTop: '4px' }}>✓ PDF Uploaded</div>}
           </div>
         </div>
 
         <div style={{ marginBottom: '20px' }}>
-          <label style={{ display: 'block', marginBottom: '8px', color: '#888' }}>Job Description</label>
+          <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Job Description</label>
           <div style={{ background: 'white', color: 'black', minHeight: '200px', padding: '10px', borderRadius: '8px' }}>
             <Editor
               editorState={editorState}
@@ -184,7 +184,7 @@ const CreateJob = () => {
           </div>
         </div>
 
-        <button type="submit" style={{ padding: '10px 24px', background: '#6366f1', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
+        <button type="submit" style={{ padding: '10px 24px', background: '#6366f1', color: 'var(--text-primary)', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
           Post Job
         </button>
       </form>

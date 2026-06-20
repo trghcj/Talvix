@@ -38,41 +38,41 @@ const MyApplications = () => {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6" style={{ color: 'white' }}>My Applications</h1>
+      <h1 className="text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>My Applications</h1>
 
       {loading ? (
-        <p style={{ color: '#888' }}>Loading applications...</p>
+        <p style={{ color: 'var(--text-secondary)' }}>Loading applications...</p>
       ) : applications.length === 0 ? (
-        <div style={{ padding: '40px', background: '#111315', borderRadius: '12px', textAlign: 'center', color: '#888' }}>
+        <div style={{ padding: '40px', background: 'var(--bg-card)', borderRadius: '12px', textAlign: 'center', color: 'var(--text-secondary)' }}>
           You haven't applied to any jobs yet.
           <br /><br />
-          <Link to="/dashboard/candidate/jobs" style={{ padding: '8px 16px', background: '#6366f1', color: 'white', borderRadius: '8px', textDecoration: 'none' }}>
+          <Link to="/dashboard/candidate/jobs" style={{ padding: '8px 16px', background: '#6366f1', color: 'var(--text-primary)', borderRadius: '8px', textDecoration: 'none' }}>
             Browse Jobs
           </Link>
         </div>
       ) : (
         <div style={{ display: 'grid', gap: '16px' }}>
           {applications.map(app => (
-            <div key={app.id} style={{ background: '#111315', padding: '24px', borderRadius: '12px', border: '1px solid #222', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div key={app.id} style={{ background: 'var(--bg-card)', padding: '24px', borderRadius: '12px', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--text-primary)', marginBottom: '8px' }}>
                     {app.job?.title} at{' '}
                     <a href={app.job?.organization?.career_page?.website_url || '#'} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">
                       {app.job?.organization?.name}
                     </a>
                   </h3>
-                  <p style={{ color: '#888', marginBottom: '8px' }}>Applied on {new Date(app.applied_at).toLocaleDateString()}</p>
+                  <p style={{ color: 'var(--text-secondary)', marginBottom: '8px' }}>Applied on {new Date(app.applied_at).toLocaleDateString()}</p>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <p style={{ color: '#888', fontSize: '0.85rem', marginBottom: '4px' }}>Current Status</p>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '4px' }}>Current Status</p>
                   <span style={{ 
                     padding: '6px 12px', 
                     borderRadius: '4px', 
                     fontSize: '0.9rem',
                     fontWeight: 'bold',
-                    border: '1px solid #333',
-                    background: '#1a1d21',
+                    border: '1px solid var(--border-color)',
+                    background: 'var(--bg-secondary)',
                     color: app.status === 'Rejected' ? '#f87171' : app.status === 'Hired' ? '#4ade80' : '#60a5fa'
                   }}>
                     {app.status}
@@ -81,15 +81,15 @@ const MyApplications = () => {
               </div>
               
               {app.interview && (
-                <div style={{ background: '#1a1d21', padding: '16px', borderRadius: '8px', border: '1px solid #333' }}>
-                  <h4 style={{ color: 'white', fontWeight: 'bold', marginBottom: '12px' }}>📅 Interview Scheduled</h4>
+                <div style={{ background: 'var(--bg-secondary)', padding: '16px', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                  <h4 style={{ color: 'var(--text-primary)', fontWeight: 'bold', marginBottom: '12px' }}>📅 Interview Scheduled</h4>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                     <div>
-                      <p style={{ color: '#888', fontSize: '0.85rem' }}>Date & Time</p>
+                      <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Date & Time</p>
                       <p style={{ color: '#e2e8f0', fontWeight: '500' }}>{new Date(app.interview.date).toLocaleString()}</p>
                     </div>
                     <div>
-                      <p style={{ color: '#888', fontSize: '0.85rem' }}>Meeting Link</p>
+                      <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Meeting Link</p>
                       {new Date(app.interview.date) < new Date() ? (
                         <p style={{ color: '#ef4444', fontWeight: 'bold' }}>Interview Closed</p>
                       ) : app.interview.meet_link ? (
@@ -102,7 +102,7 @@ const MyApplications = () => {
                     </div>
                     {app.job?.organization?.owner?.email && (
                       <div style={{ gridColumn: '1 / -1' }}>
-                        <p style={{ color: '#888', fontSize: '0.85rem' }}>Contact Company</p>
+                        <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Contact Company</p>
                         <a href={`mailto:${app.job.organization.owner.email}`} style={{ color: '#6366f1', textDecoration: 'none', fontWeight: '500' }}>
                           {app.job.organization.owner.email}
                         </a>
@@ -113,8 +113,8 @@ const MyApplications = () => {
               )}
 
               {app.scorecards && app.scorecards.length > 0 && (
-                <div style={{ background: '#1a1d21', padding: '16px', borderRadius: '8px', border: '1px solid #333' }}>
-                  <h4 style={{ color: 'white', fontWeight: 'bold', marginBottom: '12px' }}>📝 Interview Feedback</h4>
+                <div style={{ background: 'var(--bg-secondary)', padding: '16px', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                  <h4 style={{ color: 'var(--text-primary)', fontWeight: 'bold', marginBottom: '12px' }}>📝 Interview Feedback</h4>
                   <div style={{ display: 'grid', gap: '12px' }}>
                     {app.scorecards.map((sc: any) => (
                       <div key={sc.id} style={{ background: '#2d3748', padding: '12px', borderRadius: '6px' }}>

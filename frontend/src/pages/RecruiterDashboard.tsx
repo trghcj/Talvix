@@ -57,13 +57,13 @@ export const RecruiterDashboard = () => {
 
   if (!activeOrganization) {
     return (
-      <div className="p-6 max-w-4xl mx-auto" style={{ color: 'white' }}>
+      <div className="p-6 max-w-4xl mx-auto" style={{ color: 'var(--text-primary)' }}>
         <h1 className="text-3xl font-bold mb-2">Welcome to Talvix</h1>
         <p className="mb-12 text-gray-400">You need an organization to post jobs and manage applicants.</p>
         
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px' }}>
           {/* Create Organization */}
-          <div style={{ background: '#111315', padding: '32px', borderRadius: '12px', border: '1px solid #222' }}>
+          <div style={{ background: 'var(--bg-card)', padding: '32px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
             <h2 className="text-xl font-bold mb-2">Create a Company</h2>
             <p className="text-sm text-gray-400 mb-6">Start fresh by creating a new workspace for your team.</p>
             <form onSubmit={handleCreateOrg} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -72,17 +72,17 @@ export const RecruiterDashboard = () => {
                 placeholder="Organization Name" 
                 value={newOrgName} 
                 onChange={(e) => setNewOrgName(e.target.value)}
-                style={{ padding: '12px 16px', borderRadius: '8px', background: '#090a0b', color: 'white', border: '1px solid #333' }}
+                style={{ padding: '12px 16px', borderRadius: '8px', background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border-color)' }}
                 required
               />
-              <button type="submit" style={{ padding: '12px 16px', borderRadius: '8px', background: '#6366f1', color: 'white', fontWeight: 'bold' }}>
+              <button type="submit" style={{ padding: '12px 16px', borderRadius: '8px', background: '#6366f1', color: 'var(--text-primary)', fontWeight: 'bold' }}>
                 Create Company
               </button>
             </form>
           </div>
 
           {/* Join Organization */}
-          <div style={{ background: '#111315', padding: '32px', borderRadius: '12px', border: '1px solid #222' }}>
+          <div style={{ background: 'var(--bg-card)', padding: '32px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
             <h2 className="text-xl font-bold mb-2">Join a Company</h2>
             <p className="text-sm text-gray-400 mb-6">Enter a Company ID to join an existing workspace.</p>
             <form onSubmit={handleJoinOrg} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -91,10 +91,10 @@ export const RecruiterDashboard = () => {
                 placeholder="Company ID (e.g. 1)" 
                 value={joinOrgId} 
                 onChange={(e) => setJoinOrgId(e.target.value)}
-                style={{ padding: '12px 16px', borderRadius: '8px', background: '#090a0b', color: 'white', border: '1px solid #333' }}
+                style={{ padding: '12px 16px', borderRadius: '8px', background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border-color)' }}
                 required
               />
-              <button type="submit" style={{ padding: '12px 16px', borderRadius: '8px', background: '#10b981', color: 'white', fontWeight: 'bold' }}>
+              <button type="submit" style={{ padding: '12px 16px', borderRadius: '8px', background: '#10b981', color: 'var(--text-primary)', fontWeight: 'bold' }}>
                 Join Company
               </button>
             </form>
