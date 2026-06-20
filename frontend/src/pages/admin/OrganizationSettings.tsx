@@ -98,6 +98,22 @@ export default function OrganizationSettings() {
       <div className="bg-white/5 border border-white/10 rounded-xl p-6 mb-8">
         <h2 className="text-lg font-semibold mb-6">General Information</h2>
         
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-400 mb-2">Company ID (Share this with your team to join)</label>
+          <div className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-white font-mono text-lg flex items-center justify-between">
+            <span>{activeOrganization?.id}</span>
+            <button 
+              onClick={() => {
+                navigator.clipboard.writeText(activeOrganization?.id?.toString() || '');
+                alert('Copied to clipboard!');
+              }}
+              className="text-blue-400 hover:text-blue-300 text-sm font-sans"
+            >
+              Copy ID
+            </button>
+          </div>
+        </div>
+        
         <div className="mb-6 flex gap-6 items-start">
           <div>
             <label className="block text-sm font-medium text-gray-400 mb-2">Organization Logo</label>
