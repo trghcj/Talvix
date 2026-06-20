@@ -5,7 +5,7 @@ import { Settings, Save, AlertTriangle, Trash2, Upload, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export default function OrganizationSettings() {
-  const { activeOrganization, fetchOrganizations, isOrgAdmin, setActiveOrganization } = useAuthStore();
+  const { activeOrganization, fetchOrganizations, isOrgOwner, setActiveOrganization } = useAuthStore();
   const navigate = useNavigate();
   
   const [name, setName] = useState('');
@@ -114,12 +114,14 @@ export default function OrganizationSettings() {
           <div className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-white font-mono text-lg flex items-center justify-between">
             <span className="tracking-widest font-bold text-blue-400">{activeOrganization?.invite_code || "No code generated"}</span>
             <div className="flex gap-4">
-              <button 
-                onClick={handleGenerateInvite}
-                className="text-gray-400 hover:text-white text-sm font-sans"
-              >
-                Generate New Code
-              </button>
+              {isOrgOwner && (
+                <button 
+                  onClick={handleGenerateInvite}
+                  className="text-gray-400 hover:text-white text-sm font-sans"
+                >
+                  Generate New Code
+                </button>
+              )}
               {activeOrganization?.invite_code && (
                 <button 
                   onClick={() => {
@@ -190,16 +192,17 @@ export default function OrganizationSettings() {
 
         <button 
           onClick={handleSave}
-          disabled={loading || uploading || !name.trim() || !hasChanges}
+          disabled={loading || uploading || !name.trim() || !hasChanges || !isOrgOwner}
           className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-2.5 rounded-lg font-medium transition-colors"
         >
           <Save size={18} />
           {loading ? 'Saving...' : 'Save Changes'}
         </button>
+        {!isOrgOwner && <p className="text-sm text-gray-500 mt-3">Only the organization owner can change these settings.</p>}
       </div>
 
       {/* Danger Zone - Only visible to owners */}
-      {isOrgAdmin && (
+      {isOrgOwner && (
         <div className="bg-red-500/5 border border-red-500/20 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-2 text-red-500">
             <AlertTriangle size={24} />

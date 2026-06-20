@@ -23,13 +23,23 @@ def verify_org_owner(db: Session, user_id: int, org_id: int):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Must be an organization owner")
     return member
 
+def verify_org_admin(db: Session, user_id: int, org_id: int):
+    member = db.query(OrganizationMember).filter(
+        OrganizationMember.user_id == user_id,
+        OrganizationMember.organization_id == org_id,
+        OrganizationMember.role.in_(["owner", "admin"])
+    ).first()
+    if not member:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Must be an organization admin")
+    return member
+
 @router.get("/analytics")
 def get_org_analytics(
     organization_id: int,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    verify_org_owner(db, current_user.id, organization_id)
+    verify_org_admin(db, current_user.id, organization_id)
     
     total_jobs = db.query(Job).filter(Job.organization_id == organization_id).count()
     
@@ -73,7 +83,7 @@ def get_org_members(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    verify_org_owner(db, current_user.id, organization_id)
+    verify_org_admin(db, current_user.id, organization_id)
     members = db.query(OrganizationMember).filter(OrganizationMember.organization_id == organization_id).all()
     
     result = []
@@ -95,7 +105,7 @@ def invite_org_member(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    verify_org_owner(db, current_user.id, organization_id)
+    verify_org_admin(db, current_user.id, organization_id)
     
     # Find user by email
     target_user = db.query(User).filter(func.lower(User.email) == invite_data.email.lower()).first()
@@ -129,7 +139,7 @@ def remove_org_member(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    verify_org_owner(db, current_user.id, organization_id)
+    verify_org_admin(db, current_user.id, organization_id)
     
     member = db.query(OrganizationMember).filter(
         OrganizationMember.id == member_id,
@@ -141,6 +151,9 @@ def remove_org_member(
         
     if member.user_id == current_user.id:
         raise HTTPException(status_code=400, detail="Cannot remove yourself")
+        
+    if member.role == "owner":
+        raise HTTPException(status_code=403, detail="Cannot remove the organization owner")
         
     db.delete(member)
     db.commit()
