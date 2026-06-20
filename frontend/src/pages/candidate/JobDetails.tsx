@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import DOMPurify from 'dompurify';
 import { apiClient } from '../../services/api';
 import toast from 'react-hot-toast';
 
@@ -146,7 +147,7 @@ const JobDetails = () => {
           <div 
             style={{ color: '#ccc', lineHeight: '1.6' }} 
             className="prose prose-invert max-w-none"
-            dangerouslySetInnerHTML={{ __html: job.description }} 
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(job.description) }} 
           />
         </div>
       </div>

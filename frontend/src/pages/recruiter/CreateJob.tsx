@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
-import { EditorState, convertToRaw } from 'draft-js';
-import { Editor } from 'react-draft-wysiwyg';
-import draftToHtml from 'draftjs-to-html';
-import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
+import Editor from 'react-simple-wysiwyg';
 import { apiClient } from '../../services/api';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
@@ -10,7 +7,7 @@ import { useAuthStore } from '../../store/authStore';
 
 const CreateJob = () => {
   const { activeOrganization } = useAuthStore();
-  const [editorState, setEditorState] = useState(EditorState.createEmpty());
+  const [description, setDescription] = useState('');
   const [formData, setFormData] = useState({
     title: '',
     department: '',
@@ -33,8 +30,8 @@ const CreateJob = () => {
   
   const navigate = useNavigate();
 
-  const handleEditorChange = (state: EditorState) => {
-    setEditorState(state);
+  const handleEditorChange = (e: any) => {
+    setDescription(e.target.value);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -65,14 +62,12 @@ const CreateJob = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const rawContentState = convertToRaw(editorState.getCurrentContent());
-    const markup = draftToHtml(rawContentState);
 
     try {
       await apiClient.post('/api/jobs', {
         ...formData,
         organization_id: activeOrganization?.id,
-        description: markup,
+        description: description,
         salary_min: formData.salary_min ? parseInt(formData.salary_min) : null,
         salary_max: formData.salary_max ? parseInt(formData.salary_max) : null,
         openings: parseInt(formData.openings.toString()),
@@ -176,10 +171,11 @@ const CreateJob = () => {
 
         <div style={{ marginBottom: '20px' }}>
           <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Job Description</label>
-          <div style={{ background: 'white', color: 'black', minHeight: '200px', padding: '10px', borderRadius: '8px' }}>
-            <Editor
-              editorState={editorState}
-              onEditorStateChange={handleEditorChange}
+          <div style={{ background: 'white', color: 'black', borderRadius: '8px', overflow: 'hidden' }}>
+            <Editor 
+              value={description} 
+              onChange={handleEditorChange} 
+              containerProps={{ style: { height: '200px', marginBottom: '40px' } }}
             />
           </div>
         </div>
