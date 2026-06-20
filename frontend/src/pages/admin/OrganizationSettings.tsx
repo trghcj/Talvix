@@ -30,6 +30,17 @@ export default function OrganizationSettings() {
     }
   }, [activeOrganization]);
 
+  const handleGenerateInvite = async () => {
+    try {
+      const res = await apiClient.post(`/api/organizations/${activeOrganization.id}/generate-invite`);
+      setActiveOrganization(res.data);
+      await fetchOrganizations();
+    } catch (err) {
+      console.error("Failed to generate invite code", err);
+      alert("Failed to generate invite code");
+    }
+  };
+
   const handleSave = async () => {
     try {
       setLoading(true);
@@ -99,18 +110,28 @@ export default function OrganizationSettings() {
         <h2 className="text-lg font-semibold mb-6">General Information</h2>
         
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-400 mb-2">Company ID (Share this with your team to join)</label>
+          <label className="block text-sm font-medium text-gray-400 mb-2">Invite Code (Share this with your team to join)</label>
           <div className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-white font-mono text-lg flex items-center justify-between">
-            <span>{activeOrganization?.id}</span>
-            <button 
-              onClick={() => {
-                navigator.clipboard.writeText(activeOrganization?.id?.toString() || '');
-                alert('Copied to clipboard!');
-              }}
-              className="text-blue-400 hover:text-blue-300 text-sm font-sans"
-            >
-              Copy ID
-            </button>
+            <span className="tracking-widest font-bold text-blue-400">{activeOrganization?.invite_code || "No code generated"}</span>
+            <div className="flex gap-4">
+              <button 
+                onClick={handleGenerateInvite}
+                className="text-gray-400 hover:text-white text-sm font-sans"
+              >
+                Generate New Code
+              </button>
+              {activeOrganization?.invite_code && (
+                <button 
+                  onClick={() => {
+                    navigator.clipboard.writeText(activeOrganization.invite_code);
+                    alert('Copied to clipboard!');
+                  }}
+                  className="text-blue-400 hover:text-blue-300 text-sm font-sans font-bold"
+                >
+                  Copy Code
+                </button>
+              )}
+            </div>
           </div>
         </div>
         

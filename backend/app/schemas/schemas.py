@@ -41,6 +41,7 @@ class OrganizationBase(BaseModel):
     name: str
     logo_url: Optional[str] = None
     website_url: Optional[str] = None
+    invite_code: Optional[str] = None
 
 class OrganizationCreate(OrganizationBase):
     pass

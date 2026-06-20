@@ -64,6 +64,7 @@ class Organization(Base):
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     logo_url = Column(String, nullable=True)
     website_url = Column(String, nullable=True)
+    invite_code = Column(String, unique=True, index=True, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     owner = relationship("User", back_populates="owned_organizations")
