@@ -67,12 +67,12 @@ const JobDetails = () => {
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      <Link to="/dashboard/candidate/jobs" style={{ color: '#888', textDecoration: 'none', marginBottom: '16px', display: 'inline-block' }}>&larr; Back to Jobs</Link>
+      <Link to="/dashboard/candidate/jobs" style={{ color: 'var(--text-secondary)', textDecoration: 'none', marginBottom: '16px', display: 'inline-block' }}>&larr; Back to Jobs</Link>
       
-      <div style={{ background: '#111315', padding: '32px', borderRadius: '12px', border: '1px solid #222' }}>
+      <div style={{ background: 'var(--bg-card)', padding: '32px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
           <div>
-            <h1 className="text-3xl font-bold" style={{ color: 'white', marginBottom: '8px' }}>
+            <h1 className="text-3xl font-bold" style={{ color: 'var(--text-primary)', marginBottom: '8px' }}>
               {job.title}
               {job.job_category && (
                 <span style={{ 
@@ -86,7 +86,7 @@ const JobDetails = () => {
               )}
               {isClosed && <span style={{ marginLeft: '12px', background: 'rgba(239, 68, 68, 0.2)', color: '#ef4444', padding: '4px 8px', borderRadius: '4px', fontSize: '0.9rem', fontWeight: 'bold', verticalAlign: 'middle' }}>Closed</span>}
             </h1>
-            <p style={{ color: '#888', fontSize: '1.1rem', marginBottom: '8px' }}>{job.department} • {job.location || 'Remote'}</p>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', marginBottom: '8px' }}>{job.department} • {job.location || 'Remote'}</p>
             {job.application_deadline && !isClosed && (
               <p style={{ color: '#eab308', fontSize: '0.9rem', background: 'rgba(234, 179, 8, 0.1)', display: 'inline-block', padding: '4px 8px', borderRadius: '4px' }}>
                 <strong>Deadline:</strong> {new Date(job.application_deadline).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}
@@ -101,28 +101,28 @@ const JobDetails = () => {
           <button 
             onClick={handleApply} 
             disabled={applying || isClosed}
-            style={{ padding: '12px 32px', background: (applying || isClosed) ? '#4b5563' : '#6366f1', color: 'white', border: 'none', borderRadius: '8px', cursor: (applying || isClosed) ? 'not-allowed' : 'pointer', fontWeight: 'bold', fontSize: '1.1rem' }}
+            style={{ padding: '12px 32px', background: (applying || isClosed) ? '#4b5563' : '#6366f1', color: 'var(--text-primary)', border: 'none', borderRadius: '8px', cursor: (applying || isClosed) ? 'not-allowed' : 'pointer', fontWeight: 'bold', fontSize: '1.1rem' }}
           >
             {isClosed ? 'Applications Closed' : applying ? 'Applying...' : 'Apply Now'}
           </button>
         </div>
 
         <div style={{ display: 'flex', gap: '16px', marginBottom: '32px', flexWrap: 'wrap' }}>
-          <div style={{ background: '#1a1d21', padding: '12px 16px', borderRadius: '8px' }}>
-            <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '4px' }}>Employment Type</p>
-            <p style={{ color: 'white', fontWeight: 'bold' }}>{job.employment_type}</p>
+          <div style={{ background: 'var(--bg-secondary)', padding: '12px 16px', borderRadius: '8px' }}>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginBottom: '4px' }}>Employment Type</p>
+            <p style={{ color: 'var(--text-primary)', fontWeight: 'bold' }}>{job.employment_type}</p>
           </div>
-          <div style={{ background: '#1a1d21', padding: '12px 16px', borderRadius: '8px' }}>
-            <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '4px' }}>Work Mode</p>
-            <p style={{ color: 'white', fontWeight: 'bold' }}>{job.work_mode}</p>
+          <div style={{ background: 'var(--bg-secondary)', padding: '12px 16px', borderRadius: '8px' }}>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginBottom: '4px' }}>Work Mode</p>
+            <p style={{ color: 'var(--text-primary)', fontWeight: 'bold' }}>{job.work_mode}</p>
           </div>
-          <div style={{ background: '#1a1d21', padding: '12px 16px', borderRadius: '8px' }}>
-            <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '4px' }}>Experience</p>
-            <p style={{ color: 'white', fontWeight: 'bold' }}>{job.experience_required || 'Not Specified'}</p>
+          <div style={{ background: 'var(--bg-secondary)', padding: '12px 16px', borderRadius: '8px' }}>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginBottom: '4px' }}>Experience</p>
+            <p style={{ color: 'var(--text-primary)', fontWeight: 'bold' }}>{job.experience_required || 'Not Specified'}</p>
           </div>
-          <div style={{ background: '#1a1d21', padding: '12px 16px', borderRadius: '8px' }}>
-            <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '4px' }}>Salary / Stipend</p>
-            <p style={{ color: 'white', fontWeight: 'bold' }}>
+          <div style={{ background: 'var(--bg-secondary)', padding: '12px 16px', borderRadius: '8px' }}>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginBottom: '4px' }}>Salary / Stipend</p>
+            <p style={{ color: 'var(--text-primary)', fontWeight: 'bold' }}>
               {job.salary_min && job.salary_max ? `${job.currency === 'INR' ? '₹' : '$'}${job.salary_min.toLocaleString()} - ${job.currency === 'INR' ? '₹' : '$'}${job.salary_max.toLocaleString()}` : 'Not Disclosed'}
             </p>
           </div>
@@ -134,7 +134,7 @@ const JobDetails = () => {
               href={job.jd_pdf_url} 
               target="_blank" 
               rel="noopener noreferrer"
-              style={{ display: 'inline-block', padding: '10px 20px', background: '#374151', color: 'white', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold', fontSize: '0.9rem' }}
+              style={{ display: 'inline-block', padding: '10px 20px', background: '#374151', color: 'var(--text-primary)', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold', fontSize: '0.9rem' }}
             >
               📄 View Job Description (PDF)
             </a>
@@ -142,7 +142,7 @@ const JobDetails = () => {
         )}
 
         <div>
-          <h2 style={{ color: 'white', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '16px', borderBottom: '1px solid #333', paddingBottom: '8px' }}>Job Description</h2>
+          <h2 style={{ color: 'var(--text-primary)', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '16px', borderBottom: '1px solid #333', paddingBottom: '8px' }}>Job Description</h2>
           <div 
             style={{ color: '#ccc', lineHeight: '1.6' }} 
             className="prose prose-invert max-w-none"
