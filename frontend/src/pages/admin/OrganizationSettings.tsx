@@ -111,12 +111,12 @@ export default function OrganizationSettings() {
         </div>
       </div>
 
-      <div className="glass-card p-10 mb-12 animate-slide-up" style={{ animationDelay: '0.1s' }}>
-        <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-8 border-b border-[var(--border-color)] pb-5">General Information</h2>
+      <div className="glass-card p-8 mb-10 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+        <h2 className="text-xl font-bold text-[var(--text-primary)] mb-6 border-b border-[var(--border-color)] pb-4">General Information</h2>
         
-        <div className="mb-10">
-          <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-3 tracking-wide uppercase">Invite Code <span className="text-[var(--text-muted)] font-normal normal-case">(Share this with your team to join)</span></label>
-          <div className="w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl p-5 flex items-center justify-between shadow-inner">
+        <div className="mb-8">
+          <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-2 tracking-wide uppercase">Invite Code <span className="text-[var(--text-muted)] font-normal normal-case">(Share this with your team to join)</span></label>
+          <div className="w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl p-4 flex items-center justify-between shadow-inner">
             <span className="tracking-widest font-mono font-bold text-lg text-[var(--accent-primary)]">{activeOrganization?.invite_code || "No code generated"}</span>
             <div className="flex gap-4">
               {isOrgOwner && (
@@ -142,7 +142,7 @@ export default function OrganizationSettings() {
           </div>
         </div>
         
-        <div className="mb-10 flex flex-col md:flex-row gap-10 md:items-start">
+        <div className="mb-8 flex flex-col md:flex-row gap-8 md:items-start">
           <div className="shrink-0">
             <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-2 tracking-wide uppercase">Organization Logo</label>
             <div 
@@ -172,24 +172,24 @@ export default function OrganizationSettings() {
             />
           </div>
           
-          <div className="flex-1 flex flex-col gap-6">
+          <div className="flex-1 space-y-6">
             <div>
-              <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-3 tracking-wide uppercase">Organization Name</label>
+              <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-2 tracking-wide uppercase">Organization Name</label>
               <input 
                 type="text" 
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full glass-input px-5 py-4 text-sm font-medium"
+                className="w-full glass-input px-4 py-3 text-sm font-medium"
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-3 tracking-wide uppercase">Website URL</label>
+              <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-2 tracking-wide uppercase">Website URL</label>
               <input 
                 type="url" 
                 value={websiteUrl}
                 onChange={(e) => setWebsiteUrl(e.target.value)}
                 placeholder="https://example.com"
-                className="w-full glass-input px-5 py-4 text-sm font-medium"
+                className="w-full glass-input px-4 py-3 text-sm font-medium"
               />
             </div>
           </div>
@@ -212,35 +212,33 @@ export default function OrganizationSettings() {
 
       {/* Danger Zone - Only visible to owners */}
       {isOrgOwner && (
-        <div className="bg-red-500/5 border border-red-500/20 rounded-2xl p-10 animate-slide-up mt-8" style={{ animationDelay: '0.2s' }}>
-          <div className="flex items-center gap-4 mb-4 text-red-500">
-            <div className="p-3 bg-red-500/10 rounded-xl shadow-sm border border-red-500/20">
-              <AlertTriangle size={28} />
-            </div>
-            <h2 className="text-2xl font-bold">Danger Zone</h2>
+        <div className="bg-red-500/5 border border-red-500/20 rounded-2xl p-8 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+          <div className="flex items-center gap-3 mb-2 text-red-500">
+            <AlertTriangle size={24} />
+            <h2 className="text-xl font-bold">Danger Zone</h2>
           </div>
-          <p className="text-sm font-medium text-red-500/80 mb-8 leading-relaxed">
+          <p className="text-sm font-medium text-red-500/80 mb-8">
             Deleting this organization will permanently remove all associated jobs, applications, recruiters, and career pages. This action cannot be undone.
           </p>
 
-          <div className="bg-[var(--bg-secondary)]/50 p-8 rounded-xl border border-red-500/10 shadow-inner">
-            <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-4">
-              To verify, type <span className="font-bold text-[var(--text-primary)] px-2 py-1 bg-[var(--bg-surface)] rounded border border-[var(--border-color)]">{activeOrganization?.name}</span> below:
+          <div className="bg-[var(--bg-secondary)] p-6 rounded-xl border border-red-500/10 shadow-inner">
+            <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-3">
+              To verify, type <span className="font-bold text-[var(--text-primary)] px-2 py-0.5 bg-[var(--bg-surface)] rounded border border-[var(--border-color)]">{activeOrganization?.name}</span> below:
             </label>
             <input 
               type="text" 
               value={deleteConfirmName}
               onChange={(e) => setDeleteConfirmName(e.target.value)}
-              className="w-full glass-input px-5 py-4 mb-6 focus:ring-red-500/50 focus:border-red-500/50"
+              className="w-full glass-input px-4 py-3 mb-5 focus:ring-red-500/50 focus:border-red-500/50"
               placeholder="Enter organization name"
             />
             
             <button 
               onClick={handleDelete}
               disabled={deleting || deleteConfirmName !== activeOrganization?.name}
-              className="flex items-center justify-center gap-3 w-full sm:w-auto bg-red-600 hover:bg-red-700 disabled:bg-red-900/50 disabled:text-red-400/50 disabled:cursor-not-allowed text-white px-8 py-4 rounded-lg font-bold transition-all shadow-sm shadow-red-600/20 transform hover:-translate-y-0.5"
+              className="flex items-center justify-center gap-2 w-full sm:w-auto bg-red-600 hover:bg-red-700 disabled:bg-red-900/50 disabled:text-red-400/50 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-bold transition-all shadow-sm shadow-red-600/20 transform hover:-translate-y-0.5"
             >
-              <Trash2 size={20} />
+              <Trash2 size={18} />
               {deleting ? 'Deleting Organization...' : 'Delete Organization'}
             </button>
           </div>
