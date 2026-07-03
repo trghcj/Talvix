@@ -1,9 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Briefcase, MapPin, Building, ChevronRight } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://talvix-api.onrender.com';
+
+export interface PublicJob {
+  id: string | number;
+  title: string;
+  department?: string;
+  location?: string;
+  work_mode?: string;
+  employment_type?: string;
+  salary_min?: number;
+  salary_max?: number;
+  currency?: string;
+}
 
 interface PublicCareerPageData {
   career_page: {
@@ -14,7 +26,7 @@ interface PublicCareerPageData {
     primary_color: string;
   };
   organization_name: string;
-  jobs: any[];
+  jobs: PublicJob[];
 }
 
 export default function CareerPage() {
@@ -40,7 +52,7 @@ export default function CareerPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[var(--bg-main)]">
+      <div className="min-h-screen flex items-center justify-center bg-(--bg-main)">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
       </div>
     );
@@ -48,9 +60,9 @@ export default function CareerPage() {
 
   if (error || !data) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[var(--bg-main)]">
-        <h1 className="text-3xl font-bold text-[var(--text-primary)] mb-4">Page Not Found</h1>
-        <p className="text-[var(--text-secondary)]">The career page you are looking for does not exist.</p>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-(--bg-main)">
+        <h1 className="text-3xl font-bold text-(--text-primary) mb-4">Page Not Found</h1>
+        <p className="text-(--text-secondary)">The career page you are looking for does not exist.</p>
         <Link to="/" className="mt-6 text-blue-500 hover:underline">Return Home</Link>
       </div>
     );
@@ -59,7 +71,7 @@ export default function CareerPage() {
   const { career_page, organization_name, jobs } = data;
 
   return (
-    <div className="min-h-screen bg-[var(--bg-main)] flex flex-col font-sans">
+    <div className="min-h-screen bg-(--bg-main) flex flex-col font-sans">
       {/* Header Area */}
       <div 
         className="relative h-64 flex items-center justify-center text-center px-4"
@@ -84,10 +96,10 @@ export default function CareerPage() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-grow max-w-5xl w-full mx-auto px-4 py-12 -mt-16 relative z-20">
+      <div className="grow max-w-5xl w-full mx-auto px-4 py-12 -mt-16 relative z-20">
         
         {/* Company Info Card */}
-        <div className="bg-[var(--bg-card)] rounded-2xl shadow-xl border border-[var(--border-color)] p-8 mb-12">
+        <div className="bg-(--bg-card) rounded-2xl shadow-xl border border-(--border-color) p-8 mb-12">
           <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
             {career_page.logo_url && (
               career_page.website_url ? (
@@ -109,8 +121,8 @@ export default function CareerPage() {
               )
             )}
             <div>
-              <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-3">About Us</h2>
-              <p className="text-[var(--text-secondary)] whitespace-pre-wrap leading-relaxed">
+              <h2 className="text-2xl font-bold text-(--text-primary) mb-3">About Us</h2>
+              <p className="text-(--text-secondary) whitespace-pre-wrap leading-relaxed">
                 {career_page.description || 'Welcome to our career page! Check out our open positions below.'}
               </p>
             </div>
@@ -119,22 +131,22 @@ export default function CareerPage() {
 
         {/* Jobs List */}
         <div>
-          <h2 className="text-3xl font-bold text-[var(--text-primary)] mb-8 flex items-center gap-3">
+          <h2 className="text-3xl font-bold text-(--text-primary) mb-8 flex items-center gap-3">
             <Briefcase className="w-8 h-8" style={{ color: career_page.primary_color }} />
             Open Positions
           </h2>
 
           {jobs.length === 0 ? (
-            <div className="text-center py-16 bg-[var(--bg-card)] rounded-xl border border-[var(--border-color)]">
-              <p className="text-[var(--text-secondary)] text-lg">We don't have any open positions at the moment.</p>
-              <p className="text-[var(--text-secondary)] mt-2">Please check back later!</p>
+            <div className="text-center py-16 bg-(--bg-card) rounded-xl border border-(--border-color)">
+              <p className="text-(--text-secondary) text-lg">We don't have any open positions at the moment.</p>
+              <p className="text-(--text-secondary) mt-2">Please check back later!</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-6">
               {jobs.map((job) => (
                 <div 
                   key={job.id} 
-                  className="group bg-[var(--bg-card)] border border-[var(--border-color)] rounded-xl p-6 hover:shadow-lg transition-all duration-300 hover:border-transparent relative overflow-hidden"
+                  className="group bg-(--bg-card) border border-(--border-color) rounded-xl p-6 hover:shadow-lg transition-all duration-300 hover:border-transparent relative overflow-hidden"
                 >
                   <div 
                     className="absolute top-0 left-0 w-1 h-full transition-all duration-300 opacity-0 group-hover:opacity-100"
@@ -143,11 +155,11 @@ export default function CareerPage() {
                   
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                      <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2 group-hover:text-blue-500 transition-colors">
+                      <h3 className="text-xl font-bold text-(--text-primary) mb-2 group-hover:text-blue-500 transition-colors">
                         {job.title}
                       </h3>
                       
-                      <div className="flex flex-wrap items-center gap-4 text-sm text-[var(--text-secondary)]">
+                      <div className="flex flex-wrap items-center gap-4 text-sm text-(--text-secondary)">
                         {job.department && (
                           <span className="flex items-center gap-1">
                             <Building className="w-4 h-4" />
@@ -195,7 +207,7 @@ export default function CareerPage() {
       </div>
 
       {/* Footer */}
-      <footer className="mt-auto py-8 text-center text-[var(--text-secondary)] border-t border-[var(--border-color)] bg-[var(--bg-card)]">
+      <footer className="mt-auto py-8 text-center text-(--text-secondary) border-t border-(--border-color) bg-(--bg-card)">
         <p className="text-sm">Powered by <span className="font-bold">Talvix</span></p>
       </footer>
     </div>
