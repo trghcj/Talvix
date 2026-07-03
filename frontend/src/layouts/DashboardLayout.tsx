@@ -74,22 +74,31 @@ export const DashboardLayout = () => {
             <div className="theme-switcher relative" ref={themeRef}>
               <button 
                 onClick={() => setIsThemeOpen(!isThemeOpen)} 
-                className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] transition-colors shadow-sm"
+                className="flex items-center gap-3 px-4 py-2.5 rounded-xl border border-(--border-color) bg-(--bg-surface) text-(--text-primary) hover:bg-(--bg-secondary) transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-(--accent-primary) focus:border-transparent"
               >
-                {theme === 'light' ? <Sun size={16} /> : theme === 'dark' ? <Moon size={16} /> : <Monitor size={16} />}
-                <span className="text-sm capitalize font-medium">{theme}</span>
-                <ChevronDown size={14} className="text-[var(--text-muted)]" />
+                {theme === 'light' ? <Sun size={18} className="text-amber-500" /> : theme === 'dark' ? <Moon size={18} className="text-indigo-400" /> : <Monitor size={18} className="text-(--text-muted)" />}
+                <span className="text-sm capitalize font-bold">{theme}</span>
+                <ChevronDown size={16} className={`text-(--text-muted) transition-transform duration-200 ${isThemeOpen ? 'rotate-180' : ''}`} />
               </button>
               {isThemeOpen && (
-                <div className="absolute top-full right-0 mt-2 min-w-[140px] glass-panel z-50 p-2 animate-slide-up origin-top-right shadow-xl">
-                  <button onClick={() => { setTheme('light'); setIsThemeOpen(false); }} className="flex items-center gap-3 w-full px-3 py-2 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] rounded-md transition-colors">
-                    <Sun size={14} className="text-[var(--text-muted)]" /> Light
+                <div className="absolute top-full right-0 mt-3 min-w-48 glass-panel z-50 p-2 animate-slide-up origin-top-right shadow-2xl border border-(--border-glass) rounded-xl">
+                  <button 
+                    onClick={() => { setTheme('light'); setIsThemeOpen(false); }} 
+                    className={`flex items-center gap-3 w-full px-4 py-3 text-sm font-semibold rounded-lg transition-colors ${theme === 'light' ? 'bg-(--accent-primary)/10 text-(--accent-primary)' : 'text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--bg-secondary)'}`}
+                  >
+                    <Sun size={18} className={theme === 'light' ? 'text-amber-500' : 'text-(--text-muted)'} /> Light
                   </button>
-                  <button onClick={() => { setTheme('dark'); setIsThemeOpen(false); }} className="flex items-center gap-3 w-full px-3 py-2 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] rounded-md transition-colors">
-                    <Moon size={14} className="text-[var(--text-muted)]" /> Dark
+                  <button 
+                    onClick={() => { setTheme('dark'); setIsThemeOpen(false); }} 
+                    className={`flex items-center gap-3 w-full px-4 py-3 text-sm font-semibold rounded-lg transition-colors ${theme === 'dark' ? 'bg-(--accent-primary)/10 text-(--accent-primary)' : 'text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--bg-secondary)'}`}
+                  >
+                    <Moon size={18} className={theme === 'dark' ? 'text-indigo-400' : 'text-(--text-muted)'} /> Dark
                   </button>
-                  <button onClick={() => { setTheme('system'); setIsThemeOpen(false); }} className="flex items-center gap-3 w-full px-3 py-2 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] rounded-md transition-colors">
-                    <Monitor size={14} className="text-[var(--text-muted)]" /> System
+                  <button 
+                    onClick={() => { setTheme('system'); setIsThemeOpen(false); }} 
+                    className={`flex items-center gap-3 w-full px-4 py-3 text-sm font-semibold rounded-lg transition-colors ${theme === 'system' ? 'bg-(--accent-primary)/10 text-(--accent-primary)' : 'text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--bg-secondary)'}`}
+                  >
+                    <Monitor size={18} className={theme === 'system' ? 'text-(--accent-primary)' : 'text-(--text-muted)'} /> System
                   </button>
                 </div>
               )}
