@@ -70,36 +70,38 @@
   --shadow-md: 0 8px 24px rgba(149, 157, 165, 0.15);
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
 
-body {
-  font-family: var(--font-family);
-  background-color: var(--bg-base);
-  color: var(--text-primary);
-  min-height: 100vh;
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+  body {
+    font-family: var(--font-family);
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    min-height: 100vh;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
-a {
-  color: var(--accent-primary);
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
+  a {
+    color: var(--accent-primary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
 
-a:hover {
-  color: var(--accent-hover);
-}
+  a:hover {
+    color: var(--accent-hover);
+  }
 
-/* Typography Enhancements */
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Outfit', sans-serif;
-  letter-spacing: -0.02em;
+  /* Typography Enhancements */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: -0.02em;
+  }
 }
 
 /* Glassmorphism Utilities */
