@@ -43,63 +43,58 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {loading ? (
-        <div className="flex items-center justify-center h-64">
-           <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-[var(--accent-primary)] border-t-transparent shadow-lg"></div>
-        </div>
-      ) : (
-        <div className="animate-fade-in">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {/* Top Metrics Cards */}
-            <div className="glass-card p-8 flex items-center gap-6 hover:border-blue-500/50 group">
+      {metrics && (
+        <div className="animate-slide-up" style={{ animationDelay: '0.1s' }}>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="glass-card p-6 flex items-center gap-5 hover:border-blue-500/50 group">
               <div className="bg-blue-500/10 p-4 rounded-xl text-blue-500 group-hover:scale-110 group-hover:bg-blue-500 group-hover:text-white transition-all duration-300 shadow-sm">
                 <Briefcase size={28} />
               </div>
               <div>
                 <p className="text-sm font-semibold text-[var(--text-secondary)] uppercase tracking-wide">Total Jobs</p>
-                <h3 className="text-4xl font-extrabold text-[var(--text-primary)] mt-2">{metrics.total_jobs}</h3>
+                <h3 className="text-3xl font-extrabold text-[var(--text-primary)] mt-1">{metrics.total_jobs}</h3>
               </div>
             </div>
 
-            <div className="glass-card p-8 flex items-center gap-6 hover:border-purple-500/50 group">
+            <div className="glass-card p-6 flex items-center gap-5 hover:border-purple-500/50 group">
               <div className="bg-purple-500/10 p-4 rounded-xl text-purple-500 group-hover:scale-110 group-hover:bg-purple-500 group-hover:text-white transition-all duration-300 shadow-sm">
                 <FileText size={28} />
               </div>
               <div>
-                <p className="text-sm font-semibold text-[var(--text-secondary)] uppercase tracking-wide">Total Apps</p>
-                <h3 className="text-4xl font-extrabold text-[var(--text-primary)] mt-2">{metrics.total_applications}</h3>
+                <p className="text-sm font-semibold text-[var(--text-secondary)] uppercase tracking-wide">Total Applications</p>
+                <h3 className="text-3xl font-extrabold text-[var(--text-primary)] mt-1">{metrics.total_applications}</h3>
               </div>
             </div>
 
-            <div className="glass-card p-8 flex items-center gap-6 hover:border-emerald-500/50 group">
+            <div className="glass-card p-6 flex items-center gap-5 hover:border-emerald-500/50 group">
               <div className="bg-emerald-500/10 p-4 rounded-xl text-emerald-500 group-hover:scale-110 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-300 shadow-sm">
                 <CheckCircle size={28} />
               </div>
               <div>
-                <p className="text-sm font-semibold text-[var(--text-secondary)] uppercase tracking-wide">Hired</p>
-                <h3 className="text-4xl font-extrabold text-[var(--text-primary)] mt-2">{metrics.hired_candidates}</h3>
+                <p className="text-sm font-semibold text-[var(--text-secondary)] uppercase tracking-wide">Hired Candidates</p>
+                <h3 className="text-3xl font-extrabold text-[var(--text-primary)] mt-1">{metrics.hired_candidates}</h3>
               </div>
             </div>
 
-            <div className="glass-card p-8 flex items-center gap-6 hover:border-orange-500/50 group">
+            <div className="glass-card p-6 flex items-center gap-5 hover:border-orange-500/50 group">
               <div className="bg-orange-500/10 p-4 rounded-xl text-orange-500 group-hover:scale-110 group-hover:bg-orange-500 group-hover:text-white transition-all duration-300 shadow-sm">
                 <Users size={28} />
               </div>
               <div>
-                <p className="text-sm font-semibold text-[var(--text-secondary)] uppercase tracking-wide">Recruiters</p>
-                <h3 className="text-4xl font-extrabold text-[var(--text-primary)] mt-2">{metrics.active_recruiters}</h3>
+                <p className="text-sm font-semibold text-[var(--text-secondary)] uppercase tracking-wide">Active Recruiters</p>
+                <h3 className="text-3xl font-extrabold text-[var(--text-primary)] mt-1">{metrics.active_recruiters}</h3>
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-10">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
             {/* Pipeline Distribution */}
-            <div className="glass-card p-8 lg:col-span-1 flex flex-col">
-              <div className="flex items-center gap-4 mb-8">
-                <div className="p-2.5 bg-blue-500/10 rounded-xl text-blue-500 shadow-sm border border-blue-500/20">
-                  <Activity size={24} />
+            <div className="glass-card p-6 lg:col-span-1 flex flex-col">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-blue-500/10 rounded-lg text-blue-500">
+                  <Activity size={20} />
                 </div>
-                <h2 className="text-xl font-bold text-[var(--text-primary)]">Pipeline Overview</h2>
+                <h2 className="text-lg font-bold text-[var(--text-primary)]">Pipeline Overview</h2>
               </div>
               
               {metrics.stage_distribution && Object.keys(metrics.stage_distribution).length > 0 ? (
