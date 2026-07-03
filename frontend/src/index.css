@@ -1,26 +1,7 @@
-@import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap');
-
-@theme {
-  --color-bg-base: var(--bg-base);
-  --color-bg-surface: var(--bg-surface);
-  --color-bg-main: var(--bg-main);
-  --color-bg-card: var(--bg-card);
-  --color-bg-secondary: var(--bg-secondary);
-  --color-bg-glass: var(--bg-glass);
-  
-  --color-border-color: var(--border-color);
-  --color-border-color-light: var(--border-color-light);
-  --color-border-glass: var(--border-glass);
-  
-  --color-text-primary: var(--text-primary);
-  --color-text-secondary: var(--text-secondary);
-  --color-text-muted: var(--text-muted);
-  
-  --color-accent-primary: var(--accent-primary);
-  --color-accent-hover: var(--accent-hover);
-  --color-accent-glow: var(--accent-glow);
-}
+@import "tailwindcss";
+@source "../src";
+@source "./";
 
 :root, [data-theme='dark'] {
   /* Dark Mode Color Palette - Premium Sleek Dark */
