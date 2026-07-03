@@ -71,25 +71,25 @@ export const DashboardLayout = () => {
           <div className="header-actions">
             
             {/* Theme Toggle */}
-            <div className="theme-switcher" ref={themeRef} style={{ position: 'relative' }}>
+            <div className="theme-switcher relative" ref={themeRef}>
               <button 
                 onClick={() => setIsThemeOpen(!isThemeOpen)} 
-                style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'transparent', border: '1px solid var(--border-color, #333)', color: 'var(--text-primary, white)', padding: '6px 12px', borderRadius: '20px', cursor: 'pointer' }}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] transition-colors shadow-sm"
               >
                 {theme === 'light' ? <Sun size={16} /> : theme === 'dark' ? <Moon size={16} /> : <Monitor size={16} />}
-                <span style={{ fontSize: '14px', textTransform: 'capitalize' }}>{theme}</span>
-                <ChevronDown size={14} />
+                <span className="text-sm capitalize font-medium">{theme}</span>
+                <ChevronDown size={14} className="text-[var(--text-muted)]" />
               </button>
               {isThemeOpen && (
-                <div style={{ position: 'absolute', top: '100%', right: '0', marginTop: '8px', background: 'var(--bg-card, #1a1d21)', border: '1px solid var(--border-color, #333)', borderRadius: '8px', overflow: 'hidden', zIndex: 50, minWidth: '120px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)' }}>
-                  <button onClick={() => { setTheme('light'); setIsThemeOpen(false); }} className="theme-option-btn" style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%', padding: '10px 16px', background: 'transparent', border: 'none', color: 'var(--text-primary, white)', cursor: 'pointer', textAlign: 'left' }}>
-                    <Sun size={14} /> Light
+                <div className="absolute top-full right-0 mt-2 min-w-[140px] glass-panel z-50 p-2 animate-slide-up origin-top-right shadow-xl">
+                  <button onClick={() => { setTheme('light'); setIsThemeOpen(false); }} className="flex items-center gap-3 w-full px-3 py-2 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] rounded-md transition-colors">
+                    <Sun size={14} className="text-[var(--text-muted)]" /> Light
                   </button>
-                  <button onClick={() => { setTheme('dark'); setIsThemeOpen(false); }} className="theme-option-btn" style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%', padding: '10px 16px', background: 'transparent', border: 'none', color: 'var(--text-primary, white)', cursor: 'pointer', textAlign: 'left' }}>
-                    <Moon size={14} /> Dark
+                  <button onClick={() => { setTheme('dark'); setIsThemeOpen(false); }} className="flex items-center gap-3 w-full px-3 py-2 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] rounded-md transition-colors">
+                    <Moon size={14} className="text-[var(--text-muted)]" /> Dark
                   </button>
-                  <button onClick={() => { setTheme('system'); setIsThemeOpen(false); }} className="theme-option-btn" style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%', padding: '10px 16px', background: 'transparent', border: 'none', color: 'var(--text-primary, white)', cursor: 'pointer', textAlign: 'left' }}>
-                    <Monitor size={14} /> System
+                  <button onClick={() => { setTheme('system'); setIsThemeOpen(false); }} className="flex items-center gap-3 w-full px-3 py-2 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] rounded-md transition-colors">
+                    <Monitor size={14} className="text-[var(--text-muted)]" /> System
                   </button>
                 </div>
               )}

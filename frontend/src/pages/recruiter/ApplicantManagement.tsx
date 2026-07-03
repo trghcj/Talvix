@@ -239,74 +239,74 @@ const ApplicantManagement = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0f19] flex flex-col font-sans transition-colors duration-200">
+    <div className="min-h-screen bg-[var(--bg-base)] flex flex-col font-sans transition-colors duration-200">
       {/* Header Section */}
-      <div className="bg-white dark:bg-[#111827] border-b border-slate-200 dark:border-slate-800 px-8 py-6">
+      <div className="bg-[var(--bg-surface)] border-b border-[var(--border-color)] px-8 py-6 shadow-sm relative z-10">
         <div className="max-w-[1600px] mx-auto">
           {jobId && (
-            <Link to="/dashboard/jobs" className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 font-medium mb-4 inline-flex items-center">
+            <Link to="/dashboard/jobs" className="text-sm text-[var(--accent-primary)] hover:text-[var(--accent-hover)] font-medium mb-4 inline-flex items-center transition-colors">
               &larr; Back to Jobs
             </Link>
           )}
           
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Application Management</h1>
-              <div className="flex items-center mt-2 text-slate-600 dark:text-slate-400 text-sm font-medium">
+            <div className="animate-fade-in">
+              <h1 className="text-3xl font-bold text-[var(--text-primary)] tracking-tight">Application Management</h1>
+              <div className="flex items-center mt-2 text-[var(--text-secondary)] text-sm font-medium">
                 <Briefcase className="w-4 h-4 mr-2" />
-                <span className="text-slate-900 dark:text-white mr-4">{jobTitle}</span>
+                <span className="text-[var(--text-primary)] mr-4">{jobTitle}</span>
                 <span className="flex items-center"><Users className="w-4 h-4 mr-1"/> {metrics.total} Applicants</span>
-                <span className="mx-2">•</span>
-                <span className="flex items-center text-blue-600 dark:text-blue-400"><UserCheck className="w-4 h-4 mr-1"/> {metrics.active} Active</span>
-                <span className="mx-2">•</span>
-                <span className="flex items-center text-yellow-600 dark:text-yellow-400"><Calendar className="w-4 h-4 mr-1"/> {metrics.interviews} Interviews</span>
-                <span className="mx-2">•</span>
-                <span className="flex items-center text-emerald-600 dark:text-emerald-400"><Award className="w-4 h-4 mr-1"/> {metrics.offers} Offers</span>
+                <span className="mx-2 text-[var(--border-color)]">•</span>
+                <span className="flex items-center text-blue-500"><UserCheck className="w-4 h-4 mr-1"/> {metrics.active} Active</span>
+                <span className="mx-2 text-[var(--border-color)]">•</span>
+                <span className="flex items-center text-yellow-500"><Calendar className="w-4 h-4 mr-1"/> {metrics.interviews} Interviews</span>
+                <span className="mx-2 text-[var(--border-color)]">•</span>
+                <span className="flex items-center text-emerald-500"><Award className="w-4 h-4 mr-1"/> {metrics.offers} Offers</span>
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 animate-fade-in" style={{ animationDelay: '0.1s' }}>
               <div className="relative">
-                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
                 <input 
                   type="text" 
                   placeholder="Search candidates..." 
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
-                  className="pl-9 pr-4 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none w-64 shadow-sm"
+                  className="pl-9 pr-4 py-2.5 glass-input w-64 text-sm font-medium shadow-sm"
                 />
               </div>
               <div className="relative">
                 <button 
                   onClick={() => setShowFilterMenu(!showFilterMenu)}
-                  className={`p-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 shadow-sm transition-colors ${showFilterMenu ? 'ring-2 ring-blue-500' : ''}`}
+                  className={`p-2.5 border border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-secondary)] rounded-lg hover:bg-[var(--bg-secondary)] shadow-sm transition-all ${showFilterMenu ? 'ring-2 ring-[var(--accent-primary)] border-transparent' : ''}`}
                 >
                   <Filter className="w-4 h-4" />
                 </button>
                 {showFilterMenu && (
-                  <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 z-50 p-4">
-                    <h4 className="text-sm font-semibold mb-3 dark:text-white">Filter Candidates</h4>
-                    <div className="mb-3">
-                      <label className="text-xs font-medium text-slate-500 mb-1 block">Status</label>
-                      <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="w-full text-sm rounded-lg border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 dark:text-white p-2 outline-none">
+                  <div className="absolute right-0 mt-3 w-64 glass-panel z-50 p-5 animate-slide-up origin-top-right">
+                    <h4 className="text-sm font-semibold mb-4 text-[var(--text-primary)]">Filter Candidates</h4>
+                    <div className="mb-4">
+                      <label className="text-xs font-medium text-[var(--text-secondary)] mb-1.5 block">Status</label>
+                      <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="w-full text-sm rounded-lg glass-input p-2.5 outline-none cursor-pointer">
                         <option value="">All Statuses</option>
                         {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
                       </select>
                     </div>
-                    <div className="mb-3">
-                      <label className="text-xs font-medium text-slate-500 mb-1 block">Min Match Score: {filterMinScore}%</label>
-                      <input type="range" min="0" max="100" step="10" value={filterMinScore} onChange={e => setFilterMinScore(parseInt(e.target.value))} className="w-full" />
+                    <div className="mb-4">
+                      <label className="text-xs font-medium text-[var(--text-secondary)] mb-1.5 block">Min Match Score: <span className="text-[var(--accent-primary)] font-bold">{filterMinScore}%</span></label>
+                      <input type="range" min="0" max="100" step="10" value={filterMinScore} onChange={e => setFilterMinScore(parseInt(e.target.value))} className="w-full accent-[var(--accent-primary)]" />
                     </div>
-                    <div className="flex justify-between mt-4 items-center">
-                      <button onClick={() => { setFilterStatus(''); setFilterMinScore(0); setShowFilterMenu(false); }} className="text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 hover:underline">Clear Filters</button>
-                      <button onClick={() => setShowFilterMenu(false)} className="text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg font-medium hover:bg-blue-700 transition-colors">Apply Filters</button>
+                    <div className="flex justify-between mt-6 items-center border-t border-[var(--border-color)] pt-4">
+                      <button onClick={() => { setFilterStatus(''); setFilterMinScore(0); setShowFilterMenu(false); }} className="text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors font-medium">Clear All</button>
+                      <button onClick={() => setShowFilterMenu(false)} className="text-xs bg-[var(--accent-primary)] text-white px-4 py-2 rounded-lg font-semibold hover:bg-[var(--accent-hover)] transition-all shadow-sm shadow-[var(--accent-glow)]">Apply</button>
                     </div>
                   </div>
                 )}
               </div>
               <button 
                 onClick={exportToCSV}
-                className="inline-flex items-center px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-medium shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                className="inline-flex items-center px-4 py-2.5 bg-[var(--bg-surface)] border border-[var(--border-color)] text-[var(--text-primary)] rounded-lg text-sm font-semibold shadow-sm hover:bg-[var(--bg-secondary)] transition-all"
               >
                 <Download className="w-4 h-4 mr-2" />
                 Export CSV
@@ -317,32 +317,37 @@ const ApplicantManagement = () => {
       </div>
 
       {/* Metrics Overview Cards */}
-      <div className="px-8 pt-6">
-        <div className="max-w-[1600px] mx-auto grid grid-cols-2 md:grid-cols-5 gap-4">
+      <div className="px-8 pt-8 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+        <div className="max-w-[1600px] mx-auto grid grid-cols-2 md:grid-cols-5 gap-5">
           {[
-            { label: 'Total Applications', value: metrics.total, color: 'blue' },
-            { label: 'Screening', value: metrics.screening, color: 'purple' },
-            { label: 'Interviews', value: metrics.interviews, color: 'yellow' },
-            { label: 'Offers', value: metrics.offers, color: 'emerald' },
-            { label: 'Hired', value: metrics.hired, color: 'teal' },
+            { label: 'Total Applications', value: metrics.total, color: 'blue', icon: <Users size={20}/>, bgClass: 'bg-blue-500/10 text-blue-500' },
+            { label: 'Screening', value: metrics.screening, color: 'purple', icon: <FileText size={20}/>, bgClass: 'bg-purple-500/10 text-purple-500' },
+            { label: 'Interviews', value: metrics.interviews, color: 'yellow', icon: <Calendar size={20}/>, bgClass: 'bg-yellow-500/10 text-yellow-500' },
+            { label: 'Offers', value: metrics.offers, color: 'emerald', icon: <Award size={20}/>, bgClass: 'bg-emerald-500/10 text-emerald-500' },
+            { label: 'Hired', value: metrics.hired, color: 'teal', icon: <CheckCircle size={20}/>, bgClass: 'bg-teal-500/10 text-teal-500' },
           ].map((metric, i) => (
-            <div key={i} className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 rounded-xl p-4 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
-              <span className="text-sm font-medium text-slate-500 dark:text-slate-400">{metric.label}</span>
-              <span className={`text-2xl font-bold mt-2 text-${metric.color}-600 dark:text-${metric.color}-400`}>{metric.value}</span>
+            <div key={i} className="glass-card p-5 flex flex-col justify-between hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+              <div className="flex items-center gap-3">
+                <div className={`p-2.5 rounded-xl ${metric.bgClass}`}>
+                  {metric.icon}
+                </div>
+                <span className="text-sm font-semibold text-[var(--text-secondary)] tracking-wide uppercase">{metric.label}</span>
+              </div>
+              <span className={`text-3xl font-extrabold mt-4 ${metric.bgClass.split(' ')[1]}`}>{metric.value}</span>
             </div>
           ))}
         </div>
       </div>
 
       {/* Pipeline Board */}
-      <div className="flex-1 overflow-x-auto px-8 py-6 pb-12 custom-scrollbar">
+      <div className="flex-1 overflow-x-auto px-8 py-8 pb-12 custom-scrollbar animate-slide-up" style={{ animationDelay: '0.3s' }}>
         {loading ? (
           <div className="flex items-center justify-center h-full">
-             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+             <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-[var(--accent-primary)] border-t-transparent shadow-lg"></div>
           </div>
         ) : (
           <DragDropContext onDragEnd={onDragEnd}>
-            <div className="flex gap-4 h-full items-start">
+            <div className="flex gap-6 h-full items-start">
               {STATUSES.map(status => {
                 const config = STATUS_CONFIG[status];
                 const columnApplicants = filteredApplicants.filter(a => a.status === status);
@@ -350,12 +355,12 @@ const ApplicantManagement = () => {
                 return (
                   <div 
                     key={status} 
-                    className="flex flex-col bg-slate-100/50 dark:bg-[#161b22] border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden w-80 shrink-0 max-h-[calc(100vh-280px)]"
+                    className="flex flex-col glass-card overflow-hidden w-80 shrink-0 max-h-[calc(100vh-280px)] border-[var(--border-color)] bg-gradient-to-b from-[var(--bg-card)] to-transparent"
                   >
                     {/* Header */}
-                    <div className={`border-t-4 ${config.border} bg-white dark:bg-[#111827] border-b border-slate-200 dark:border-slate-800 p-4 flex justify-between items-center sticky top-0 z-10`}>
-                      <h3 className={`font-semibold text-sm ${config.color}`}>{status}</h3>
-                      <span className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs font-bold px-2 py-1 rounded-full">
+                    <div className={`border-t-4 ${config.border} bg-[var(--bg-surface)] border-b border-[var(--border-color)] p-4 flex justify-between items-center sticky top-0 z-10 shadow-sm`}>
+                      <h3 className={`font-bold text-sm tracking-wide ${config.color}`}>{status}</h3>
+                      <span className="bg-[var(--bg-secondary)] text-[var(--text-secondary)] text-xs font-bold px-2.5 py-1 rounded-full border border-[var(--border-glass)]">
                         {columnApplicants.length}
                       </span>
                     </div>
@@ -366,12 +371,12 @@ const ApplicantManagement = () => {
                         <div 
                           ref={provided.innerRef}
                           {...provided.droppableProps}
-                          className={`flex-1 p-3 overflow-y-auto custom-scrollbar min-h-[150px] transition-colors ${snapshot.isDraggingOver ? 'bg-slate-200/50 dark:bg-slate-800/50' : ''}`}
+                          className={`flex-1 p-3 overflow-y-auto custom-scrollbar min-h-[150px] transition-colors duration-300 ${snapshot.isDraggingOver ? 'bg-[var(--accent-primary)]/5 backdrop-blur-md' : ''}`}
                         >
                           {columnApplicants.length === 0 && !snapshot.isDraggingOver && (
-                            <div className="h-32 flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-lg mx-2 my-2 opacity-50">
-                              <Inbox className="w-8 h-8 mb-2" />
-                              <span className="text-sm font-medium">No candidates</span>
+                            <div className="h-32 flex flex-col items-center justify-center text-[var(--text-muted)] border-2 border-dashed border-[var(--border-color)] rounded-xl mx-2 my-2 bg-[var(--bg-surface)]/30 backdrop-blur-sm">
+                              <Inbox className="w-8 h-8 mb-2 opacity-50" />
+                              <span className="text-sm font-semibold tracking-wide">No candidates</span>
                             </div>
                           )}
 
@@ -383,22 +388,22 @@ const ApplicantManagement = () => {
                                   {...provided.draggableProps}
                                   {...provided.dragHandleProps}
                                   onClick={() => setSelectedApplicant(app)}
-                                  className={`group relative bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-700 rounded-xl p-4 mb-3 cursor-grab hover:border-blue-300 dark:hover:border-blue-600 shadow-sm hover:shadow-md transition-all duration-200 ${snapshot.isDragging ? 'shadow-xl rotate-2 z-50 ring-2 ring-blue-500' : ''}`}
+                                  className={`group relative glass-card p-4 mb-3 cursor-grab hover:border-[var(--accent-primary)] shadow-sm hover:shadow-md transition-all duration-300 ${snapshot.isDragging ? 'shadow-xl rotate-2 z-50 ring-2 ring-[var(--accent-primary)] ring-offset-2 ring-offset-[var(--bg-base)]' : ''}`}
                                   style={{
                                     ...provided.draggableProps.style,
                                   }}
                                 >
                                   {/* Quick Actions Hover */}
-                                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex bg-white dark:bg-[#111827] shadow-sm rounded-md border border-slate-200 dark:border-slate-700 overflow-hidden z-10">
+                                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex bg-[var(--bg-surface)] shadow-md rounded-lg border border-[var(--border-color)] overflow-hidden z-10">
                                     <button 
-                                      className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-slate-50 dark:hover:bg-slate-800 border-r border-slate-200 dark:border-slate-700"
+                                      className="p-2 text-[var(--text-secondary)] hover:text-[var(--accent-primary)] hover:bg-[var(--accent-glow)] border-r border-[var(--border-color)] transition-colors"
                                       title="View Profile"
                                       onClick={(e) => { e.stopPropagation(); setSelectedApplicant(app); }}
                                     >
                                       <FileText className="w-4 h-4" />
                                     </button>
                                     <button 
-                                      className="p-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                      className="p-2 text-[var(--text-secondary)] hover:text-red-500 hover:bg-red-500/10 transition-colors"
                                       title="Delete Applicant"
                                       onClick={(e) => { e.stopPropagation(); deleteApplicant(app.id); }}
                                     >
@@ -406,48 +411,48 @@ const ApplicantManagement = () => {
                                     </button>
                                   </div>
 
-                                  <div className="flex items-start gap-3 mb-3">
-                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-inner">
+                                  <div className="flex items-start gap-3 mb-4">
+                                    <div className="w-11 h-11 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-inner border border-white/20">
                                       {getInitials(app.candidate?.user?.name)}
                                     </div>
-                                    <div className="min-w-0 flex-1">
-                                      <h4 className="font-bold text-slate-900 dark:text-white text-sm truncate pr-6">
+                                    <div className="min-w-0 flex-1 pt-1">
+                                      <h4 className="font-bold text-[var(--text-primary)] text-sm truncate pr-6 leading-tight">
                                         {app.candidate?.user?.name || `Candidate #${app.candidate?.id || 'Unknown'}`}
                                       </h4>
-                                      <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                                      <p className="text-xs text-[var(--text-secondary)] truncate mt-1 font-medium">
                                         {app.candidate?.user?.email || app.job?.title}
                                       </p>
                                     </div>
                                   </div>
 
-                                  <div className="mb-3">
+                                  <div className="mb-4">
                                     {getMatchScoreBadge(app.candidate_score || 0)}
                                   </div>
 
                                   {app.candidate?.skills && (
-                                    <div className="flex flex-wrap gap-1 mb-3">
+                                    <div className="flex flex-wrap gap-1.5 mb-4">
                                       {Array.isArray(app.candidate.skills) 
                                         ? app.candidate.skills.slice(0, 3).map((s: string, i: number) => (
-                                          <span key={i} className="px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded text-[10px] font-medium truncate max-w-[80px]">
+                                          <span key={i} className="px-2 py-1 bg-[var(--bg-secondary)] text-[var(--text-secondary)] rounded-md text-[10px] font-semibold tracking-wide truncate max-w-[80px] border border-[var(--border-glass)]">
                                             {s}
                                           </span>
                                         ))
                                         : typeof app.candidate.skills === 'string' 
                                           ? app.candidate.skills.split(',').slice(0, 3).map((s: string, i: number) => (
-                                            <span key={i} className="px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded text-[10px] font-medium truncate max-w-[80px]">
+                                            <span key={i} className="px-2 py-1 bg-[var(--bg-secondary)] text-[var(--text-secondary)] rounded-md text-[10px] font-semibold tracking-wide truncate max-w-[80px] border border-[var(--border-glass)]">
                                               {s.trim()}
                                             </span>
                                           ))
                                           : null
                                       }
                                       {Array.isArray(app.candidate.skills) && app.candidate.skills.length > 3 && (
-                                        <span className="px-1.5 py-0.5 text-slate-400 text-[10px] font-medium">+{app.candidate.skills.length - 3}</span>
+                                        <span className="px-2 py-1 text-[var(--text-muted)] text-[10px] font-bold">+{app.candidate.skills.length - 3}</span>
                                       )}
                                     </div>
                                   )}
 
-                                  <div className="flex items-center justify-between mt-auto pt-3 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400 font-medium">
-                                    <span className="flex items-center gap-1"><Calendar className="w-3 h-3"/> {new Date(app.applied_at).toLocaleDateString(undefined, {month: 'short', day: 'numeric'})}</span>
+                                  <div className="flex items-center justify-between mt-auto pt-3 border-t border-[var(--border-color)] text-xs text-[var(--text-muted)] font-medium">
+                                    <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5 text-[var(--text-secondary)]"/> {new Date(app.applied_at).toLocaleDateString(undefined, {month: 'short', day: 'numeric'})}</span>
                                     <span className="flex items-center gap-1 hover:text-blue-600 cursor-pointer transition-colors">Details <ChevronRight className="w-3 h-3"/></span>
                                   </div>
                                 </div>
