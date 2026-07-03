@@ -7,7 +7,7 @@ export default function CareerPageBuilder() {
   const { activeOrganization } = useAuthStore();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [jobs, setJobs] = useState<any[]>([]);
+  const [jobs, setJobs] = useState<Record<string, unknown>[]>([]);
   const [formData, setFormData] = useState({
     slug: '',
     title: '',
@@ -37,7 +37,7 @@ export default function CareerPageBuilder() {
         });
         
         // Only show 'Open' jobs in preview
-        setJobs(jobsRes.data.filter((j: any) => j.status === 'Open'));
+        setJobs(jobsRes.data.filter((j: Record<string, unknown>) => j.status === 'Open'));
       } catch (error) {
         console.error("Failed to fetch data", error);
         toast.error("Failed to load career page settings.");
@@ -64,20 +64,21 @@ export default function CareerPageBuilder() {
       setSaving(true);
       await apiClient.put(`/api/organizations/${activeOrganization.id}/career-page`, formData);
       toast.success('Career page settings saved successfully!');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error saving career page settings", error);
-      toast.error(error.response?.data?.detail || "Failed to save settings.");
+      const err = error as { response?: { data?: { detail?: string } } };
+      toast.error(err.response?.data?.detail || "Failed to save settings.");
     } finally {
       setSaving(false);
     }
   };
 
   if (!activeOrganization) {
-    return <div className="p-8 text-[var(--text-secondary)]">Please select an organization.</div>;
+    return <div className="p-8 text-(--text-secondary)">Please select an organization.</div>;
   }
 
   if (loading) {
-    return <div className="p-8 text-[var(--text-secondary)]">Loading settings...</div>;
+    return <div className="p-8 text-(--text-secondary)">Loading settings...</div>;
   }
 
   const publicUrl = `/careers/${encodeURIComponent(formData.slug)}`;
@@ -86,14 +87,14 @@ export default function CareerPageBuilder() {
     <div className="p-8 max-w-6xl mx-auto animate-fade-in">
       <div className="flex justify-between items-center mb-10">
         <div>
-          <h1 className="text-3xl font-extrabold text-[var(--text-primary)] tracking-tight">Career Page Builder</h1>
-          <p className="text-[var(--text-secondary)] mt-2 font-medium">Customize your public-facing careers page to attract top talent.</p>
+          <h1 className="text-3xl font-extrabold text-(--text-primary) tracking-tight">Career Page Builder</h1>
+          <p className="text-(--text-secondary) mt-2 font-medium">Customize your public-facing careers page to attract top talent.</p>
         </div>
         <a 
           href={publicUrl} 
           target="_blank" 
           rel="noreferrer"
-          className="px-5 py-2.5 bg-[var(--accent-primary)] text-white font-semibold rounded-lg shadow-sm shadow-[var(--accent-glow)] hover:bg-[var(--accent-hover)] transition-all transform hover:-translate-y-0.5"
+          className="px-5 py-2.5 bg-(--accent-primary) text-white font-semibold rounded-lg shadow-(--accent-glow) hover:bg-(--accent-hover) transition-all transform hover:-translate-y-0.5"
         >
           View Live Page
         </a>
@@ -101,15 +102,15 @@ export default function CareerPageBuilder() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
         {/* Settings Form */}
-        <div className="glass-card p-8 animate-slide-up" style={{ animationDelay: '0.1s' }}>
-          <form onSubmit={handleSubmit} className="space-y-7">
+        <div className="glass-card p-10 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-8">
             
             <div>
-              <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-2 tracking-wide uppercase">
+              <label className="block text-sm font-semibold text-(--text-secondary) mb-3 tracking-wide uppercase">
                 URL Slug
               </label>
-              <div className="flex shadow-sm rounded-lg overflow-hidden border border-[var(--border-color)] focus-within:ring-2 focus-within:ring-[var(--accent-primary)] focus-within:border-transparent transition-all">
-                <span className="inline-flex items-center px-4 bg-[var(--bg-secondary)] text-[var(--text-muted)] font-medium sm:text-sm border-r border-[var(--border-color)]">
+              <div className="flex shadow-sm rounded-xl overflow-hidden border border-(--border-color) focus-within:ring-2 focus-within:ring-(--accent-primary) focus-within:border-transparent transition-all">
+                <span className="inline-flex items-center px-5 bg-(--bg-secondary) text-(--text-muted) font-bold sm:text-sm border-r border-(--border-color)">
                   /careers/
                 </span>
                 <input
@@ -117,7 +118,7 @@ export default function CareerPageBuilder() {
                   name="slug"
                   value={formData.slug}
                   onChange={handleChange}
-                  className="flex-1 min-w-0 block w-full px-4 py-3 bg-[var(--bg-surface)] text-[var(--text-primary)] focus:outline-none sm:text-sm font-medium"
+                  className="flex-1 min-h-15 block w-full px-5 py-4 bg-(--bg-surface) text-(--text-primary) focus:outline-none sm:text-sm font-medium"
                   placeholder="acme-corp"
                   required
                 />
@@ -125,7 +126,7 @@ export default function CareerPageBuilder() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-2 tracking-wide uppercase">
+              <label className="block text-sm font-semibold text-(--text-secondary) mb-3 tracking-wide uppercase">
                 Page Title
               </label>
               <input
@@ -133,14 +134,14 @@ export default function CareerPageBuilder() {
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                className="block w-full px-4 py-3 glass-input sm:text-sm font-medium"
+                className="block w-full px-5 py-4 glass-input sm:text-sm font-medium"
                 placeholder="Join our team at Acme Corp"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-2 tracking-wide uppercase">
+              <label className="block text-sm font-semibold text-(--text-secondary) mb-3 tracking-wide uppercase">
                 Company Description
               </label>
               <textarea
@@ -154,8 +155,8 @@ export default function CareerPageBuilder() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-2 tracking-wide uppercase">
-                Logo URL <span className="text-[var(--text-muted)] font-normal normal-case">(Optional)</span>
+              <label className="block text-sm font-semibold text-(--text-secondary) mb-2 tracking-wide uppercase">
+                Logo URL <span className="text-(--text-muted) font-normal normal-case">(Optional)</span>
               </label>
               <input
                 type="text"
@@ -168,8 +169,8 @@ export default function CareerPageBuilder() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-2 tracking-wide uppercase">
-                Website URL <span className="text-[var(--text-muted)] font-normal normal-case">(Optional)</span>
+              <label className="block text-sm font-semibold text-(--text-secondary) mb-2 tracking-wide uppercase">
+                Website URL <span className="text-(--text-muted) font-normal normal-case">(Optional)</span>
               </label>
               <input
                 type="url"
@@ -182,7 +183,7 @@ export default function CareerPageBuilder() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-2 tracking-wide uppercase">
+              <label className="block text-sm font-semibold text-(--text-secondary) mb-2 tracking-wide uppercase">
                 Brand Color
               </label>
               <div className="flex items-center gap-4">
@@ -199,17 +200,17 @@ export default function CareerPageBuilder() {
                     style={{ backgroundColor: formData.primary_color }}
                   ></div>
                 </div>
-                <span className="text-sm font-mono font-bold text-[var(--text-primary)] uppercase bg-[var(--bg-secondary)] px-3 py-1.5 rounded-md border border-[var(--border-color)]">
+                <span className="text-sm font-mono font-bold text-(--text-primary) uppercase bg-(--bg-secondary) px-3 py-1.5 rounded-md border border-(--border-color)">
                   {formData.primary_color}
                 </span>
               </div>
             </div>
 
-            <div className="pt-6 border-t border-[var(--border-color)]">
+            <div className="pt-6 border-t border-(--border-color)">
               <button
                 type="submit"
                 disabled={saving}
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm shadow-[var(--accent-glow)] text-sm font-bold text-white bg-[var(--accent-primary)] hover:bg-[var(--accent-hover)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[var(--bg-base)] focus:ring-[var(--accent-primary)] disabled:opacity-50 transition-all transform hover:-translate-y-0.5"
+                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-(--accent-glow) text-sm font-bold text-white bg-(--accent-primary) hover:bg-(--accent-hover) focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-(--bg-base) focus:ring-(--accent-primary) disabled:opacity-50 transition-all transform hover:-translate-y-0.5"
               >
                 {saving ? 'Saving Changes...' : 'Save Settings'}
               </button>
@@ -219,16 +220,16 @@ export default function CareerPageBuilder() {
 
         {/* Live Preview Pane */}
         <div className="hidden lg:block animate-fade-in" style={{ animationDelay: '0.2s' }}>
-          <div className="sticky top-8 border-[12px] border-[#0B0F19] rounded-[2.5rem] overflow-hidden bg-[var(--bg-base)] h-[650px] shadow-2xl flex flex-col relative ring-1 ring-[var(--border-color)]">
+          <div className="sticky top-8 border-12 border-[#0B0F19] rounded-[2.5rem] overflow-hidden bg-(--bg-main) h-162.5 shadow-2xl flex flex-col ring-1 ring-(--border-color)">
             {/* Phone Notch */}
             <div className="absolute top-0 inset-x-0 h-6 bg-[#0B0F19] w-40 mx-auto rounded-b-2xl z-50"></div>
             
             {/* Header */}
             <div 
-              className="h-40 p-6 flex flex-col justify-end relative shrink-0 transition-colors duration-500"
+              className="h-40 p-6 flex flex-col justify-end relative transition-colors duration-500"
               style={{ backgroundColor: formData.primary_color }}
             >
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0B0F19]/80 to-transparent"></div>
+              <div className="absolute inset-0 bg-linear-to-t from-[#0B0F19]/80 to-transparent"></div>
               {formData.website_url ? (
                 <a href={formData.website_url} target="_blank" rel="noreferrer" className="relative z-10 block hover:opacity-90 transition-opacity">
                   <h2 className="text-2xl font-extrabold text-white drop-shadow-md tracking-tight leading-tight">
@@ -243,14 +244,14 @@ export default function CareerPageBuilder() {
             </div>
             
             {/* Body */}
-            <div className="p-6 flex-1 overflow-y-auto custom-scrollbar bg-gradient-to-b from-[var(--bg-surface)] to-[var(--bg-base)]">
+            <div className="p-6 flex-1 overflow-y-auto custom-scrollbar bg-linear-to-b from-(--bg-surface) to-(--bg-base)">
               {formData.logo_url && (
                 formData.website_url ? (
                   <a href={formData.website_url} target="_blank" rel="noreferrer" className="inline-block relative z-20 mb-5 -mt-12">
                     <img 
                       src={formData.logo_url} 
                       alt="Company Logo" 
-                      className="w-16 h-16 rounded-xl object-contain bg-white p-1 border-2 border-[var(--bg-surface)] shadow-lg hover:scale-105 transition-transform"
+                      className="w-16 h-16 rounded-xl object-contain bg-white p-1 border-2 border-(--bg-surface) shadow-lg hover:scale-105 transition-transform"
                       onError={(e) => {
                         (e.target as HTMLImageElement).style.display = 'none';
                       }}
@@ -260,35 +261,35 @@ export default function CareerPageBuilder() {
                   <img 
                     src={formData.logo_url} 
                     alt="Company Logo" 
-                    className="w-16 h-16 rounded-xl object-contain bg-white p-1 border-2 border-[var(--bg-surface)] shadow-lg mb-5 -mt-12 relative z-20"
+                    className="w-16 h-16 rounded-xl object-contain bg-white p-1 border-2 border-(--bg-surface) shadow-lg mb-5 -mt-12 relative z-20"
                     onError={(e) => {
                       (e.target as HTMLImageElement).style.display = 'none';
                     }}
                   />
                 )
               )}
-              <h3 className="text-lg font-bold text-[var(--text-primary)] mb-2">About Us</h3>
-              <p className="text-sm text-[var(--text-secondary)] whitespace-pre-wrap leading-relaxed">
+              <h3 className="text-lg font-bold text-(--text-primary) mb-2">About Us</h3>
+              <p className="text-sm text-(--text-secondary) whitespace-pre-wrap leading-relaxed">
                 {formData.description || 'Your company description will appear here...'}
               </p>
               
               <div className="mt-8 pb-6">
-                <h3 className="text-lg font-bold text-[var(--text-primary)] mb-4 flex items-center gap-2">
+                <h3 className="text-lg font-bold text-(--text-primary) mb-4 flex items-center gap-2">
                   Open Positions
-                  <span className="bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] text-[10px] px-2 py-0.5 rounded-full font-bold">{jobs.length}</span>
+                  <span className="bg-(--accent-primary)/10 text-(--accent-primary) text-[10px] px-2 py-0.5 rounded-full font-bold">{jobs.length}</span>
                 </h3>
                 {jobs.length === 0 ? (
-                  <div className="p-5 border border-dashed border-[var(--border-color)] rounded-xl bg-[var(--bg-secondary)]/50 text-center text-sm font-medium text-[var(--text-muted)]">
+                  <div className="p-5 border border-dashed border-(--border-color) rounded-xl bg-(--bg-secondary)/50 text-center text-sm font-medium text-(--text-muted)">
                     No open positions currently.
                   </div>
                 ) : (
                   <div className="space-y-3">
                     {jobs.map((job) => (
-                      <div key={job.id} className="p-4 glass-card group cursor-pointer hover:border-[var(--accent-primary)]">
-                        <div className="font-bold text-[var(--text-primary)] text-sm group-hover:text-[var(--accent-primary)] transition-colors">{job.title}</div>
-                        <div className="text-xs font-semibold text-[var(--text-muted)] mt-1.5 flex flex-wrap gap-1.5">
+                      <div key={job.id} className="p-4 glass-card group cursor-pointer hover:border-(--accent-primary)">
+                        <div className="font-bold text-(--text-primary) text-sm group-hover:text-(--accent-primary) transition-colors">{job.title}</div>
+                        <div className="text-xs font-semibold text-(--text-muted) mt-1.5 flex flex-wrap gap-1.5">
                           {[job.work_mode, job.employment_type, job.location].filter(Boolean).map((tag, idx) => (
-                            <span key={idx} className="bg-[var(--bg-secondary)] px-1.5 py-0.5 rounded text-[10px]">{tag}</span>
+                            <span key={idx} className="bg-(--bg-secondary) px-1.5 py-0.5 rounded text-[10px]">{tag}</span>
                           ))}
                         </div>
                       </div>
