@@ -7,12 +7,21 @@ from sqlalchemy.orm import Session
 from app.db.database import get_db
 from app.db.models import User
 
-# Initialize Firebase Admin SDK
-cred_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "serviceAccountKey.json")
+import json
 
+# Initialize Firebase Admin SDK
 if not firebase_admin._apps:
     try:
-        cred = credentials.Certificate(cred_path)
+        firebase_cred_env = os.environ.get("FIREBASE_CREDENTIALS")
+        if firebase_cred_env:
+            # Load from environment variable (Render)
+            cred_dict = json.loads(firebase_cred_env)
+            cred = credentials.Certificate(cred_dict)
+        else:
+            # Load from file (Local)
+            cred_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "serviceAccountKey.json")
+            cred = credentials.Certificate(cred_path)
+            
         firebase_admin.initialize_app(cred)
     except Exception as e:
         print(f"Error initializing Firebase Admin: {e}")
