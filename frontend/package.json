@@ -23,7 +23,7 @@
     "dompurify": "^3.4.13",
     "firebase": "^12.16.0",
     "lucide-react": "^1.24.0",
-    "react": "^19.2.6",
+    "react": "^19.2.8",
     "react-dom": "^19.2.6",
     "react-hot-toast": "^2.6.0",
     "react-router-dom": "^7.18.3",
@@ -46,7 +46,7 @@
     "postcss": "^8.5.15",
     "tailwindcss": "^4.3.3",
     "typescript": "~6.0.2",
-    "typescript-eslint": "^8.62.1",
+    "typescript-eslint": "^8.65.0",
     "vite": "^8.1.5"
   }
 }
