@@ -25,3 +25,8 @@ updates:
     directory: "/backend"
     schedule:
       interval: "weekly"
+    ignore:
+      # New Python minor versions ship before wheels exist for native deps
+      # (e.g. grpcio), which breaks the build. Bump these manually.
+      - dependency-name: "python"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
