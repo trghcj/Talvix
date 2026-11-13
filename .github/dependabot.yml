@@ -6,6 +6,18 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5
+    groups:
+      # react and react-dom must stay on the exact same version, or the app
+      # crashes at startup with React error #527. Bump them in one PR.
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
+      mui:
+        patterns:
+          - "@mui/*"
 
   # Maintain dependencies for the Backend (Python/pip)
   - package-ecosystem: "pip"
